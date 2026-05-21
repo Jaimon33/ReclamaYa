@@ -4,100 +4,279 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReclamaYa — Genera tu carta de reclamación en segundos</title>
+  <meta name="description" content="Genera cartas de reclamación profesionales con respaldo legal en segundos. Sin abogados, sin esperas. Para particulares y empresas.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="app">
+
     <header>
-      <h1>ReclamaYa</h1>
-      <p>Genera tu carta de reclamación profesional en segundos</p>
+      <div class="badge">
+        <span class="badge-icon">✓</span>
+        Más de 10.000 reclamaciones generadas
+      </div>
+      <h1>Reclama lo que es tuyo.<br>En segundos.</h1>
+      <p class="subtitulo">Genera una carta de reclamación profesional con respaldo legal.<br>Sin abogados. Sin esperas.</p>
+      <div class="checks">
+        <span>✓ Gratis para ver</span>
+        <span>✓ Referencias legales reales</span>
+        <span>✓ Lista para enviar</span>
+      </div>
     </header>
-    <main id="formulario">
-      <form id="reclamacion-form">
-        <div class="campo">
-          <label for="empresa">¿A quién reclamas?</label>
-          <select id="empresa" required>
-            <option value="">Selecciona...</option>
-            <option value="Telefónica / Movistar">Telefónica / Movistar</option>
-            <option value="Orange / MásMóvil">Orange / MásMóvil</option>
-            <option value="Vodafone">Vodafone</option>
-            <option value="Iberdrola">Iberdrola</option>
-            <option value="Endesa">Endesa</option>
-            <option value="Naturgy">Naturgy</option>
-            <option value="Vueling">Vueling</option>
-            <option value="Iberia">Iberia</option>
-            <option value="Ryanair">Ryanair</option>
-            <option value="Banco o entidad financiera">Banco o entidad financiera</option>
-            <option value="Compañía de seguros">Compañía de seguros</option>
-            <option value="AEAT (Agencia Tributaria)">AEAT (Agencia Tributaria)</option>
-            <option value="Seguridad Social">Seguridad Social</option>
-            <option value="DGT (multa de tráfico)">DGT (multa de tráfico)</option>
-            <option value="SEPE (desempleo)">SEPE (desempleo)</option>
-            <option value="Amazon">Amazon</option>
-            <option value="Otra empresa o entidad">Otra empresa o entidad</option>
-          </select>
+
+    <main>
+      <div class="form-card">
+
+        <div class="form-header">
+          <div class="form-icon">📄</div>
+          <div>
+            <p class="form-title">Nueva reclamación</p>
+            <p class="form-subtitle">Rellena los datos de tu caso</p>
+          </div>
         </div>
-        <div class="campo">
-          <label for="problema">¿Qué problema tienes?</label>
-          <select id="problema" required>
-            <option value="">Selecciona...</option>
-            <option value="cobro indebido o cargo no autorizado">Cobro indebido o cargo no autorizado</option>
-            <option value="incumplimiento de contrato">Incumplimiento de contrato</option>
-            <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
-            <option value="retraso o cancelación de vuelo">Retraso o cancelación de vuelo</option>
-            <option value="devolución no realizada">Devolución no realizada</option>
-            <option value="imposibilidad de darme de baja">Imposibilidad de darme de baja</option>
-            <option value="multa o sanción que considero injusta">Multa o sanción que considero injusta</option>
-            <option value="prestación denegada o recortada">Prestación denegada o recortada</option>
-            <option value="embargo o retención indebida">Embargo o retención indebida</option>
-            <option value="uso indebido de mis datos personales">Uso indebido de mis datos personales</option>
-            <option value="otro problema">Otro problema</option>
-          </select>
+
+        <form id="reclamacion-form">
+
+          <div class="seccion">
+            <div class="seccion-titulo">
+              <span class="seccion-numero">1</span>
+              ¿Quién reclama?
+            </div>
+
+            <div class="campo">
+              <label>Tipo de reclamante</label>
+              <div class="radio-group">
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo" value="particular" checked onchange="toggleTipo(this.value)">
+                  <span>Particular</span>
+                </label>
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo" value="empresa" onchange="toggleTipo(this.value)">
+                  <span>Empresa</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="campo">
+                <label for="nombre" id="label-nombre">Nombre completo</label>
+                <input type="text" id="nombre" placeholder="Juan García López" required>
+              </div>
+              <div class="campo">
+                <label for="documento" id="label-documento">DNI</label>
+                <input type="text" id="documento" placeholder="12345678A" required>
+              </div>
+            </div>
+
+            <div class="campo">
+              <label for="direccion">Dirección completa</label>
+              <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B" required>
+            </div>
+
+            <div class="grid-2">
+              <div class="campo">
+                <label for="ciudad">Ciudad</label>
+                <input type="text" id="ciudad" placeholder="Madrid" required>
+              </div>
+              <div class="campo">
+                <label for="cp">Código postal</label>
+                <input type="text" id="cp" placeholder="28001" required>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="campo">
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" placeholder="600 123 456" required>
+              </div>
+              <div class="campo">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="juan@email.com" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="seccion">
+            <div class="seccion-titulo">
+              <span class="seccion-numero">2</span>
+              ¿A quién reclamas?
+            </div>
+
+            <div class="campo">
+              <label for="empresa">Empresa o entidad</label>
+              <select id="empresa" required>
+                <option value="">Selecciona...</option>
+                <optgroup label="Telecomunicaciones">
+                  <option value="Telefónica / Movistar">Telefónica / Movistar</option>
+                  <option value="Orange / MásMóvil">Orange / MásMóvil</option>
+                  <option value="Vodafone">Vodafone</option>
+                  <option value="Jazztel">Jazztel</option>
+                </optgroup>
+                <optgroup label="Energía">
+                  <option value="Iberdrola">Iberdrola</option>
+                  <option value="Endesa">Endesa</option>
+                  <option value="Naturgy">Naturgy</option>
+                  <option value="Repsol">Repsol</option>
+                </optgroup>
+                <optgroup label="Aerolíneas">
+                  <option value="Vueling">Vueling</option>
+                  <option value="Iberia">Iberia</option>
+                  <option value="Ryanair">Ryanair</option>
+                  <option value="EasyJet">EasyJet</option>
+                </optgroup>
+                <optgroup label="Bancos y seguros">
+                  <option value="Banco o entidad financiera">Banco o entidad financiera</option>
+                  <option value="Compañía de seguros">Compañía de seguros</option>
+                </optgroup>
+                <optgroup label="Administración pública">
+                  <option value="AEAT (Agencia Tributaria)">AEAT (Agencia Tributaria)</option>
+                  <option value="Seguridad Social (TGSS)">Seguridad Social</option>
+                  <option value="DGT (multa de tráfico)">DGT (multa de tráfico)</option>
+                  <option value="SEPE (desempleo)">SEPE (desempleo)</option>
+                  <option value="Ayuntamiento">Ayuntamiento</option>
+                  <option value="Comunidad Autónoma">Comunidad Autónoma</option>
+                </optgroup>
+                <optgroup label="Comercio y otros">
+                  <option value="Amazon">Amazon</option>
+                  <option value="El Corte Inglés">El Corte Inglés</option>
+                  <option value="Otra empresa o entidad">Otra empresa o entidad</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="grid-2">
+              <div class="campo">
+                <label for="referencia">Nº contrato o referencia</label>
+                <input type="text" id="referencia" placeholder="Ej: 123456789">
+              </div>
+              <div class="campo">
+                <label for="fecha-hecho">Fecha del hecho</label>
+                <input type="date" id="fecha-hecho" required>
+              </div>
+            </div>
+
+            <div class="campo">
+              <label for="problema">Tipo de problema</label>
+              <select id="problema" required>
+                <option value="">Selecciona...</option>
+                <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
+                <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
+                <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
+                <option value="retraso o cancelación de vuelo sin compensación">Retraso o cancelación de vuelo</option>
+                <option value="devolución no realizada tras devolución de producto">Devolución no realizada</option>
+                <option value="imposibilidad de darme de baja del servicio">No me dejan darme de baja</option>
+                <option value="multa o sanción que considero improcedente">Multa o sanción improcedente</option>
+                <option value="embargo o retención de cuenta que considero indebido">Embargo o retención indebida</option>
+                <option value="prestación denegada o reducida sin justificación">Prestación denegada o reducida</option>
+                <option value="subida de tarifa no comunicada previamente">Subida de tarifa sin previo aviso</option>
+                <option value="uso indebido de mis datos personales">Uso indebido de datos personales</option>
+                <option value="producto defectuoso o que no corresponde a lo anunciado">Producto defectuoso o no conforme</option>
+                <option value="otro problema no listado">Otro problema</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="importe">Importe reclamado en euros (si aplica)</label>
+              <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="seccion">
+            <div class="seccion-titulo">
+              <span class="seccion-numero">3</span>
+              ¿Qué quieres conseguir?
+            </div>
+
+            <div class="campo">
+              <label for="objetivo">Objetivo de la reclamación</label>
+              <select id="objetivo" required>
+                <option value="">Selecciona...</option>
+                <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
+                <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
+                <option value="que solucionen el problema técnico o de servicio de forma inmediata">Solución inmediata del problema</option>
+                <option value="darme de baja del servicio sin penalización ni coste adicional">Baja sin penalización</option>
+                <option value="anular la multa o sanción impuesta">Anulación de multa o sanción</option>
+                <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
+                <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
+                <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="descripcion">Describe brevemente qué ocurrió</label>
+              <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora (si la hay)..." required></textarea>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-generar">
+            ✨ Generar mi carta gratis
+          </button>
+
+        </form>
+      </div>
+
+      <div class="categorias">
+        <div class="categoria-card">
+          <span class="categoria-icon">🏦</span>
+          <p class="categoria-titulo">Bancos</p>
+          <p class="categoria-sub">Cobros, cláusulas</p>
         </div>
-        <div class="campo">
-          <label for="objetivo">¿Qué quieres conseguir?</label>
-          <select id="objetivo" required>
-            <option value="">Selecciona...</option>
-            <option value="que me devuelvan el dinero cobrado indebidamente">Que me devuelvan el dinero</option>
-            <option value="que me indemnicen por los daños causados">Que me indemnicen</option>
-            <option value="que solucionen el problema de forma inmediata">Que solucionen el problema</option>
-            <option value="darme de baja sin penalización">Darme de baja sin penalización</option>
-            <option value="anular la multa o sanción">Anular la multa o sanción</option>
-            <option value="paralizar un embargo">Paralizar un embargo</option>
-            <option value="solicitar un aplazamiento de pago">Solicitar aplazamiento de pago</option>
-          </select>
+        <div class="categoria-card">
+          <span class="categoria-icon">🧾</span>
+          <p class="categoria-titulo">AEAT / SS</p>
+          <p class="categoria-sub">Multas, embargos</p>
         </div>
-        <div class="campo">
-          <label for="importe">Importe reclamado en euros (si aplica)</label>
-          <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
+        <div class="categoria-card">
+          <span class="categoria-icon">✈️</span>
+          <p class="categoria-titulo">Aerolíneas</p>
+          <p class="categoria-sub">Vuelos, retrasos</p>
         </div>
-        <div class="campo">
-          <label for="nombre">Tu nombre completo</label>
-          <input type="text" id="nombre" placeholder="Ej: Juan García López" required>
-        </div>
-        <div class="campo">
-          <label for="ciudad">Tu ciudad</label>
-          <input type="text" id="ciudad" placeholder="Ej: Madrid" required>
-        </div>
-        <button type="submit" id="btn-generar">Generar mi carta gratis</button>
-      </form>
+      </div>
+
+      <p class="footer-texto">🔒 Tus datos no se almacenan. Pago seguro con Stripe.</p>
     </main>
+
     <section id="resultado" style="display:none;">
       <div id="loading">
         <div class="spinner"></div>
         <p id="loading-text">Analizando tu caso...</p>
       </div>
       <div id="carta-generada" style="display:none;">
-        <h2>Tu carta está lista</h2>
-        <div id="carta-texto"></div>
-        <div class="botones-resultado">
-          <button id="btn-copiar">Copiar carta</button>
-          <button id="btn-pagar">Descargar PDF — 3,99€</button>
+        <div class="form-card">
+          <div class="form-header">
+            <div class="form-icon">✅</div>
+            <div>
+              <p class="form-title">Tu carta está lista</p>
+              <p class="form-subtitle">Revísala antes de enviarla</p>
+            </div>
+          </div>
+          <div id="carta-texto"></div>
+          <div class="botones-resultado">
+            <button id="btn-copiar">📋 Copiar carta</button>
+            <button id="btn-pagar" class="btn-pagar">⬇️ Descargar PDF — 3,99€</button>
+          </div>
+          <button id="btn-nueva">Hacer otra reclamación</button>
         </div>
-        <button id="btn-nueva">Hacer otra reclamación</button>
       </div>
     </section>
+
   </div>
   <script src="app.js"></script>
+  <script>
+    function toggleTipo(valor) {
+      const labelNombre = document.getElementById('label-nombre');
+      const labelDoc = document.getElementById('label-documento');
+      const inputDoc = document.getElementById('documento');
+      if (valor === 'empresa') {
+        labelNombre.textContent = 'Razón social';
+        labelDoc.textContent = 'CIF';
+        inputDoc.placeholder = 'B12345678';
+      } else {
+        labelNombre.textContent = 'Nombre completo';
+        labelDoc.textContent = 'DNI';
+        inputDoc.placeholder = '12345678A';
+      }
+    }
+  </script>
 </body>
 </html>
