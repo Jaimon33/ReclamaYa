@@ -3,35 +3,58 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { empresa, problema, objetivo, importe, nombre, ciudad } = req.body;
+  const {
+    tipo, nombre, documento, direccion, ciudad, cp,
+    telefono, email, empresa, referencia, fechaHecho,
+    problema, importe, objetivo, descripcion
+  } = req.body;
 
-  if (!empresa || !problema || !objetivo || !nombre || !ciudad) {
+  if (!nombre || !documento || !direccion || !ciudad || !cp ||
+      !telefono || !email || !empresa || !problema || !objetivo || !descripcion) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
-  const importeTexto = importe
-    ? `El importe reclamado es de ${parseFloat(importe).toFixed(2)}€.`
-    : '';
+  const tipoTexto = tipo === 'empresa' ? 'empresa' : 'particular';
+  const docTexto = tipo === 'empresa' ? 'CIF' : 'DNI';
+  const nombreTexto = tipo === 'empresa' ? 'Razón social' : 'Nombre completo';
+  const importeTexto = importe ? `El importe reclamado es de ${parseFloat(importe).toFixed(2)}€.` : '';
+  const referenciaTexto = referencia ? `El número de contrato o referencia es: ${referencia}.` : '';
+  const fechaTexto = fechaHecho ? `Los hechos ocurrieron el ${fechaHecho}.` : '';
 
-  const prompt = `Eres un experto en derecho del consumidor y administrativo español. 
-Redacta una carta de reclamación formal, profesional y contundente con los siguientes datos:
+  const prompt = `Eres un experto en derecho del consumidor y administrativo español.
+Redacta una carta de reclamación formal, profesional y contundente con los siguientes datos reales del reclamante. 
+IMPORTANTE: Usa todos los datos proporcionados directamente en la carta, sin dejar ningún campo entre corchetes para rellenar después. La carta debe estar 100% completa y lista para enviar.
 
-- Remitente: ${nombre}, con domicilio en ${ciudad}
+DATOS DEL RECLAMANTE:
+- Tipo: ${tipoTexto}
+- ${nombreTexto}: ${nombre}
+- ${docTexto}: ${documento}
+- Dirección: ${direccion}, ${cp} ${ciudad}
+- Teléfono: ${telefono}
+- Email: ${email}
+
+DATOS DE LA RECLAMACIÓN:
 - Destinatario: ${empresa}
-- Motivo de la reclamación: ${problema}
-- Objetivo que se quiere conseguir: ${objetivo}
+- Motivo: ${problema}
+- Objetivo: ${objetivo}
 - ${importeTexto}
+- ${referenciaTexto}
+- ${fechaTexto}
 
-La carta debe:
-1. Tener formato formal con lugar, fecha y datos del remitente
-2. Incluir referencias legales concretas y aplicables al caso (leyes españolas vigentes)
-3. Ser firme y profesional, dejando claro que el remitente conoce sus derechos
-4. Incluir un plazo máximo de respuesta de 15 días hábiles
-5. Mencionar las consecuencias de no atender la reclamación (organismos reguladores, acciones legales)
-6. Terminar con firma y datos de contacto en formato [TU TELÉFONO] y [TU EMAIL] para que el usuario los complete
-7. Usar los campos [TU DNI], [Nº CONTRATO/REFERENCIA] y [FECHA DEL HECHO] donde corresponda
+DESCRIPCIÓN DEL CASO:
+${descripcion}
 
-Devuelve únicamente el texto de la carta, sin explicaciones adicionales.`;
+INSTRUCCIONES PARA REDACTAR LA CARTA:
+1. Encabezado con lugar (${ciudad}), fecha actual y datos completos del remitente
+2. Dirigida al Servicio de Atención al Cliente de ${empresa}
+3. Cuerpo con exposición clara de los hechos basada en la descripción proporcionada
+4. Referencias legales concretas y vigentes aplicables al caso (Ley General de Telecomunicaciones, Ley de Consumidores, Reglamento CE 261/2004, LGT, LGSS, LGT, etc. según corresponda)
+5. Solicitud formal y clara del objetivo indicado
+6. Plazo máximo de respuesta de 15 días hábiles
+7. Advertencia de acciones ante organismos reguladores competentes si no se atiende (CNMC, AEPD, AESA, OCU, Defensor del Pueblo, etc. según corresponda)
+8. Cierre formal con nombre completo, ${docTexto} y datos de contacto reales ya incluidos
+
+Devuelve únicamente el texto de la carta, sin explicaciones ni comentarios adicionales.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -43,7 +66,7 @@ Devuelve únicamente el texto de la carta, sin explicaciones adicionales.`;
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1500,
+        max_tokens: 2000,
         messages: [
           {
             role: 'user',
