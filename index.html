@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReclamaYa — Genera tu carta de reclamación en segundos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>ReclamaYa</h1>
+      <p>Genera tu carta de reclamación profesional en segundos</p>
+    </header>
+    <main id="formulario">
+      <form id="reclamacion-form">
+        <div class="campo">
+          <label for="empresa">¿A quién reclamas?</label>
+          <select id="empresa" required>
+            <option value="">Selecciona...</option>
+            <option value="Telefónica / Movistar">Telefónica / Movistar</option>
+            <option value="Orange / MásMóvil">Orange / MásMóvil</option>
+            <option value="Vodafone">Vodafone</option>
+            <option value="Iberdrola">Iberdrola</option>
+            <option value="Endesa">Endesa</option>
+            <option value="Naturgy">Naturgy</option>
+            <option value="Vueling">Vueling</option>
+            <option value="Iberia">Iberia</option>
+            <option value="Ryanair">Ryanair</option>
+            <option value="Banco o entidad financiera">Banco o entidad financiera</option>
+            <option value="Compañía de seguros">Compañía de seguros</option>
+            <option value="AEAT (Agencia Tributaria)">AEAT (Agencia Tributaria)</option>
+            <option value="Seguridad Social">Seguridad Social</option>
+            <option value="DGT (multa de tráfico)">DGT (multa de tráfico)</option>
+            <option value="SEPE (desempleo)">SEPE (desempleo)</option>
+            <option value="Amazon">Amazon</option>
+            <option value="Otra empresa o entidad">Otra empresa o entidad</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="problema">¿Qué problema tienes?</label>
+          <select id="problema" required>
+            <option value="">Selecciona...</option>
+            <option value="cobro indebido o cargo no autorizado">Cobro indebido o cargo no autorizado</option>
+            <option value="incumplimiento de contrato">Incumplimiento de contrato</option>
+            <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
+            <option value="retraso o cancelación de vuelo">Retraso o cancelación de vuelo</option>
+            <option value="devolución no realizada">Devolución no realizada</option>
+            <option value="imposibilidad de darme de baja">Imposibilidad de darme de baja</option>
+            <option value="multa o sanción que considero injusta">Multa o sanción que considero injusta</option>
+            <option value="prestación denegada o recortada">Prestación denegada o recortada</option>
+            <option value="embargo o retención indebida">Embargo o retención indebida</option>
+            <option value="uso indebido de mis datos personales">Uso indebido de mis datos personales</option>
+            <option value="otro problema">Otro problema</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="objetivo">¿Qué quieres conseguir?</label>
+          <select id="objetivo" required>
+            <option value="">Selecciona...</option>
+            <option value="que me devuelvan el dinero cobrado indebidamente">Que me devuelvan el dinero</option>
+            <option value="que me indemnicen por los daños causados">Que me indemnicen</option>
+            <option value="que solucionen el problema de forma inmediata">Que solucionen el problema</option>
+            <option value="darme de baja sin penalización">Darme de baja sin penalización</option>
+            <option value="anular la multa o sanción">Anular la multa o sanción</option>
+            <option value="paralizar un embargo">Paralizar un embargo</option>
+            <option value="solicitar un aplazamiento de pago">Solicitar aplazamiento de pago</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="importe">Importe reclamado en euros (si aplica)</label>
+          <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
+        </div>
+        <div class="campo">
+          <label for="nombre">Tu nombre completo</label>
+          <input type="text" id="nombre" placeholder="Ej: Juan García López" required>
+        </div>
+        <div class="campo">
+          <label for="ciudad">Tu ciudad</label>
+          <input type="text" id="ciudad" placeholder="Ej: Madrid" required>
+        </div>
+        <button type="submit" id="btn-generar">Generar mi carta gratis</button>
+      </form>
+    </main>
+    <section id="resultado" style="display:none;">
+      <div id="loading">
+        <div class="spinner"></div>
+        <p id="loading-text">Analizando tu caso...</p>
+      </div>
+      <div id="carta-generada" style="display:none;">
+        <h2>Tu carta está lista</h2>
+        <div id="carta-texto"></div>
+        <div class="botones-resultado">
+          <button id="btn-copiar">Copiar carta</button>
+          <button id="btn-pagar">Descargar PDF — 3,99€</button>
+        </div>
+        <button id="btn-nueva">Hacer otra reclamación</button>
+      </div>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
