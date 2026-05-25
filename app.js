@@ -110,10 +110,11 @@ form.addEventListener('submit', async (e) => {
   const archivosInput = document.getElementById('archivos');
   const archivos = archivosInput.files;
 
-  document.querySelector('main').style.display = 'none';
+  document.getElementById('formulario').style.display = 'none';
   resultado.style.display = 'block';
   loading.style.display = 'block';
   cartaGenerada.style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   let i = 0;
   const interval = setInterval(() => {
@@ -150,6 +151,7 @@ form.addEventListener('submit', async (e) => {
       loading.style.display = 'none';
       cartaGenerada.style.display = 'block';
       cartaTexto.textContent = datos.carta;
+      resultado.scrollIntoView({ behavior: 'smooth' });
     } else {
       throw new Error('No se pudo generar la carta');
     }
@@ -158,7 +160,8 @@ form.addEventListener('submit', async (e) => {
     loadingText.textContent = 'Ha ocurrido un error. Por favor inténtalo de nuevo.';
     setTimeout(() => {
       resultado.style.display = 'none';
-      document.querySelector('main').style.display = 'block';
+      document.getElementById('formulario').style.display = 'block';
+      document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
     }, 2000);
   }
 });
@@ -173,8 +176,16 @@ btnCopiar.addEventListener('click', () => {
 btnNueva.addEventListener('click', () => {
   form.reset();
   document.getElementById('lista-archivos').innerHTML = '';
+  document.getElementById('step-1').style.display = 'block';
+  document.getElementById('step-2').style.display = 'none';
+  document.getElementById('step-3').style.display = 'none';
+  ['nav-step-1', 'nav-step-2', 'nav-step-3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active', 'done');
+    if (i === 0) el.classList.add('active');
+  });
   resultado.style.display = 'none';
   cartaGenerada.style.display = 'none';
-  document.querySelector('main').style.display = 'block';
-  window.scrollTo(0, 0);
+  document.getElementById('formulario').style.display = 'block';
+  document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
 });
