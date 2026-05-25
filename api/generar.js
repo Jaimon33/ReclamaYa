@@ -150,11 +150,11 @@ export default async function handler(req, res) {
     .join('\n\n');
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
+const prompt = `Eres un experto en derecho del consumidor y administrativo español con más de 20 años de experiencia redactando escritos de reclamación formales.
 
-  const prompt = `Eres un experto en derecho del consumidor y administrativo español.
-Redacta una carta de reclamación formal, profesional y contundente.
+Redacta un ESCRITO DE RECLAMACIÓN FORMAL con la siguiente estructura exacta y formato profesional. Es imprescindible respetar este formato al pie de la letra.
 
-IMPORTANTE: Usa todos los datos proporcionados directamente en la carta. La carta debe estar 100% completa y lista para enviar, sin campos en blanco ni corchetes.
+---
 
 DATOS DEL RECLAMANTE:
 - Tipo: ${tipoTexto}
@@ -176,87 +176,71 @@ DATOS DE LA RECLAMACIÓN:
 DESCRIPCIÓN DEL CASO:
 ${descripcion}
 
-${textoDocumentos ? `CONTENIDO DE DOCUMENTOS ADJUNTOS:\n${textoDocumentos}\n\nExtrae y menciona los datos clave que aparezcan en estos documentos.` : ''}
+${textoDocumentos ? `CONTENIDO DE DOCUMENTOS ADJUNTOS:\n${textoDocumentos}` : ''}
 
-LEGISLACIÓN VERIFICADA A APLICAR:
-Las siguientes leyes han sido verificadas en fuentes oficiales (BOE y EUR-Lex). Úsalas como base legal de la carta, citando solo las que sean directamente aplicables al caso:
-
+LEGISLACIÓN VERIFICADA APLICABLE:
 ${leyesTexto}
 
-INSTRUCCIONES:
-1. Encabezado con lugar (${ciudad}), fecha actual y datos completos del remitente
-2. Dirigida al Servicio de Atención al Cliente de ${empresa}
-3. Exposición clara y cronológica de los hechos
-4. Fundamentación legal citando únicamente las leyes verificadas proporcionadas
-5. Solicitud formal y clara del objetivo
-6. Plazo máximo de respuesta de 15 días hábiles
-7. Advertencia de acciones ante el organismo regulador competente si no se atiende (${fuentesNombres.join(', ')})
-8. Cierre formal con todos los datos del remitente ya incluidos
+---
 
-Devuelve únicamente el texto de la carta, sin explicaciones adicionales.`;
+FORMATO EXACTO DEL ESCRITO — Sigue esta estructura sin alterarla:
 
-  try {
-    const mensajeContenido = [];
+[Ciudad], [fecha actual escrita en formato: Madrid, a [día] de [mes] de [año]]
 
-    const imagenesYPdfs = documentos.filter(d => d.tipo === 'imagen' || d.tipo === 'pdf');
-    for (const doc of imagenesYPdfs) {
-      if (doc.tipo === 'imagen') {
-        mensajeContenido.push({
-          type: 'image',
-          source: {
-            type: 'base64',
-            media_type: doc.mediaType,
-            data: doc.data
-          }
-        });
-      } else if (doc.tipo === 'pdf') {
-        mensajeContenido.push({
-          type: 'document',
-          source: {
-            type: 'base64',
-            media_type: 'application/pdf',
-            data: doc.data
-          }
-        });
-      }
-    }
+[Nombre completo del remitente]
+[DNI/CIF: número]
+[Dirección completa]
+[Código postal y ciudad]
+[Teléfono: número]
+[Email: dirección]
 
-    mensajeContenido.push({
-      type: 'text',
-      text: prompt
-    });
+A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE
+[NOMBRE DE LA EMPRESA EN MAYÚSCULAS]
+[Ciudad]
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 2000,
-        messages: [
-          {
-            role: 'user',
-            content: mensajeContenido
-          }
-        ]
-      })
-    });
+ASUNTO: Escrito de reclamación formal por [motivo breve en mayúsculas]
 
-    const data = await response.json();
+REF. INTERNA: RY-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000) + 10000}
 
-    if (data.content && data.content[0] && data.content[0].text) {
-      return res.status(200).json({
-        carta: data.content[0].text,
-        fuentes: fuentesVerificadas
-      });
-    } else {
-      throw new Error('Respuesta inesperada de la API');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ error: 'Error al generar la carta' });
-  }
-}
+Muy señores míos:
+
+[Nombre completo], con [DNI/CIF] número [número], y domicilio en [dirección completa], ante ustedes comparezco y, como mejor proceda en derecho, EXPONGO:
+
+PRIMERO.- [Primer hecho relevante con fecha exacta si se conoce]
+
+SEGUNDO.- [Segundo hecho: intentos de resolución previos, respuestas recibidas o ausencia de las mismas]
+
+TERCERO.- [Tercer hecho: perjuicio causado e importe si aplica]
+
+En virtud de los hechos expuestos, y al amparo de la siguiente legislación vigente verificada:
+
+— [Ley 1 aplicable con artículo concreto si procede]
+— [Ley 2 aplicable]
+— [Ley 3 aplicable si procede]
+
+SOLICITO:
+
+PRIMERO.- [Objetivo principal de la reclamación de forma concreta y cuantificada si aplica]
+
+SEGUNDO.- Que se dé respuesta formal y por escrito a este escrito en un plazo máximo de QUINCE (15) DÍAS HÁBILES desde su recepción.
+
+TERCERO.- Que en caso de no obtener respuesta satisfactoria en dicho plazo, me reservo expresamente el derecho a interponer reclamación ante [organismo regulador competente: ${fuentesNombres.join(' / ')}], así como a ejercer las acciones legales que correspondan.
+
+En [ciudad], a [fecha actual]
+
+Atentamente,
+
+[Nombre completo]
+[DNI/CIF: número]
+
+---
+Documento generado por ReclamaYa | Legislación verificada: ${fuentesNombres.join(', ')}
+Este escrito tiene carácter de reclamación extrajudicial.
+
+INSTRUCCIONES ADICIONALES:
+- Rellena TODOS los campos con los datos reales proporcionados. Cero campos vacíos o entre corchetes en el resultado final.
+- La fecha actual es ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
+- Los hechos deben ser concretos, cronológicos y basados en la descripción proporcionada.
+- Cita solo las leyes de la lista verificada que sean directamente aplicables.
+- Tono: formal, firme y profesional. Sin lenguaje coloquial.
+- Devuelve únicamente el escrito, sin explicaciones ni comentarios adicionales.`;
