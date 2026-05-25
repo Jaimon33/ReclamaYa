@@ -9,11 +9,82 @@ const btnNueva = document.getElementById('btn-nueva');
 
 const pasos = [
   'Analizando tu caso...',
+  'Leyendo los documentos adjuntos...',
   'Identificando legislación aplicable...',
   'Redactando la carta...',
   'Añadiendo referencias legales...',
   'Finalizando el documento...'
 ];
+
+async function procesarArchivo(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve({
+          tipo: 'imagen',
+          mediaType: file.type,
+          data: e.target.result.split(',')[1]
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (ext === 'pdf') {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve({
+          tipo: 'pdf',
+          mediaType: 'application/pdf',
+          data: e.target.result.split(',')[1]
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (['doc', 'docx'].includes(ext)) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        mammoth.extractRawText({ arrayBuffer: e.target.result })
+          .then((result) => {
+            resolve({
+              tipo: 'texto',
+              contenido: `[Documento Word: ${file.name}]\n${result.value}`
+            });
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  if (['xls', 'xlsx'].includes(ext)) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const workbook = XLSX.read(e.target.result, { type: 'array' });
+        let texto = `[Documento Excel: ${file.name}]\n`;
+        workbook.SheetNames.forEach((sheetName) => {
+          const sheet = workbook.Sheets[sheetName];
+          texto += `\nHoja: ${sheetName}\n`;
+          texto += XLSX.utils.sheet_to_csv(sheet);
+        });
+        resolve({
+          tipo: 'texto',
+          contenido: texto
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  return null;
+}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -26,13 +97,18 @@ form.addEventListener('submit', async (e) => {
   const cp = document.getElementById('cp').value;
   const telefono = document.getElementById('telefono').value;
   const email = document.getElementById('email').value;
+  const categoriaEmpresa = document.getElementById('categoria-empresa').value;
   const empresa = document.getElementById('empresa').value;
   const referencia = document.getElementById('referencia').value;
   const fechaHecho = document.getElementById('fecha-hecho').value;
   const problema = document.getElementById('problema').value;
   const importe = document.getElementById('importe').value;
-  const objetivo = document.getElementById('objetivo').value;
+  const objetivoSelect = document.getElementById('objetivo').value;
+  const otroObjetivo = document.getElementById('otro-objetivo').value;
+  const objetivo = objetivoSelect === 'otro' ? otroObjetivo : objetivoSelect;
   const descripcion = document.getElementById('descripcion').value;
+  const archivosInput = document.getElementById('archivos');
+  const archivos = archivosInput.files;
 
   document.querySelector('main').style.display = 'none';
   resultado.style.display = 'block';
@@ -45,16 +121,25 @@ form.addEventListener('submit', async (e) => {
       loadingText.textContent = pasos[i];
       i++;
     }
-  }, 800);
+  }, 1000);
 
   try {
+    const documentosProcesados = [];
+    if (archivos.length > 0) {
+      for (const file of Array.from(archivos)) {
+        const procesado = await procesarArchivo(file);
+        if (procesado) documentosProcesados.push(procesado);
+      }
+    }
+
     const respuesta = await fetch('/api/generar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tipo, nombre, documento, direccion, ciudad, cp,
-        telefono, email, empresa, referencia, fechaHecho,
-        problema, importe, objetivo, descripcion
+        telefono, email, categoriaEmpresa, empresa,
+        referencia, fechaHecho, problema, importe,
+        objetivo, descripcion, documentos: documentosProcesados
       })
     });
 
@@ -87,6 +172,7 @@ btnCopiar.addEventListener('click', () => {
 
 btnNueva.addEventListener('click', () => {
   form.reset();
+  document.getElementById('lista-archivos').innerHTML = '';
   resultado.style.display = 'none';
   cartaGenerada.style.display = 'none';
   document.querySelector('main').style.display = 'block';
