@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genera tu reclamación — ReclamaYa</title>
+  <meta name="description" content="Genera tu carta de reclamación profesional en segundos con respaldo legal verificado.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="reclamar.css">
+</head>
+<body class="reclamar-page">
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">⚡</div>
+        <span>ReclamaYa</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">← Volver al inicio</a>
+      </div>
+      <a href="/" class="nav-mobile-btn-link">← Inicio</a>
+    </div>
+  </nav>
+
+  <main class="reclamar-main">
+    <div class="reclamar-inner">
+
+      <div class="reclamar-header">
+        <h1>Genera tu carta de reclamación</h1>
+        <p>Gratis para ver. Solo pagas 3,99€ si quieres descargar el PDF listo para enviar.</p>
+      </div>
+
+      <div class="form-card">
+        <div class="form-steps-nav">
+          <div class="form-step-nav active" id="nav-step-1">
+            <span class="step-nav-num">1</span>
+            <span class="step-nav-label">Tus datos</span>
+          </div>
+          <div class="step-nav-line"></div>
+          <div class="form-step-nav" id="nav-step-2">
+            <span class="step-nav-num">2</span>
+            <span class="step-nav-label">La reclamación</span>
+          </div>
+          <div class="step-nav-line"></div>
+          <div class="form-step-nav" id="nav-step-3">
+            <span class="step-nav-num">3</span>
+            <span class="step-nav-label">Documentos</span>
+          </div>
+        </div>
+
+        <form id="reclamacion-form">
+
+          <div class="form-step" id="step-1">
+            <div class="campo">
+              <label>Tipo de reclamante</label>
+              <div class="radio-group">
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo" value="particular" checked onchange="toggleTipo(this.value)">
+                  <span>Particular</span>
+                </label>
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo" value="empresa" onchange="toggleTipo(this.value)">
+                  <span>Empresa</span>
+                </label>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="campo">
+                <label for="nombre" id="label-nombre">Nombre completo</label>
+                <input type="text" id="nombre" placeholder="Juan García López" required>
+              </div>
+              <div class="campo">
+                <label for="documento" id="label-documento">DNI</label>
+                <input type="text" id="documento" placeholder="12345678A" required>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="direccion">Dirección completa</label>
+              <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B" required>
+            </div>
+            <div class="grid-2">
+              <div class="campo">
+                <label for="ciudad">Ciudad</label>
+                <input type="text" id="ciudad" placeholder="Madrid" required>
+              </div>
+              <div class="campo">
+                <label for="cp">Código postal</label>
+                <input type="text" id="cp" placeholder="28001" required>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="campo">
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" placeholder="600 123 456" required>
+              </div>
+              <div class="campo">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="juan@email.com" required>
+              </div>
+            </div>
+            <div class="form-nav-btns">
+              <div></div>
+              <button type="button" class="btn-siguiente" onclick="irPaso(2)">Siguiente →</button>
+            </div>
+          </div>
+
+          <div class="form-step" id="step-2" style="display:none;">
+            <div class="campo">
+              <label for="categoria-empresa">Categoría</label>
+              <select id="categoria-empresa" required>
+                <option value="">Selecciona una categoría...</option>
+                <option value="Telecomunicaciones">Telecomunicaciones</option>
+                <option value="Energía y suministros">Energía y suministros</option>
+                <option value="Aerolíneas y transporte">Aerolíneas y transporte</option>
+                <option value="Banca y seguros">Banca y seguros</option>
+                <option value="Administración pública">Administración pública</option>
+                <option value="Comercio y tiendas online">Comercio y tiendas online</option>
+                <option value="Sanidad y salud">Sanidad y salud</option>
+                <option value="Inmobiliaria y alquiler">Inmobiliaria y alquiler</option>
+                <option value="Educación">Educación</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="empresa">Nombre de la empresa o entidad</label>
+              <input type="text" id="empresa" placeholder="Escribe el nombre exacto" required>
+            </div>
+            <div class="grid-2">
+              <div class="campo">
+                <label for="referencia">Nº contrato o referencia</label>
+                <input type="text" id="referencia" placeholder="Ej: 123456789">
+              </div>
+              <div class="campo">
+                <label for="fecha-hecho">Fecha del hecho</label>
+                <input type="date" id="fecha-hecho" required>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="problema">Tipo de problema</label>
+              <select id="problema" required>
+                <option value="">Selecciona...</option>
+                <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
+                <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
+                <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
+                <option value="retraso o cancelación de vuelo sin compensación">Retraso o cancelación de vuelo</option>
+                <option value="devolución no realizada tras devolución de producto">Devolución no realizada</option>
+                <option value="imposibilidad de darme de baja del servicio">No me dejan darme de baja</option>
+                <option value="multa o sanción que considero improcedente">Multa o sanción improcedente</option>
+                <option value="embargo o retención de cuenta que considero indebido">Embargo o retención indebida</option>
+                <option value="prestación denegada o reducida sin justificación">Prestación denegada o reducida</option>
+                <option value="subida de tarifa no comunicada previamente">Subida de tarifa sin previo aviso</option>
+                <option value="uso indebido de mis datos personales">Uso indebido de datos personales</option>
+                <option value="producto defectuoso o que no corresponde a lo anunciado">Producto defectuoso o no conforme</option>
+                <option value="otro problema no listado">Otro problema</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="importe">Importe reclamado en euros (si aplica)</label>
+              <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
+            </div>
+            <div class="campo">
+              <label for="objetivo">Objetivo de la reclamación</label>
+              <select id="objetivo" required onchange="toggleOtroObjetivo(this.value)">
+                <option value="">Selecciona...</option>
+                <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
+                <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
+                <option value="que solucionen el problema técnico o de servicio de forma inmediata">Solución inmediata del problema</option>
+                <option value="darme de baja del servicio sin penalización ni coste adicional">Baja sin penalización</option>
+                <option value="anular la multa o sanción impuesta">Anulación de multa o sanción</option>
+                <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
+                <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
+                <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
+                <option value="otro">Otro objetivo</option>
+              </select>
+            </div>
+            <div class="campo" id="campo-otro-objetivo" style="display:none;">
+              <label for="otro-objetivo">Describe tu objetivo</label>
+              <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
+            </div>
+            <div class="campo">
+              <label for="descripcion">Describe brevemente qué ocurrió</label>
+              <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
+            </div>
+            <div class="form-nav-btns">
+              <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
+              <button type="button" class="btn-siguiente" onclick="irPaso(3)">Siguiente →</button>
+            </div>
+          </div>
+
+          <div class="form-step" id="step-3" style="display:none;">
+            <div class="campo">
+              <label>Adjunta documentos relacionados (opcional)</label>
+              <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
+                <span class="upload-icon">📎</span>
+                <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
+                <p class="upload-sub">JPG, PNG, PDF, Word, Excel — Máx. 10MB por archivo</p>
+              </div>
+              <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
+              <div id="lista-archivos"></div>
+            </div>
+            <div class="precio-aviso">
+              <div class="precio-aviso-inner">
+                <span class="precio-aviso-icon">💡</span>
+                <div>
+                  <p class="precio-aviso-titulo">Gratis para ver, 3,99€ para descargar</p>
+                  <p class="precio-aviso-sub">Podrás leer el inicio de tu carta antes de decidir si descargas el PDF completo.</p>
+                </div>
+              </div>
+            </div>
+            <div class="form-nav-btns">
+              <button type="button" class="btn-atras" onclick="irPaso(2)">← Atrás</button>
+              <button type="submit" id="btn-generar">✨ Generar mi carta gratis</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div id="resultado" style="display:none;">
+        <div id="loading" style="text-align:center; padding:3rem 0;">
+          <div class="spinner"></div>
+          <p id="loading-text" style="color:#666; font-size:0.95rem; margin-top:1rem;">Analizando tu caso...</p>
+        </div>
+        <div id="carta-generada" style="display:none;">
+          <div class="form-card">
+            <div class="form-header">
+              <div class="form-icon">✅</div>
+              <div>
+                <p class="form-title">Tu carta está lista</p>
+                <p class="form-subtitle">Aquí tienes una vista previa</p>
+              </div>
+            </div>
+
+            <div class="carta-preview-wrapper">
+              <div id="carta-visible"></div>
+              <div class="carta-blur-overlay">
+                <div class="blur-content">
+                  <div class="blur-icon">🔒</div>
+                  <p class="blur-titulo">El resto de la carta está listo</p>
+                  <p class="blur-sub">Descarga el PDF completo, con todas las referencias legales verificadas y listo para enviar.</p>
+                  <button id="btn-pagar" class="btn-pagar">⬇️ Descargar carta completa en PDF — 3,99€</button>
+                  <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Descarga inmediata &nbsp;·&nbsp; ✓ Sin suscripción</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="descargo-legal">
+              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en esta carta han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). No obstante, ReclamaYa es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica. Se recomienda verificar la vigencia de la legislación citada antes de enviar la carta.</p>
+            </div>
+
+            <button id="btn-nueva">Hacer otra reclamación</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="nav-logo-icon">⚡</div>
+        <span>ReclamaYa</span>
+      </div>
+      <p class="footer-sub">Defiende tus derechos. En segundos.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="mailto:hola@reclamaya.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamaYa. Todos los derechos reservados.<br>ReclamaYa no presta servicios de asesoría jurídica. Las cartas generadas son documentos de apoyo.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="reclamar.js"></script>
+  <script>
+    function toggleTipo(valor) {
+      const labelNombre = document.getElementById('label-nombre');
+      const labelDoc = document.getElementById('label-documento');
+      const inputDoc = document.getElementById('documento');
+      if (valor === 'empresa') {
+        labelNombre.textContent = 'Razón social';
+        labelDoc.textContent = 'CIF';
+        inputDoc.placeholder = 'B12345678';
+      } else {
+        labelNombre.textContent = 'Nombre completo';
+        labelDoc.textContent = 'DNI';
+        inputDoc.placeholder = '12345678A';
+      }
+    }
+
+    function toggleOtroObjetivo(valor) {
+      const campo = document.getElementById('campo-otro-objetivo');
+      const input = document.getElementById('otro-objetivo');
+      if (valor === 'otro') {
+        campo.style.display = 'block';
+        input.required = true;
+      } else {
+        campo.style.display = 'none';
+        input.required = false;
+      }
+    }
+
+    function irPaso(num) {
+      const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
+      const campos2 = ['categoria-empresa','empresa','fecha-hecho','problema','objetivo','descripcion'];
+      if (num === 2) {
+        for (const id of campos1) {
+          const el = document.getElementById(id);
+          if (el && el.required && !el.value.trim()) {
+            el.focus();
+            el.style.borderColor = '#e24b4a';
+            setTimeout(() => { el.style.borderColor = ''; }, 2000);
+            return;
+          }
+        }
+      }
+      if (num === 3) {
+        for (const id of campos2) {
+          const el = document.getElementById(id);
+          if (el && el.required && !el.value.trim()) {
+            el.focus();
+            el.style.borderColor = '#e24b4a';
+            setTimeout(() => { el.style.borderColor = ''; }, 2000);
+            return;
+          }
+        }
+      }
+      document.getElementById('step-1').style.display = 'none';
+      document.getElementById('step-2').style.display = 'none';
+      document.getElementById('step-3').style.display = 'none';
+      document.getElementById('step-' + num).style.display = 'block';
+      ['nav-step-1','nav-step-2','nav-step-3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.classList.remove('active','done');
+        if (i + 1 < num) el.classList.add('done');
+        if (i + 1 === num) el.classList.add('active');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function mostrarArchivos(files) {
+      const lista = document.getElementById('lista-archivos');
+      const area = document.getElementById('upload-area');
+      lista.innerHTML = '';
+      if (files.length === 0) return;
+      area.style.borderColor = '#1a1a2e';
+      Array.from(files).forEach((file) => {
+        const item = document.createElement('div');
+        item.className = 'archivo-item';
+        item.innerHTML = `
+          <span class="archivo-icono">${getIcono(file.name)}</span>
+          <span class="archivo-nombre">${file.name}</span>
+          <span class="archivo-peso">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    function getIcono(nombre) {
+      const ext = nombre.split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','webp'].includes(ext)) return '🖼️';
+      if (ext === 'pdf') return '📕';
+      if (['doc','docx'].includes(ext)) return '📘';
+      if (['xls','xlsx'].includes(ext)) return '📗';
+      return '📄';
+    }
+
+    const uploadArea = document.getElementById('upload-area');
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#1a1a2e';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.getElementById('archivos').files = e.dataTransfer.files;
+      mostrarArchivos(e.dataTransfer.files);
+    });
+
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+  </script>
+</body>
+</html>
