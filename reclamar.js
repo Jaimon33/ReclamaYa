@@ -170,7 +170,16 @@ form.addEventListener('submit', async (e) => {
 
       resultado.scrollIntoView({ behavior: 'smooth' });
 
-      window._cartaCompleta = datos.carta;
+     window._cartaCompleta = datos.carta;
+
+const btnPagar = document.getElementById('btn-pagar');
+if (btnPagar) {
+  btnPagar.addEventListener('click', () => {
+    if (window._cartaCompleta) {
+      alert('Integración con Stripe próximamente. Tu escrito completo está guardado en esta sesión.');
+    }
+  });
+}
 
     } else {
       throw new Error('No se pudo generar la carta');
