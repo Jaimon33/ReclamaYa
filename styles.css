@@ -235,6 +235,75 @@ header h1 {
   border-color: #1a1a2e;
 }
 
+.upload-area {
+  border: 1.5px dashed #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
+}
+
+.upload-area:hover {
+  border-color: #1a1a2e;
+  background: #f5f5f5;
+}
+
+.upload-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.upload-texto {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.upload-sub {
+  font-size: 11px;
+  color: #aaa;
+}
+
+#lista-archivos {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.archivo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f5f5;
+  border: 0.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+
+.archivo-icono {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.archivo-nombre {
+  font-size: 12px;
+  color: #1a1a2e;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.archivo-peso {
+  font-size: 11px;
+  color: #aaa;
+  flex-shrink: 0;
+}
+
 #btn-generar {
   width: 100%;
   padding: 1rem;
