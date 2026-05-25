@@ -103,45 +103,25 @@
             </div>
 
             <div class="campo">
-              <label for="empresa">Empresa o entidad</label>
-              <select id="empresa" required>
-                <option value="">Selecciona...</option>
-                <optgroup label="Telecomunicaciones">
-                  <option value="Telefónica / Movistar">Telefónica / Movistar</option>
-                  <option value="Orange / MásMóvil">Orange / MásMóvil</option>
-                  <option value="Vodafone">Vodafone</option>
-                  <option value="Jazztel">Jazztel</option>
-                </optgroup>
-                <optgroup label="Energía">
-                  <option value="Iberdrola">Iberdrola</option>
-                  <option value="Endesa">Endesa</option>
-                  <option value="Naturgy">Naturgy</option>
-                  <option value="Repsol">Repsol</option>
-                </optgroup>
-                <optgroup label="Aerolíneas">
-                  <option value="Vueling">Vueling</option>
-                  <option value="Iberia">Iberia</option>
-                  <option value="Ryanair">Ryanair</option>
-                  <option value="EasyJet">EasyJet</option>
-                </optgroup>
-                <optgroup label="Bancos y seguros">
-                  <option value="Banco o entidad financiera">Banco o entidad financiera</option>
-                  <option value="Compañía de seguros">Compañía de seguros</option>
-                </optgroup>
-                <optgroup label="Administración pública">
-                  <option value="AEAT (Agencia Tributaria)">AEAT (Agencia Tributaria)</option>
-                  <option value="Seguridad Social (TGSS)">Seguridad Social</option>
-                  <option value="DGT (multa de tráfico)">DGT (multa de tráfico)</option>
-                  <option value="SEPE (desempleo)">SEPE (desempleo)</option>
-                  <option value="Ayuntamiento">Ayuntamiento</option>
-                  <option value="Comunidad Autónoma">Comunidad Autónoma</option>
-                </optgroup>
-                <optgroup label="Comercio y otros">
-                  <option value="Amazon">Amazon</option>
-                  <option value="El Corte Inglés">El Corte Inglés</option>
-                  <option value="Otra empresa o entidad">Otra empresa o entidad</option>
-                </optgroup>
+              <label for="categoria-empresa">Categoría</label>
+              <select id="categoria-empresa" required onchange="toggleOtraCategoria(this.value)">
+                <option value="">Selecciona una categoría...</option>
+                <option value="Telecomunicaciones">Telecomunicaciones</option>
+                <option value="Energía y suministros">Energía y suministros</option>
+                <option value="Aerolíneas y transporte">Aerolíneas y transporte</option>
+                <option value="Banca y seguros">Banca y seguros</option>
+                <option value="Administración pública">Administración pública</option>
+                <option value="Comercio y tiendas online">Comercio y tiendas online</option>
+                <option value="Sanidad y salud">Sanidad y salud</option>
+                <option value="Inmobiliaria y alquiler">Inmobiliaria y alquiler</option>
+                <option value="Educación">Educación</option>
+                <option value="Otro">Otro</option>
               </select>
+            </div>
+
+            <div class="campo">
+              <label for="empresa">Nombre de la empresa o entidad</label>
+              <input type="text" id="empresa" placeholder="Escribe el nombre exacto de la empresa o entidad" required>
             </div>
 
             <div class="grid-2">
@@ -189,7 +169,7 @@
 
             <div class="campo">
               <label for="objetivo">Objetivo de la reclamación</label>
-              <select id="objetivo" required>
+              <select id="objetivo" required onchange="toggleOtroObjetivo(this.value)">
                 <option value="">Selecciona...</option>
                 <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
                 <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
@@ -199,12 +179,36 @@
                 <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
                 <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
                 <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
+                <option value="otro">Otro objetivo</option>
               </select>
+            </div>
+
+            <div class="campo" id="campo-otro-objetivo" style="display:none;">
+              <label for="otro-objetivo">Describe tu objetivo</label>
+              <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
             </div>
 
             <div class="campo">
               <label for="descripcion">Describe brevemente qué ocurrió</label>
               <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora (si la hay)..." required></textarea>
+            </div>
+          </div>
+
+          <div class="seccion">
+            <div class="seccion-titulo">
+              <span class="seccion-numero">4</span>
+              Adjunta documentos (opcional)
+            </div>
+
+            <div class="campo">
+              <label>Sube la multa, notificación o cualquier documento relacionado</label>
+              <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
+                <span class="upload-icon">📎</span>
+                <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
+                <p class="upload-sub">JPG, PNG, PDF, Word, Excel — Máx. 10MB por archivo</p>
+              </div>
+              <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
+              <div id="lista-archivos"></div>
             </div>
           </div>
 
@@ -261,6 +265,9 @@
     </section>
 
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="app.js"></script>
   <script>
     function toggleTipo(valor) {
@@ -277,6 +284,56 @@
         inputDoc.placeholder = '12345678A';
       }
     }
+
+    function toggleOtroObjetivo(valor) {
+      const campo = document.getElementById('campo-otro-objetivo');
+      const input = document.getElementById('otro-objetivo');
+      if (valor === 'otro') {
+        campo.style.display = 'block';
+        input.required = true;
+      } else {
+        campo.style.display = 'none';
+        input.required = false;
+      }
+    }
+
+    function mostrarArchivos(files) {
+      const lista = document.getElementById('lista-archivos');
+      const area = document.getElementById('upload-area');
+      lista.innerHTML = '';
+      if (files.length === 0) return;
+      area.style.borderColor = '#1a1a2e';
+      Array.from(files).forEach((file, i) => {
+        const item = document.createElement('div');
+        item.className = 'archivo-item';
+        item.innerHTML = `
+          <span class="archivo-icono">${getIcono(file.name)}</span>
+          <span class="archivo-nombre">${file.name}</span>
+          <span class="archivo-peso">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    function getIcono(nombre) {
+      const ext = nombre.split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','webp'].includes(ext)) return '🖼️';
+      if (ext === 'pdf') return '📕';
+      if (['doc','docx'].includes(ext)) return '📘';
+      if (['xls','xlsx'].includes(ext)) return '📗';
+      return '📄';
+    }
+
+    const uploadArea = document.getElementById('upload-area');
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#1a1a2e';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.getElementById('archivos').files = e.dataTransfer.files;
+      mostrarArchivos(e.dataTransfer.files);
+    });
   </script>
 </body>
 </html>
