@@ -8,41 +8,197 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
 
-    <header>
-      <div class="badge">
-        <span class="badge-icon">✓</span>
-        Más de 10.000 reclamaciones generadas
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">⚡</div>
+        <span>ReclamaYa</span>
+      </a>
+      <div class="nav-links">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#categorias">Categorías</a>
+        <a href="#formulario" class="nav-cta">Reclamar ahora</a>
       </div>
-      <h1>Reclama lo que es tuyo.<br>En segundos.</h1>
-      <p class="subtitulo">Genera una carta de reclamación profesional con respaldo legal.<br>Sin abogados. Sin esperas.</p>
-      <div class="checks">
-        <span>✓ Gratis para ver</span>
-        <span>✓ Referencias legales reales</span>
-        <span>✓ Lista para enviar</span>
-      </div>
-    </header>
+      <button class="nav-mobile-btn" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">Reclamar</button>
+    </div>
+  </nav>
 
-    <main>
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">✓ Más de 10.000 reclamaciones generadas</div>
+      <h1>Reclama lo que es tuyo.<br><span class="hero-accent">En segundos.</span></h1>
+      <p class="hero-sub">Genera una carta de reclamación profesional con respaldo legal.<br>Sin abogados. Sin esperas. Desde 3,99€.</p>
+      <div class="hero-btns">
+        <a href="#formulario" class="btn-primary">✨ Generar mi carta gratis</a>
+        <a href="#como-funciona" class="btn-secondary">Ver cómo funciona →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-num">10.247</span>
+          <span class="stat-label">Cartas generadas</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-num">4.8 ★</span>
+          <span class="stat-label">Valoración media</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-num">87%</span>
+          <span class="stat-label">Reclamaciones exitosas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="section-inner">
+      <p class="section-label">Cómo funciona</p>
+      <h2 class="section-title">Tres pasos. Menos de 3 minutos.</h2>
+      <div class="pasos-grid">
+        <div class="paso-card">
+          <div class="paso-icon">📝</div>
+          <div class="paso-num">1</div>
+          <h3>Rellena el formulario</h3>
+          <p>Describe tu caso en menos de 2 minutos. Puedes adjuntar la multa, factura o notificación que tengas.</p>
+        </div>
+        <div class="paso-arrow">→</div>
+        <div class="paso-card">
+          <div class="paso-icon">🤖</div>
+          <div class="paso-num">2</div>
+          <h3>La IA genera tu carta</h3>
+          <p>Nuestra IA analiza tu caso, identifica la legislación aplicable y redacta una carta profesional y contundente.</p>
+        </div>
+        <div class="paso-arrow">→</div>
+        <div class="paso-card">
+          <div class="paso-icon">📨</div>
+          <div class="paso-num">3</div>
+          <h3>Descarga y envía</h3>
+          <p>Descarga tu carta en PDF lista para enviar. Sin campos en blanco, sin nada que rellenar a mano.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="categorias">
+    <div class="section-inner">
+      <p class="section-label">Categorías</p>
+      <h2 class="section-title">¿A quién quieres reclamar?</h2>
+      <div class="categorias-grid">
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">🏦</span>
+          <p class="cat-titulo">Bancos y seguros</p>
+          <p class="cat-sub">Cobros indebidos, hipotecas, tarjetas</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">🧾</span>
+          <p class="cat-titulo">AEAT / Seguridad Social</p>
+          <p class="cat-sub">Multas, embargos, aplazamientos</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">✈️</span>
+          <p class="cat-titulo">Aerolíneas</p>
+          <p class="cat-sub">Retrasos, cancelaciones, compensaciones</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">📱</span>
+          <p class="cat-titulo">Telecomunicaciones</p>
+          <p class="cat-sub">Cobros, bajas, servicios no prestados</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">⚡</span>
+          <p class="cat-titulo">Energía y suministros</p>
+          <p class="cat-sub">Iberdrola, Endesa, Naturgy...</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">🚗</span>
+          <p class="cat-titulo">Multas de tráfico</p>
+          <p class="cat-sub">DGT, ayuntamientos, radares</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">🛍️</span>
+          <p class="cat-titulo">Comercio online</p>
+          <p class="cat-sub">Amazon, devoluciones, fraudes</p>
+        </div>
+        <div class="cat-card" onclick="document.getElementById('formulario').scrollIntoView({behavior:'smooth'})">
+          <span class="cat-icon">➕</span>
+          <p class="cat-titulo">Cualquier otra</p>
+          <p class="cat-sub">Empresa, entidad o administración</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonios">
+    <div class="section-inner">
+      <p class="section-label">Testimonios</p>
+      <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+      <div class="testimonios-grid">
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Generé la carta en 2 minutos y Movistar me devolvió el dinero en una semana. Increíble."</p>
+          <div class="testimonio-autor">
+            <div class="testimonio-avatar">MR</div>
+            <div>
+              <p class="testimonio-nombre">María R.</p>
+              <p class="testimonio-ciudad">Madrid</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Recurrí una multa de la DGT. La carta tenía todas las referencias legales correctas. La anularon."</p>
+          <div class="testimonio-autor">
+            <div class="testimonio-avatar">JL</div>
+            <div>
+              <p class="testimonio-nombre">José L.</p>
+              <p class="testimonio-ciudad">Barcelona</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Como autónomo tenía un problema con la AEAT. La carta fue directa al grano y lo resolvimos rápido."</p>
+          <div class="testimonio-autor">
+            <div class="testimonio-avatar">AP</div>
+            <div>
+              <p class="testimonio-nombre">Antonio P.</p>
+              <p class="testimonio-ciudad">Valencia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="formulario">
+    <div class="section-inner">
+      <p class="section-label">Empieza ahora</p>
+      <h2 class="section-title">Genera tu carta de reclamación</h2>
+      <p class="section-sub">Gratis para ver. Solo pagas 3,99€ si quieres descargar el PDF listo para enviar.</p>
+
       <div class="form-card">
-
-        <div class="form-header">
-          <div class="form-icon">📄</div>
-          <div>
-            <p class="form-title">Nueva reclamación</p>
-            <p class="form-subtitle">Rellena los datos de tu caso</p>
+        <div class="form-steps-nav">
+          <div class="form-step-nav active" id="nav-step-1">
+            <span class="step-nav-num">1</span>
+            <span class="step-nav-label">Tus datos</span>
+          </div>
+          <div class="step-nav-line"></div>
+          <div class="form-step-nav" id="nav-step-2">
+            <span class="step-nav-num">2</span>
+            <span class="step-nav-label">La reclamación</span>
+          </div>
+          <div class="step-nav-line"></div>
+          <div class="form-step-nav" id="nav-step-3">
+            <span class="step-nav-num">3</span>
+            <span class="step-nav-label">Documentos</span>
           </div>
         </div>
 
         <form id="reclamacion-form">
 
-          <div class="seccion">
-            <div class="seccion-titulo">
-              <span class="seccion-numero">1</span>
-              ¿Quién reclama?
-            </div>
-
+          <div class="form-step" id="step-1">
             <div class="campo">
               <label>Tipo de reclamante</label>
               <div class="radio-group">
@@ -56,7 +212,6 @@
                 </label>
               </div>
             </div>
-
             <div class="grid-2">
               <div class="campo">
                 <label for="nombre" id="label-nombre">Nombre completo</label>
@@ -67,12 +222,10 @@
                 <input type="text" id="documento" placeholder="12345678A" required>
               </div>
             </div>
-
             <div class="campo">
               <label for="direccion">Dirección completa</label>
               <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B" required>
             </div>
-
             <div class="grid-2">
               <div class="campo">
                 <label for="ciudad">Ciudad</label>
@@ -83,7 +236,6 @@
                 <input type="text" id="cp" placeholder="28001" required>
               </div>
             </div>
-
             <div class="grid-2">
               <div class="campo">
                 <label for="telefono">Teléfono</label>
@@ -94,17 +246,16 @@
                 <input type="email" id="email" placeholder="juan@email.com" required>
               </div>
             </div>
+            <div class="form-nav-btns">
+              <div></div>
+              <button type="button" class="btn-siguiente" onclick="irPaso(2)">Siguiente →</button>
+            </div>
           </div>
 
-          <div class="seccion">
-            <div class="seccion-titulo">
-              <span class="seccion-numero">2</span>
-              ¿A quién reclamas?
-            </div>
-
+          <div class="form-step" id="step-2" style="display:none;">
             <div class="campo">
               <label for="categoria-empresa">Categoría</label>
-              <select id="categoria-empresa" required onchange="toggleOtraCategoria(this.value)">
+              <select id="categoria-empresa" required>
                 <option value="">Selecciona una categoría...</option>
                 <option value="Telecomunicaciones">Telecomunicaciones</option>
                 <option value="Energía y suministros">Energía y suministros</option>
@@ -118,12 +269,10 @@
                 <option value="Otro">Otro</option>
               </select>
             </div>
-
             <div class="campo">
               <label for="empresa">Nombre de la empresa o entidad</label>
-              <input type="text" id="empresa" placeholder="Escribe el nombre exacto de la empresa o entidad" required>
+              <input type="text" id="empresa" placeholder="Escribe el nombre exacto" required>
             </div>
-
             <div class="grid-2">
               <div class="campo">
                 <label for="referencia">Nº contrato o referencia</label>
@@ -134,7 +283,6 @@
                 <input type="date" id="fecha-hecho" required>
               </div>
             </div>
-
             <div class="campo">
               <label for="problema">Tipo de problema</label>
               <select id="problema" required>
@@ -154,19 +302,10 @@
                 <option value="otro problema no listado">Otro problema</option>
               </select>
             </div>
-
             <div class="campo">
               <label for="importe">Importe reclamado en euros (si aplica)</label>
               <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
             </div>
-          </div>
-
-          <div class="seccion">
-            <div class="seccion-titulo">
-              <span class="seccion-numero">3</span>
-              ¿Qué quieres conseguir?
-            </div>
-
             <div class="campo">
               <label for="objetivo">Objetivo de la reclamación</label>
               <select id="objetivo" required onchange="toggleOtroObjetivo(this.value)">
@@ -182,26 +321,23 @@
                 <option value="otro">Otro objetivo</option>
               </select>
             </div>
-
             <div class="campo" id="campo-otro-objetivo" style="display:none;">
               <label for="otro-objetivo">Describe tu objetivo</label>
               <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
             </div>
-
             <div class="campo">
               <label for="descripcion">Describe brevemente qué ocurrió</label>
-              <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora (si la hay)..." required></textarea>
+              <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
+            </div>
+            <div class="form-nav-btns">
+              <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
+              <button type="button" class="btn-siguiente" onclick="irPaso(3)">Siguiente →</button>
             </div>
           </div>
 
-          <div class="seccion">
-            <div class="seccion-titulo">
-              <span class="seccion-numero">4</span>
-              Adjunta documentos (opcional)
-            </div>
-
+          <div class="form-step" id="step-3" style="display:none;">
             <div class="campo">
-              <label>Sube la multa, notificación o cualquier documento relacionado</label>
+              <label>Adjunta documentos relacionados (opcional)</label>
               <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
                 <span class="upload-icon">📎</span>
                 <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
@@ -210,40 +346,31 @@
               <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
               <div id="lista-archivos"></div>
             </div>
+            <div class="precio-aviso">
+              <div class="precio-aviso-inner">
+                <span class="precio-aviso-icon">💡</span>
+                <div>
+                  <p class="precio-aviso-titulo">Gratis para ver, 3,99€ para descargar</p>
+                  <p class="precio-aviso-sub">Podrás leer tu carta completa antes de decidir si descargas el PDF.</p>
+                </div>
+              </div>
+            </div>
+            <div class="form-nav-btns">
+              <button type="button" class="btn-atras" onclick="irPaso(2)">← Atrás</button>
+              <button type="submit" id="btn-generar">✨ Generar mi carta gratis</button>
+            </div>
           </div>
-
-          <button type="submit" id="btn-generar">
-            ✨ Generar mi carta gratis
-          </button>
 
         </form>
       </div>
+    </div>
+  </section>
 
-      <div class="categorias">
-        <div class="categoria-card">
-          <span class="categoria-icon">🏦</span>
-          <p class="categoria-titulo">Bancos</p>
-          <p class="categoria-sub">Cobros, cláusulas</p>
-        </div>
-        <div class="categoria-card">
-          <span class="categoria-icon">🧾</span>
-          <p class="categoria-titulo">AEAT / SS</p>
-          <p class="categoria-sub">Multas, embargos</p>
-        </div>
-        <div class="categoria-card">
-          <span class="categoria-icon">✈️</span>
-          <p class="categoria-titulo">Aerolíneas</p>
-          <p class="categoria-sub">Vuelos, retrasos</p>
-        </div>
-      </div>
-
-      <p class="footer-texto">🔒 Tus datos no se almacenan. Pago seguro con Stripe.</p>
-    </main>
-
-    <section id="resultado" style="display:none;">
-      <div id="loading">
+  <section id="resultado" style="display:none;">
+    <div class="section-inner">
+      <div id="loading" style="text-align:center; padding:3rem 0;">
         <div class="spinner"></div>
-        <p id="loading-text">Analizando tu caso...</p>
+        <p id="loading-text" style="color:#666; font-size:0.95rem; margin-top:1rem;">Analizando tu caso...</p>
       </div>
       <div id="carta-generada" style="display:none;">
         <div class="form-card">
@@ -257,14 +384,29 @@
           <div id="carta-texto"></div>
           <div class="botones-resultado">
             <button id="btn-copiar">📋 Copiar carta</button>
-            <button id="btn-pagar" class="btn-pagar">⬇️ Descargar PDF — 3,99€</button>
+            <button id="btn-pagar" class="btn-pagar">⬇️ Descargar PDF lista para enviar — 3,99€</button>
           </div>
           <button id="btn-nueva">Hacer otra reclamación</button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="nav-logo-icon">⚡</div>
+        <span>ReclamaYa</span>
+      </div>
+      <p class="footer-sub">Defiende tus derechos. En segundos.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="mailto:hola@reclamaya.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamaYa. Todos los derechos reservados.<br>ReclamaYa no presta servicios de asesoría jurídica. Las cartas generadas son documentos de apoyo.</p>
+    </div>
+  </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -297,13 +439,51 @@
       }
     }
 
+    function irPaso(num) {
+      const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
+      const campos2 = ['categoria-empresa','empresa','fecha-hecho','problema','objetivo','descripcion'];
+      if (num === 2) {
+        for (const id of campos1) {
+          const el = document.getElementById(id);
+          if (el && el.required && !el.value.trim()) {
+            el.focus();
+            el.style.borderColor = '#e24b4a';
+            setTimeout(() => { el.style.borderColor = ''; }, 2000);
+            return;
+          }
+        }
+      }
+      if (num === 3) {
+        for (const id of campos2) {
+          const el = document.getElementById(id);
+          if (el && el.required && !el.value.trim()) {
+            el.focus();
+            el.style.borderColor = '#e24b4a';
+            setTimeout(() => { el.style.borderColor = ''; }, 2000);
+            return;
+          }
+        }
+      }
+      document.getElementById('step-1').style.display = 'none';
+      document.getElementById('step-2').style.display = 'none';
+      document.getElementById('step-3').style.display = 'none';
+      document.getElementById('step-' + num).style.display = 'block';
+      ['nav-step-1','nav-step-2','nav-step-3'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.classList.remove('active','done');
+        if (i + 1 < num) el.classList.add('done');
+        if (i + 1 === num) el.classList.add('active');
+      });
+      document.getElementById('formulario').scrollIntoView({behavior:'smooth'});
+    }
+
     function mostrarArchivos(files) {
       const lista = document.getElementById('lista-archivos');
       const area = document.getElementById('upload-area');
       lista.innerHTML = '';
       if (files.length === 0) return;
       area.style.borderColor = '#1a1a2e';
-      Array.from(files).forEach((file, i) => {
+      Array.from(files).forEach((file) => {
         const item = document.createElement('div');
         item.className = 'archivo-item';
         item.innerHTML = `
@@ -333,6 +513,15 @@
       e.preventDefault();
       document.getElementById('archivos').files = e.dataTransfer.files;
       mostrarArchivos(e.dataTransfer.files);
+    });
+
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
     });
   </script>
 </body>
