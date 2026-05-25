@@ -11,7 +11,7 @@ const pasos = [
   'Consultando el BOE...',
   'Verificando legislación en EUR-Lex...',
   'Consultando organismos reguladores...',
-  'Redactando la carta...',
+  'Redactando el escrito...',
   'Añadiendo referencias legales verificadas...',
   'Finalizando el documento...'
 ];
@@ -86,6 +86,52 @@ async function procesarArchivo(file) {
   return null;
 }
 
+async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
+  const btnPagar = document.getElementById('btn-pagar');
+  const textoOriginal = btnPagar.textContent;
+
+  try {
+    btnPagar.textContent = '⏳ Generando tu PDF...';
+    btnPagar.disabled = true;
+
+    const respuesta = await fetch('/api/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        carta,
+        datos: datosUsuario
+      })
+    });
+
+    if (!respuesta.ok) {
+      throw new Error('Error al generar el PDF');
+    }
+
+    const blob = await respuesta.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ReclamaYa-${nombreEmpresa.replace(/\s+/g, '-')}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    btnPagar.textContent = '✓ PDF descargado';
+    btnPagar.style.background = '#5DCAA5';
+
+  } catch (error) {
+    console.error('Error:', error);
+    btnPagar.textContent = 'Error al generar. Inténtalo de nuevo.';
+    btnPagar.style.background = '#e24b4a';
+    setTimeout(() => {
+      btnPagar.textContent = textoOriginal;
+      btnPagar.style.background = '';
+      btnPagar.disabled = false;
+    }, 3000);
+  }
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -109,6 +155,13 @@ form.addEventListener('submit', async (e) => {
   const descripcion = document.getElementById('descripcion').value;
   const archivosInput = document.getElementById('archivos');
   const archivos = archivosInput.files;
+
+  const datosUsuario = {
+    tipo, nombre, documento, direccion, ciudad, cp,
+    telefono, email, categoriaEmpresa, empresa,
+    referencia, fechaHecho, problema, importe,
+    objetivo, descripcion
+  };
 
   document.querySelector('.form-card').style.display = 'none';
   resultado.style.display = 'block';
@@ -137,10 +190,8 @@ form.addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        tipo, nombre, documento, direccion, ciudad, cp,
-        telefono, email, categoriaEmpresa, empresa,
-        referencia, fechaHecho, problema, importe,
-        objetivo, descripcion, documentos: documentosProcesados
+        ...datosUsuario,
+        documentos: documentosProcesados
       })
     });
 
@@ -156,33 +207,39 @@ form.addEventListener('submit', async (e) => {
       cartaVisible.textContent = preview;
 
       if (datos.fuentes && datos.fuentes.length > 0) {
+        const fuentesExistente = document.querySelector('.fuentes-legales');
+        if (fuentesExistente) fuentesExistente.remove();
+
         const fuentesDiv = document.createElement('div');
         fuentesDiv.className = 'fuentes-legales';
         fuentesDiv.innerHTML = `
           <p>✅ Legislación verificada en fuentes oficiales:</p>
           <ul>${datos.fuentes.map(f => `<li>${f}</li>`).join('')}</ul>
         `;
-        cartaGenerada.querySelector('.form-card').insertBefore(
-          fuentesDiv,
-          cartaGenerada.querySelector('.descargo-legal')
-        );
+        const descargo = cartaGenerada.querySelector('.descargo-legal');
+        if (descargo) {
+          descargo.parentNode.insertBefore(fuentesDiv, descargo);
+        }
+      }
+
+      window._cartaCompleta = datos.carta;
+      window._datosUsuario = datosUsuario;
+
+      const btnPagar = document.getElementById('btn-pagar');
+      if (btnPagar) {
+        btnPagar.onclick = () => {
+          descargarPDF(
+            window._cartaCompleta,
+            window._datosUsuario,
+            empresa
+          );
+        };
       }
 
       resultado.scrollIntoView({ behavior: 'smooth' });
 
-     window._cartaCompleta = datos.carta;
-
-const btnPagar = document.getElementById('btn-pagar');
-if (btnPagar) {
-  btnPagar.addEventListener('click', () => {
-    if (window._cartaCompleta) {
-      alert('Integración con Stripe próximamente. Tu escrito completo está guardado en esta sesión.');
-    }
-  });
-}
-
     } else {
-      throw new Error('No se pudo generar la carta');
+      throw new Error('No se pudo generar el escrito');
     }
 
   } catch (error) {
@@ -211,6 +268,7 @@ btnNueva.addEventListener('click', () => {
   cartaGenerada.style.display = 'none';
   document.querySelector('.form-card').style.display = 'block';
   window._cartaCompleta = null;
+  window._datosUsuario = null;
   const fuentesDiv = document.querySelector('.fuentes-legales');
   if (fuentesDiv) fuentesDiv.remove();
   window.scrollTo({ top: 0, behavior: 'smooth' });
