@@ -199,15 +199,6 @@
               <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
               <div id="lista-archivos"></div>
             </div>
-            <div class="precio-aviso">
-              <div class="precio-aviso-inner">
-                <span class="precio-aviso-icon">💡</span>
-                <div>
-                  <p class="precio-aviso-titulo">Gratis para ver, 3,99€ para descargar</p>
-                  <p class="precio-aviso-sub">Podrás leer el inicio de tu carta antes de decidir si descargas el PDF completo.</p>
-                </div>
-              </div>
-            </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(2)">← Atrás</button>
               <button type="submit" id="btn-generar">✨ Generar mi carta gratis</button>
@@ -228,7 +219,7 @@
               <div class="form-icon">✅</div>
               <div>
                 <p class="form-title">Tu carta está lista</p>
-                <p class="form-subtitle">Aquí tienes una vista previa</p>
+               <p class="form-subtitle">Aquí tienes una vista previa de tu escrito</p>
               </div>
             </div>
 
@@ -237,9 +228,9 @@
               <div class="carta-blur-overlay">
                 <div class="blur-content">
                   <div class="blur-icon">🔒</div>
-                  <p class="blur-titulo">El resto de la carta está listo</p>
-                  <p class="blur-sub">Descarga el PDF completo, con todas las referencias legales verificadas y listo para enviar.</p>
-                  <button id="btn-pagar" class="btn-pagar">⬇️ Descargar carta completa en PDF — 3,99€</button>
+                  <p class="blur-titulo">Tu escrito completo está listo</p>
+                  <p class="blur-sub">Descarga el PDF con tu escrito completo, referencias legales verificadas y listo para enviar o presentar.</p>
+                  <button id="btn-pagar" class="btn-pagar">⬇️ Descargar escrito completo en PDF — 3,99€</button>
                   <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Descarga inmediata &nbsp;·&nbsp; ✓ Sin suscripción</p>
                 </div>
               </div>
