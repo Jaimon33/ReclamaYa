@@ -60,42 +60,15 @@ export default async function handler(req, res) {
     max-width: 800px;
     margin: 0 auto;
   }
-  .remitente {
-    margin-bottom: 20px;
-    font-size: 10.5pt;
-    line-height: 1.75;
-  }
+  .remitente { margin-bottom: 20px; font-size: 10.5pt; line-height: 1.75; }
   .remitente p { margin: 1px 0; }
-  hr {
-    border: none;
-    border-top: 0.5px solid #ccc;
-    margin: 16px 0;
-  }
-  .destinatario {
-    margin-bottom: 16px;
-    font-size: 10.5pt;
-    line-height: 1.75;
-  }
+  hr { border: none; border-top: 0.5px solid #ccc; margin: 16px 0; }
+  .destinatario { margin-bottom: 16px; font-size: 10.5pt; line-height: 1.75; }
   .destinatario p { margin: 1px 0; }
-  .fecha-lugar {
-    margin-bottom: 20px;
-    font-size: 10.5pt;
-  }
-  .cuerpo {
-    font-size: 11pt;
-    line-height: 1.8;
-    margin-bottom: 20px;
-  }
-  .firma {
-    margin-top: 32px;
-    font-size: 10.5pt;
-    line-height: 1.7;
-  }
-  .firma-linea {
-    width: 180px;
-    border-top: 1px solid #333;
-    margin: 30px 0 8px;
-  }
+  .fecha-lugar { margin-bottom: 20px; font-size: 10.5pt; }
+  .cuerpo { font-size: 11pt; line-height: 1.8; margin-bottom: 20px; }
+  .firma { margin-top: 32px; font-size: 10.5pt; line-height: 1.7; }
+  .firma-linea { width: 180px; border-top: 1px solid #333; margin: 30px 0 8px; }
   .pie-pagina {
     margin-top: 50px;
     padding-top: 8px;
@@ -106,37 +79,9 @@ export default async function handler(req, res) {
     line-height: 1.6;
     text-align: center;
   }
-  .marca-agua {
-    position: fixed;
-    bottom: 25mm;
-    right: 20mm;
-    font-family: Arial, sans-serif;
-    font-size: 8pt;
-    color: rgba(0,0,0,0.06);
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transform: rotate(-45deg);
-    transform-origin: bottom right;
-    pointer-events: none;
-  }
-  @media print {
-    body { padding: 0; }
-    @page {
-      margin: 22mm 20mm 22mm 25mm;
-      size: A4;
-    }
-    .marca-agua {
-      position: fixed;
-      bottom: 25mm;
-      right: 20mm;
-    }
-  }
 </style>
 </head>
 <body>
-
-<div class="marca-agua">ReclamaYa · ${escapar(refInterna)}</div>
 
 <div class="remitente">
   <p><strong>${escapar(nombre)}</strong></p>
@@ -207,23 +152,20 @@ export default async function handler(req, res) {
   <div class="cuerpo-email">
     <p class="titulo">Tu escrito de reclamación está listo, ${escapar(nombre.split(' ')[0])}</p>
     <p class="texto">Hemos generado tu escrito de reclamación formal contra <strong>${escapar(empresa)}</strong> con legislación verificada en el BOE y EUR-Lex. Lo encontrarás adjunto a este email en formato PDF.</p>
-
     <div class="ref-box">
       <p>✓ <strong>Referencia:</strong> ${escapar(refInterna)}</p>
       <p>✓ <strong>Fecha:</strong> ${escapar(fecha)}</p>
       <p>✓ <strong>Destinatario:</strong> ${escapar(empresa)}</p>
       <p>✓ <strong>Legislación verificada:</strong> BOE · EUR-Lex</p>
     </div>
-
     <div class="instrucciones">
       <p><strong>¿Qué hago ahora con mi escrito?</strong></p>
-      <p>1. Descarga el PDF adjunto a este email</p>
+      <p>1. Abre el PDF adjunto a este email</p>
       <p>2. Envíalo a ${escapar(empresa)} por un medio que deje constancia: email con acuse de recibo o correo certificado</p>
       <p>3. Guarda el justificante de envío — es fundamental si necesitas escalar la reclamación</p>
-      <p>4. Si no obtienes respuesta en 15 días hábiles, puedes acudir al organismo regulador correspondiente</p>
+      <p>4. Si no obtienes respuesta en 15 días hábiles, acude al organismo regulador correspondiente</p>
     </div>
-
-    <p class="aviso">ReclamaYa es una herramienta de asistencia en la redacción de escritos de reclamación. No presta servicios de asesoría jurídica. Se recomienda verificar la vigencia de la legislación citada antes de enviar el escrito.</p>
+    <p class="aviso">ReclamaYa es una herramienta de asistencia en la redacción de escritos de reclamación. No presta servicios de asesoría jurídica.</p>
   </div>
   <div class="pie-email">
     <p>ReclamaYa · reclamaya.es</p>
@@ -234,6 +176,34 @@ export default async function handler(req, res) {
 </html>`;
 
   try {
+    const pdfResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        source: htmlEscrito,
+        landscape: false,
+        use_print: true,
+        format: 'A4',
+        margin: {
+          top: '22mm',
+          bottom: '22mm',
+          left: '25mm',
+          right: '20mm'
+        }
+      })
+    });
+
+    if (!pdfResponse.ok) {
+      const errorText = await pdfResponse.text();
+      throw new Error(`PDFShift error: ${errorText}`);
+    }
+
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+
     await resend.emails.send({
       from: 'ReclamaYa <onboarding@resend.dev>',
       to: email,
@@ -241,9 +211,9 @@ export default async function handler(req, res) {
       html: htmlEmail,
       attachments: [
         {
-          filename: `ReclamaYa-${empresa.replace(/\s+/g, '-')}-${refInterna}.html`,
-          content: Buffer.from(htmlEscrito).toString('base64'),
-          type: 'text/html'
+          filename: `ReclamaYa-${empresa.replace(/\s+/g, '-')}-${refInterna}.pdf`,
+          content: pdfBase64,
+          type: 'application/pdf'
         }
       ]
     });
@@ -251,12 +221,11 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       ref: refInterna,
-      email: email,
-      html: htmlEscrito
+      email: email
     });
 
   } catch (error) {
-    console.error('Error enviando email:', error);
-    return res.status(500).json({ error: 'Error al enviar el email' });
+    console.error('Error generando PDF:', error);
+    return res.status(500).json({ error: 'Error al generar el PDF' });
   }
 }
