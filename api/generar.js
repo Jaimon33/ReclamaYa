@@ -231,10 +231,15 @@ INSTRUCCIONES FINALES:
     const data = await response.json();
 
     if (data.content && data.content[0] && data.content[0].text) {
-      return res.status(200).json({
-        carta: data.content[0].text,
-        fuentes: fuentesVerificadas
-      });
+     const textoEscrito = data.content[0].text;
+const matchDest = textoEscrito.match(/ante ([^,]+(?:\n[^,\n]+)*), comparezco/);
+const destinatario = matchDest ? matchDest[1].trim() : null;
+
+return res.status(200).json({
+  carta: textoEscrito,
+  fuentes: fuentesVerificadas,
+  destinatario
+});
     } else {
       throw new Error('Respuesta inesperada de la API');
     }
