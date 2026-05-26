@@ -138,54 +138,61 @@ export default async function handler(req, res) {
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
 
-  const prompt = `Eres un abogado especialista en derecho del consumidor español con 20 años de experiencia en despachos de primer nivel. Redacta un escrito de reclamación extrajudicial formal.
+  const prompt = `Eres un abogado especialista en derecho del consumidor español. Redacta un escrito de reclamación extrajudicial formal.
 
-DATOS:
-- Reclamante: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
-- Empresa indicada por el usuario: ${empresa} | Categoría: ${categoria}
-- Motivo: ${problema} | Objetivo: ${objetivo}
+DATOS DEL RECLAMANTE:
+Nombre: ${nombre} | ${docTexto}: ${documento} | Dirección: ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
+
+RECLAMACIÓN:
+Empresa indicada: ${empresa} | Categoría: ${categoria}
+Motivo: ${problema} | Objetivo: ${objetivo}
 ${importeTexto} ${referenciaTexto} ${fechaTexto}
-- Descripción: ${descripcion}
-${textoDocumentos ? `- Documentos aportados: ${textoDocumentos}` : ''}
+Descripción: ${descripcion}
+${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
 
-LEGISLACIÓN VERIFICADA:
+LEGISLACIÓN APLICABLE:
 ${leyesTexto}
 
-INSTRUCCIÓN SOBRE EL DESTINATARIO:
-Si en los documentos adjuntos aparece un organismo, departamento o dirección específica a la que debe dirigirse el escrito (como "Dependencia Regional de Recaudación", "Departamento de Atención al Cliente", una dirección postal concreta, etc.), usa ESE destinatario real en el escrito incluyendo su dirección postal completa. Si no hay documentos adjuntos, usa el nombre indicado por el usuario.
+REGLAS ABSOLUTAS DE FORMATO — incumplirlas invalida el escrito:
+1. PROHIBIDO usar asteriscos (**), almohadillas (#), guiones triples (---) o cualquier formato markdown
+2. PROHIBIDO incluir títulos como "ESCRITO DE RECLAMACIÓN" o similares al inicio
+3. El escrito empieza DIRECTAMENTE con el párrafo de presentación del reclamante
+4. Los ordinales PRIMERO.- SEGUNDO.- TERCERO.- van en mayúsculas seguidos de punto y guión, sin ningún símbolo adicional
+5. Todo el texto en formato plano, sin negritas markdown
 
-ESTRUCTURA OBLIGATORIA — usa exactamente este formato sin asteriscos ni markdown:
+DESTINATARIO:
+Si en los documentos adjuntos aparece el nombre exacto del organismo, departamento y dirección postal a quien va dirigido el escrito, úsalos. Si no hay documentos, usa: ${empresa}. En cualquier caso NO escribas el destinatario en el cuerpo del escrito, ese bloque lo añade el sistema automáticamente.
 
-1. Presentación:
-${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante [destinatario real extraído del documento o indicado por el usuario], comparezco y como mejor proceda en Derecho, EXPONGO:
+ESTRUCTURA DEL CUERPO DEL ESCRITO:
 
-2. Hechos numerados sin asteriscos:
-PRIMERO.- [primer hecho con fecha concreta]
+${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante [destinatario real], comparezco y como mejor proceda en Derecho, EXPONGO:
+
+PRIMERO.- [primer hecho con fecha concreta y datos del documento si los hay]
+
 SEGUNDO.- [segundo hecho]
+
 TERCERO.- [tercer hecho si procede]
 
-3. Fundamentos:
 En virtud de los hechos expuestos, y al amparo de la normativa vigente:
-— [ley y artículo concreto]
-— [ley y artículo concreto]
+— [ley y artículo concreto aplicable]
+— [ley y artículo concreto aplicable]
 
-4. Solicitud:
 Por todo lo expuesto, SOLICITO:
-PRIMERO.- [solicitud principal concreta]
-SEGUNDO.- Que se dé respuesta formal en el plazo máximo de QUINCE (15) DÍAS HÁBILES.
-TERCERO.- Que de no obtener respuesta, queda reservado el derecho a reclamar ante ${fuentesNombres.join(' y/o ')}.
 
-5. Cierre:
+PRIMERO.- [solicitud principal concreta con importe si aplica]
+
+SEGUNDO.- Que se dé respuesta formal y por escrito en el plazo máximo de QUINCE (15) DIAS HABILES contados desde la recepción del presente escrito.
+
+TERCERO.- Que de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a interponer las correspondientes reclamaciones ante ${fuentesNombres.join(' y/o ')}, así como a ejercer cuantas acciones legales procedan.
+
 En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
 
 Atentamente,
 
-REGLAS ABSOLUTAS:
-- NUNCA uses asteriscos (**) ni ningún formato markdown
-- Solo escribe PRIMERO/SEGUNDO/TERCERO en mayúsculas seguido de punto y guion, el resto en texto normal
-- Sin encabezados ni datos del remitente al inicio del cuerpo
-- Mínimo 400 palabras, tono técnico-jurídico profesional
-- Devuelve solo el cuerpo del escrito`;
+INSTRUCCIONES FINALES:
+- Extensión mínima 400 palabras
+- Tono técnico-jurídico, formal y firme
+- Devuelve ÚNICAMENTE el cuerpo del escrito, nada más`;
 
   try {
     const mensajeContenido = [];
