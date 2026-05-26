@@ -317,6 +317,7 @@ form.addEventListener('submit', async (e) => {
       }
 
       window._cartaCompleta = datos.carta;
+      window._destinatarioReal = datos.destinatario || null;
       window._datosUsuario = datosUsuario;
 
       const opcion = window._opcionSeleccionada || 'completa';
