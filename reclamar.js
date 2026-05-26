@@ -91,7 +91,7 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
   const textoOriginal = btnPagar.textContent;
 
   try {
-    btnPagar.textContent = '⏳ Generando y enviando tu escrito...';
+    btnPagar.textContent = '⏳ Procesando tu escrito...';
     btnPagar.disabled = true;
 
     const respuesta = await fetch('/api/pdf', {
@@ -100,12 +100,12 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
       body: JSON.stringify({ carta, datos: datosUsuario })
     });
 
-    if (!respuesta.ok) throw new Error('Error al generar');
+    if (!respuesta.ok) throw new Error('Error al procesar');
 
     const datos = await respuesta.json();
 
     if (datos.ok) {
-      btnPagar.textContent = `✓ Escrito enviado a ${datosUsuario.email}`;
+      btnPagar.textContent = '✓ Escrito enviado a tu email';
       btnPagar.style.background = '#5DCAA5';
       btnPagar.style.color = '#1a1a2e';
       btnPagar.disabled = true;
@@ -115,31 +115,19 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
         background: #f0f9f5;
         border: 1px solid #5DCAA5;
         border-radius: 10px;
-        padding: 14px 16px;
-        margin-top: 12px;
+        padding: 16px 18px;
+        margin-top: 14px;
         font-size: 13px;
-        color: #2a8a6a;
-        line-height: 1.6;
+        color: #1a1a2e;
+        line-height: 1.7;
       `;
       avisoEnvio.innerHTML = `
-        <p><strong>✓ Escrito generado y enviado correctamente</strong></p>
-        <p style="margin-top:4px;">Ref: <strong>${datos.ref}</strong> · Enviado a <strong>${datosUsuario.email}</strong></p>
-        <p style="margin-top:4px; font-size:12px; color:#555;">Revisa tu bandeja de entrada. Si no lo ves, comprueba la carpeta de spam.</p>
+        <p style="font-weight:700; margin-bottom:6px;">✓ Tu escrito está en camino</p>
+        <p>Lo recibirás en <strong>${datosUsuario.email}</strong> en los próximos minutos en formato PDF, listo para enviar.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;">Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
       `;
 
       btnPagar.parentNode.insertBefore(avisoEnvio, btnPagar.nextSibling);
-
-      if (datos.html) {
-        const blob = new Blob([datos.html], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ReclamaYa-${nombreEmpresa.replace(/\s+/g, '-')}.html`;
-        document.body.appendChild(a);
-        a.click();
-        URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }
     }
 
   } catch (error) {
