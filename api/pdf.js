@@ -2,6 +2,10 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export const config = {
+  maxDuration: 300
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -37,12 +41,6 @@ export default async function handler(req, res) {
     const e = escapar(linea.trimEnd());
     if (!e.trim()) return '<p style="margin:6px 0">&nbsp;</p>';
 
-    const soloNegrita = /^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO|SOLICITO:|EXPONGO:)(\.-)?$/;
-    if (soloNegrita.test(e.trim())) {
-      return `<p style="margin:10px 0 4px; font-weight:bold;">${e}</p>`;
-    }
-
-    const conTexto = /^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)\.-\s+(.+)$/;
     const match = linea.trimEnd().match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
     if (match) {
       const numero = escapar(match[1] + match[2]);
@@ -58,16 +56,12 @@ export default async function handler(req, res) {
       return `<p style="margin:14px 0 4px;">${e}</p>`;
     }
 
-    if (/^(En ${escapar(ciudad)}|En Madrid|En Barcelona|En Valencia|En Sevilla|En [A-Z])/.test(e) && e.includes('de 20')) {
-      return `<p style="margin:20px 0 4px;">${e}</p>`;
+    if (/^Al amparo de/.test(e)) {
+      return `<p style="margin:6px 0 4px; font-style:italic; color:#444;">${e}</p>`;
     }
 
     if (/^[—–]/.test(e)) {
       return `<p style="margin:4px 0 4px 20px;">${e}</p>`;
-    }
-
-    if (/^Al amparo de/.test(e)) {
-      return `<p style="margin:6px 0 4px 0; font-style:italic; color:#333;">${e}</p>`;
     }
 
     return `<p style="margin:5px 0; text-align:justify;">${e}</p>`;
@@ -88,38 +82,14 @@ export default async function handler(req, res) {
     max-width: 800px;
     margin: 0 auto;
   }
-  .remitente {
-    margin-bottom: 20px;
-    font-size: 10.5pt;
-    line-height: 1.75;
-  }
+  .remitente { margin-bottom: 20px; font-size: 10.5pt; line-height: 1.75; }
   .remitente p { margin: 1px 0; }
-  hr {
-    border: none;
-    border-top: 0.5px solid #ccc;
-    margin: 16px 0;
-  }
-  .destinatario {
-    margin-bottom: 16px;
-    font-size: 10.5pt;
-    line-height: 1.75;
-  }
+  hr { border: none; border-top: 0.5px solid #ccc; margin: 16px 0; }
+  .destinatario { margin-bottom: 16px; font-size: 10.5pt; line-height: 1.75; }
   .destinatario p { margin: 1px 0; }
-  .cuerpo {
-    font-size: 11pt;
-    line-height: 1.8;
-    margin-bottom: 20px;
-  }
-  .firma {
-    margin-top: 40px;
-    font-size: 10.5pt;
-    line-height: 1.7;
-  }
-  .firma-linea {
-    width: 180px;
-    border-top: 1px solid #333;
-    margin: 35px 0 8px;
-  }
+  .cuerpo { font-size: 11pt; line-height: 1.8; margin-bottom: 20px; }
+  .firma { margin-top: 40px; font-size: 10.5pt; line-height: 1.7; }
+  .firma-linea { width: 180px; border-top: 1px solid #333; margin: 35px 0 8px; }
   .pie-pagina {
     margin-top: 60px;
     padding-top: 8px;
@@ -132,10 +102,7 @@ export default async function handler(req, res) {
   }
   @media print {
     body { padding: 0; }
-    @page {
-      margin: 22mm 20mm 22mm 25mm;
-      size: A4;
-    }
+    @page { margin: 22mm 20mm 22mm 25mm; size: A4; }
   }
 </style>
 </head>
@@ -183,7 +150,7 @@ export default async function handler(req, res) {
   body { font-family: Arial, sans-serif; background: #f0f2f7; margin: 0; padding: 0; }
   .contenedor { max-width: 560px; margin: 40px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 20px rgba(0,0,0,0.06); }
   .cabecera { background: #1a1a2e; padding: 28px 32px; }
-  .logo { font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+  .logo { font-size: 22px; font-weight: 900; color: #fff; }
   .logo span { color: #5DCAA5; }
   .cuerpo-email { padding: 32px; }
   .titulo { font-size: 18px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
@@ -191,7 +158,7 @@ export default async function handler(req, res) {
   .ref-box { background: #f0f9f5; border: 1px solid #5DCAA5; border-radius: 8px; padding: 12px 16px; margin: 20px 0; }
   .ref-box p { font-size: 13px; color: #2a8a6a; margin: 3px 0; }
   .instrucciones { background: #f8f8f8; border-radius: 8px; padding: 16px; margin: 20px 0; }
-  .instrucciones p { font-size: 13px; color: #555; margin: 4px 0; line-height: 1.6; }
+  .instrucciones p { font-size: 13px; color: #555; margin: 6px 0; line-height: 1.6; }
   .instrucciones strong { color: #1a1a2e; }
   .aviso { font-size: 11px; color: #999; line-height: 1.6; margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
   .pie-email { background: #f8f8f8; padding: 16px 32px; text-align: center; }
@@ -227,6 +194,17 @@ export default async function handler(req, res) {
 </div>
 </body>
 </html>`;
+
+  try {
+    res.status(200).json({
+      ok: true,
+      ref: refInterna,
+      email: email,
+      mensaje: 'Tu escrito está siendo procesado y lo recibirás en tu email en unos minutos.'
+    });
+  } catch (e) {
+    // continuar aunque falle el envío de respuesta
+  }
 
   try {
     const pdfResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
@@ -271,14 +249,7 @@ export default async function handler(req, res) {
       ]
     });
 
-    return res.status(200).json({
-      ok: true,
-      ref: refInterna,
-      email: email
-    });
-
   } catch (error) {
-    console.error('Error generando PDF:', error);
-    return res.status(500).json({ error: 'Error al generar el PDF' });
+    console.error('Error generando PDF en background:', error);
   }
 }
