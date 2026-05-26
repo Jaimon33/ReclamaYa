@@ -91,21 +91,187 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
   const textoOriginal = btnPagar.textContent;
 
   try {
-    btnPagar.textContent = '⏳ Procesando tu escrito...';
+    btnPagar.textContent = '⏳ Generando tu PDF...';
     btnPagar.disabled = true;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const fecha = new Date().toLocaleDateString('es-ES', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    const refInterna = `RY-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000) + 10000}`;
+
+    const margenIzq = 25;
+    const margenDer = 20;
+    const anchoUtil = 210 - margenIzq - margenDer;
+    let y = 22;
+
+    const addTexto = (texto, opciones = {}) => {
+      const {
+        fontSize = 11,
+        bold = false,
+        italic = false,
+        color = [26, 26, 26],
+        marginTop = 0,
+        align = 'left',
+        indent = 0
+      } = opciones;
+
+      y += marginTop;
+
+      if (y > 267) {
+        doc.addPage();
+        y = 22;
+      }
+
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+
+      if (bold && italic) doc.setFont('times', 'bolditalic');
+      else if (bold) doc.setFont('times', 'bold');
+      else if (italic) doc.setFont('times', 'italic');
+      else doc.setFont('times', 'normal');
+
+      const lineas = doc.splitTextToSize(texto, anchoUtil - indent);
+      lineas.forEach((linea, i) => {
+        if (y > 267) { doc.addPage(); y = 22; }
+        if (align === 'center') {
+          doc.text(linea, 105, y, { align: 'center' });
+        } else {
+          doc.text(linea, margenIzq + indent, y);
+        }
+        if (i < lineas.length - 1) y += 6;
+      });
+      y += 6;
+    };
+
+    const addLinea = (marginTop = 4) => {
+      y += marginTop;
+      if (y > 267) { doc.addPage(); y = 22; }
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.2);
+      doc.line(margenIzq, y, 210 - margenDer, y);
+      y += 4;
+    };
+
+    // Datos del remitente
+    addTexto(datosUsuario.nombre, { bold: true });
+    addTexto(datosUsuario.documento);
+    addTexto(`${datosUsuario.direccion}, ${datosUsuario.cp} ${datosUsuario.ciudad}`);
+    addTexto(`Tel.: ${datosUsuario.telefono}`);
+    addTexto(datosUsuario.email);
+
+    addLinea(4);
+
+    // Destinatario
+    addTexto('A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE', { bold: true });
+    addTexto(nombreEmpresa.toUpperCase(), { bold: true });
+
+    addLinea(4);
+
+    // Cuerpo del escrito
+    const lineas = carta.split('\n');
+    for (const linea of lineas) {
+      const l = linea.trim();
+      if (!l) { y += 3; continue; }
+
+      const matchHecho = l.match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
+      if (matchHecho) {
+        const numero = matchHecho[1] + matchHecho[2];
+        const resto = matchHecho[3];
+        if (y > 267) { doc.addPage(); y = 22; }
+        doc.setFontSize(11);
+        doc.setFont('times', 'bold');
+        doc.setTextColor(26, 26, 26);
+        const anchoNumero = doc.getTextWidth(numero + ' ');
+        doc.text(numero, margenIzq, y);
+        doc.setFont('times', 'normal');
+        const restoLineas = doc.splitTextToSize(resto, anchoUtil - anchoNumero);
+        restoLineas.forEach((rl, i) => {
+          if (y > 267) { doc.addPage(); y = 22; }
+          doc.text(rl, margenIzq + anchoNumero, y);
+          if (i < restoLineas.length - 1) y += 6;
+        });
+        y += 7;
+        continue;
+      }
+
+      if (/^(SOLICITO:|EXPONGO:)/.test(l)) {
+        addTexto(l, { bold: true, marginTop: 4 });
+        continue;
+      }
+
+      if (/^Al amparo de/.test(l)) {
+        addTexto(l, { italic: true, color: [80, 80, 80], indent: 5 });
+        continue;
+      }
+
+      if (/^[—–]/.test(l)) {
+        addTexto(l, { indent: 8 });
+        continue;
+      }
+
+      if (/^(Muy señores|Atentamente)/.test(l)) {
+        addTexto(l, { marginTop: 4 });
+        continue;
+      }
+
+      addTexto(l);
+    }
+
+    // Espacio para firma
+    y += 15;
+    if (y > 250) { doc.addPage(); y = 22; }
+    doc.setDrawColor(80, 80, 80);
+    doc.setLineWidth(0.3);
+    doc.line(margenIzq, y, margenIzq + 50, y);
+    y += 6;
+    addTexto(datosUsuario.nombre, { bold: true });
+    addTexto(datosUsuario.documento);
+
+    // Pie de página en todas las páginas
+    const totalPaginas = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(180, 180, 180);
+      doc.text(
+        'ReclamaYa · reclamaya.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaYa no presta servicios de asesoría jurídica.',
+        105, 287, { align: 'center', maxWidth: anchoUtil }
+      );
+    }
+
+    const pdfBase64 = doc.output('datauristring').split(',')[1];
+    const nombreArchivo = `Escrito-Reclamacion-${nombreEmpresa.replace(/\s+/g, '-')}.pdf`;
+
+    doc.save(nombreArchivo);
+
+    btnPagar.textContent = '⏳ Enviando a tu email...';
 
     const respuesta = await fetch('/api/pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ carta, datos: datosUsuario })
+      body: JSON.stringify({
+        pdfBase64,
+        nombreArchivo,
+        datos: datosUsuario,
+        nombreEmpresa
+      })
     });
 
-    if (!respuesta.ok) throw new Error('Error al procesar');
+    if (!respuesta.ok) throw new Error('Error al enviar email');
 
     const datos = await respuesta.json();
 
     if (datos.ok) {
-      btnPagar.textContent = '✓ Escrito enviado a tu email';
+      btnPagar.textContent = '✓ PDF descargado y enviado a tu email';
       btnPagar.style.background = '#5DCAA5';
       btnPagar.style.color = '#1a1a2e';
       btnPagar.disabled = true;
@@ -122,11 +288,10 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
         line-height: 1.7;
       `;
       avisoEnvio.innerHTML = `
-        <p style="font-weight:700; margin-bottom:6px;">✓ Tu escrito está en camino</p>
-        <p>Lo recibirás en <strong>${datosUsuario.email}</strong> en los próximos minutos en formato PDF, listo para enviar.</p>
-        <p style="margin-top:8px; font-size:12px; color:#666;">Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
+        <p style="font-weight:700; margin-bottom:6px;">✓ Escrito generado correctamente</p>
+        <p>El PDF se ha descargado en tu dispositivo y también lo hemos enviado a <strong>${datosUsuario.email}</strong>.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;">Si no lo ves en tu email en unos minutos, revisa la carpeta de spam.</p>
       `;
-
       btnPagar.parentNode.insertBefore(avisoEnvio, btnPagar.nextSibling);
     }
 
