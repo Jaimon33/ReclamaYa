@@ -1,10 +1,10 @@
 {
   "functions": {
-    "api/pdf.js": {
-      "maxDuration": 300
-    },
     "api/generar.js": {
       "maxDuration": 60
+    },
+    "api/pdf.js": {
+      "maxDuration": 30
     }
   }
 }
