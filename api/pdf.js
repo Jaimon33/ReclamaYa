@@ -2,31 +2,22 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const config = {
-  maxDuration: 300
-};
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { carta, datos } = req.body;
+  const { pdfBase64, nombreArchivo, datos, nombreEmpresa } = req.body;
 
-  if (!carta || !datos) {
+  if (!pdfBase64 || !datos) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
-  const {
-    nombre, documento, direccion, cp, ciudad,
-    telefono, email, empresa, categoriaEmpresa
-  } = datos;
+  const { nombre, email, empresa } = datos;
 
   const fecha = new Date().toLocaleDateString('es-ES', {
     day: 'numeric', month: 'long', year: 'numeric'
   });
-
-  const refInterna = `RY-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000) + 10000}`;
 
   const escapar = (str) => {
     if (!str) return '';
@@ -36,111 +27,6 @@ export default async function handler(req, res) {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   };
-
-  const cuerpoHTML = carta.split('\n').map(linea => {
-    const e = escapar(linea.trimEnd());
-    if (!e.trim()) return '<p style="margin:6px 0">&nbsp;</p>';
-
-    const match = linea.trimEnd().match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
-    if (match) {
-      const numero = escapar(match[1] + match[2]);
-      const resto = escapar(match[3]);
-      return `<p style="margin:10px 0 4px;"><strong>${numero}</strong> ${resto}</p>`;
-    }
-
-    if (/^(SOLICITO:|EXPONGO:)/.test(e)) {
-      return `<p style="margin:14px 0 6px; font-weight:bold;">${e}</p>`;
-    }
-
-    if (/^(Muy señores|Atentamente)/.test(e)) {
-      return `<p style="margin:14px 0 4px;">${e}</p>`;
-    }
-
-    if (/^Al amparo de/.test(e)) {
-      return `<p style="margin:6px 0 4px; font-style:italic; color:#444;">${e}</p>`;
-    }
-
-    if (/^[—–]/.test(e)) {
-      return `<p style="margin:4px 0 4px 20px;">${e}</p>`;
-    }
-
-    return `<p style="margin:5px 0; text-align:justify;">${e}</p>`;
-  }).join('');
-
-  const htmlEscrito = `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 11pt;
-    color: #1a1a1a;
-    background: #fff;
-    padding: 40px 50px 60px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .remitente { margin-bottom: 20px; font-size: 10.5pt; line-height: 1.75; }
-  .remitente p { margin: 1px 0; }
-  hr { border: none; border-top: 0.5px solid #ccc; margin: 16px 0; }
-  .destinatario { margin-bottom: 16px; font-size: 10.5pt; line-height: 1.75; }
-  .destinatario p { margin: 1px 0; }
-  .cuerpo { font-size: 11pt; line-height: 1.8; margin-bottom: 20px; }
-  .firma { margin-top: 40px; font-size: 10.5pt; line-height: 1.7; }
-  .firma-linea { width: 180px; border-top: 1px solid #333; margin: 35px 0 8px; }
-  .pie-pagina {
-    margin-top: 60px;
-    padding-top: 8px;
-    border-top: 0.5px solid #ddd;
-    font-family: Arial, sans-serif;
-    font-size: 7pt;
-    color: #bbb;
-    line-height: 1.6;
-    text-align: center;
-  }
-  @media print {
-    body { padding: 0; }
-    @page { margin: 22mm 20mm 22mm 25mm; size: A4; }
-  }
-</style>
-</head>
-<body>
-
-<div class="remitente">
-  <p><strong>${escapar(nombre)}</strong></p>
-  <p>${escapar(documento)}</p>
-  <p>${escapar(direccion)}, ${escapar(cp)} ${escapar(ciudad)}</p>
-  <p>Tel.: ${escapar(telefono)}</p>
-  <p>${escapar(email)}</p>
-</div>
-
-<hr>
-
-<div class="destinatario">
-  <p><strong>A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE</strong></p>
-  <p><strong>${escapar(empresa.toUpperCase())}</strong></p>
-</div>
-
-<hr>
-
-<div class="cuerpo">
-  ${cuerpoHTML}
-</div>
-
-<div class="firma">
-  <div class="firma-linea"></div>
-  <p><strong>${escapar(nombre)}</strong></p>
-  <p>${escapar(documento)}</p>
-</div>
-
-<div class="pie-pagina">
-  <p>ReclamaYa · reclamaya.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaYa no presta servicios de asesoría jurídica.</p>
-</div>
-
-</body>
-</html>`;
 
   const htmlEmail = `<!DOCTYPE html>
 <html lang="es">
@@ -182,7 +68,7 @@ export default async function handler(req, res) {
       <p><strong>¿Qué hago ahora con mi escrito?</strong></p>
       <p>1. Abre el PDF adjunto a este email</p>
       <p>2. Envíalo a ${escapar(empresa)} por un medio que deje constancia: email con acuse de recibo o correo certificado</p>
-      <p>3. Guarda el justificante de envío — es fundamental si necesitas escalar la reclamación</p>
+      <p>3. Guarda el justificante de envío — fundamental si necesitas escalar la reclamación</p>
       <p>4. Si no obtienes respuesta en 15 días hábiles, acude al organismo regulador correspondiente</p>
     </div>
     <p class="aviso">ReclamaYa es una herramienta de asistencia en la redacción de escritos de reclamación. No presta servicios de asesoría jurídica.</p>
@@ -196,45 +82,6 @@ export default async function handler(req, res) {
 </html>`;
 
   try {
-    res.status(200).json({
-      ok: true,
-      ref: refInterna,
-      email: email,
-      mensaje: 'Tu escrito está siendo procesado y lo recibirás en tu email en unos minutos.'
-    });
-  } catch (e) {
-    // continuar aunque falle el envío de respuesta
-  }
-
-  try {
-    const pdfResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        source: htmlEscrito,
-        landscape: false,
-        use_print: true,
-        format: 'A4',
-        margin: {
-          top: '22mm',
-          bottom: '22mm',
-          left: '25mm',
-          right: '20mm'
-        }
-      })
-    });
-
-    if (!pdfResponse.ok) {
-      const errorText = await pdfResponse.text();
-      throw new Error(`PDFShift error: ${errorText}`);
-    }
-
-    const pdfBuffer = await pdfResponse.arrayBuffer();
-    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
-
     await resend.emails.send({
       from: 'ReclamaYa <onboarding@resend.dev>',
       to: email,
@@ -242,14 +89,17 @@ export default async function handler(req, res) {
       html: htmlEmail,
       attachments: [
         {
-          filename: `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`,
+          filename: nombreArchivo || `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`,
           content: pdfBase64,
           type: 'application/pdf'
         }
       ]
     });
 
+    return res.status(200).json({ ok: true, email });
+
   } catch (error) {
-    console.error('Error generando PDF en background:', error);
+    console.error('Error enviando email:', error);
+    return res.status(500).json({ error: 'Error al enviar el email' });
   }
 }
