@@ -142,7 +142,7 @@ export default async function handler(req, res) {
 
 DATOS:
 - Reclamante: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
-- Destinatario: ${empresa} | Categoría: ${categoria}
+- Empresa indicada por el usuario: ${empresa} | Categoría: ${categoria}
 - Motivo: ${problema} | Objetivo: ${objetivo}
 ${importeTexto} ${referenciaTexto} ${fechaTexto}
 - Descripción: ${descripcion}
@@ -151,35 +151,39 @@ ${textoDocumentos ? `- Documentos aportados: ${textoDocumentos}` : ''}
 LEGISLACIÓN VERIFICADA:
 ${leyesTexto}
 
-ESTRUCTURA OBLIGATORIA:
+INSTRUCCIÓN SOBRE EL DESTINATARIO:
+Si en los documentos adjuntos aparece un organismo, departamento o dirección específica a la que debe dirigirse el escrito (como "Dependencia Regional de Recaudación", "Departamento de Atención al Cliente", una dirección postal concreta, etc.), usa ESE destinatario real en el escrito incluyendo su dirección postal completa. Si no hay documentos adjuntos, usa el nombre indicado por el usuario.
+
+ESTRUCTURA OBLIGATORIA — usa exactamente este formato sin asteriscos ni markdown:
 
 1. Presentación:
-"${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante el Servicio de Atención al Cliente de ${empresa}, comparezco y como mejor proceda en Derecho, EXPONGO:"
+${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante [destinatario real extraído del documento o indicado por el usuario], comparezco y como mejor proceda en Derecho, EXPONGO:
 
-2. Hechos numerados:
+2. Hechos numerados sin asteriscos:
 PRIMERO.- [primer hecho con fecha concreta]
-SEGUNDO.- [segundo hecho: respuesta recibida o ausencia de ella]
-TERCERO.- [perjuicio causado cuantificado si aplica]
+SEGUNDO.- [segundo hecho]
+TERCERO.- [tercer hecho si procede]
 
 3. Fundamentos:
-"En virtud de los hechos expuestos, y al amparo de la normativa vigente:"
-— [ley y artículo concreto aplicable]
-— [ley y artículo concreto aplicable]
+En virtud de los hechos expuestos, y al amparo de la normativa vigente:
+— [ley y artículo concreto]
+— [ley y artículo concreto]
 
 4. Solicitud:
-"Por todo lo expuesto, SOLICITO:"
-PRIMERO.- [solicitud principal concreta con importe si aplica]
+Por todo lo expuesto, SOLICITO:
+PRIMERO.- [solicitud principal concreta]
 SEGUNDO.- Que se dé respuesta formal en el plazo máximo de QUINCE (15) DÍAS HÁBILES.
 TERCERO.- Que de no obtener respuesta, queda reservado el derecho a reclamar ante ${fuentesNombres.join(' y/o ')}.
 
 5. Cierre:
-"En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
+En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
 
-Atentamente,"
+Atentamente,
 
-REGLAS:
-- Solo PRIMERO/SEGUNDO/TERCERO en negrita, el resto en texto normal
-- Sin encabezados ni datos del remitente al inicio
+REGLAS ABSOLUTAS:
+- NUNCA uses asteriscos (**) ni ningún formato markdown
+- Solo escribe PRIMERO/SEGUNDO/TERCERO en mayúsculas seguido de punto y guion, el resto en texto normal
+- Sin encabezados ni datos del remitente al inicio del cuerpo
 - Mínimo 400 palabras, tono técnico-jurídico profesional
 - Devuelve solo el cuerpo del escrito`;
 
