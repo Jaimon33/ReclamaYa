@@ -81,10 +81,6 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    const fecha = new Date().toLocaleDateString('es-ES', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    });
-
     const margenIzq = 25;
     const margenDer = 20;
     const anchoUtil = 210 - margenIzq - margenDer;
@@ -130,7 +126,7 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
 
     const lineas = carta.split('\n');
     for (const linea of lineas) {
-      const l = linea.trim();
+      const l = linea.trim().replace(/\*\*/g, '');
       if (!l) { y += 3; continue; }
 
       const match = l.match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
@@ -301,7 +297,7 @@ form.addEventListener('submit', async (e) => {
       cartaGenerada.style.display = 'block';
 
       const lineasPreview = datos.carta.split('\n');
-      cartaVisible.textContent = lineasPreview.slice(0, 6).join('\n');
+      cartaVisible.textContent = lineasPreview.slice(0, 6).join('\n').replace(/\*\*/g, '');
 
       if (datos.fuentes && datos.fuentes.length > 0) {
         const fuentesExistente = document.querySelector('.fuentes-legales');
