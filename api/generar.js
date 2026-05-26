@@ -86,24 +86,13 @@ const FUENTES_POR_CATEGORIA = {
 async function consultarBOE(termino) {
   try {
     const url = `https://www.boe.es/buscar/api/json?q=${encodeURIComponent(termino)}&sort=fecha&order=desc&rows=3`;
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json' }
-    });
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
     if (!res.ok) return null;
     const data = await res.json();
     if (data.response && data.response.docs && data.response.docs.length > 0) {
       return data.response.docs.map(d => `BOE: ${d.titulo || d.identificador}`).slice(0, 2);
     }
     return null;
-  } catch {
-    return null;
-  }
-}
-
-async function consultarEURLex(termino) {
-  try {
-    const url = `https://eur-lex.europa.eu/search.html?type=quick&lang=es&text=${encodeURIComponent(termino)}`;
-    return [`EUR-Lex: búsqueda verificada para "${termino}"`];
   } catch {
     return null;
   }
@@ -137,11 +126,9 @@ export default async function handler(req, res) {
     ...(boeResultados || [])
   ];
 
-  const tipoTexto = tipo === 'empresa' ? 'empresa' : 'particular';
   const docTexto = tipo === 'empresa' ? 'CIF' : 'DNI';
-  const nombreTexto = tipo === 'empresa' ? 'Razón social' : 'Nombre completo';
   const importeTexto = importe ? `El importe reclamado es de ${parseFloat(importe).toFixed(2)}€.` : '';
-  const referenciaTexto = referencia ? `El número de contrato o referencia es: ${referencia}.` : '';
+  const referenciaTexto = referencia ? `Número de contrato o referencia: ${referencia}.` : '';
   const fechaTexto = fechaHecho ? `Los hechos ocurrieron el ${fechaHecho}.` : '';
 
   const textoDocumentos = documentos
@@ -150,7 +137,8 @@ export default async function handler(req, res) {
     .join('\n\n');
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
-const prompt = `Eres un abogado especialista en derecho del consumidor español con 20 años de experiencia en despachos de abogados de primer nivel. Redacta un escrito de reclamación extrajudicial formal, siguiendo estrictamente el formato de un despacho profesional.
+
+  const prompt = `Eres un abogado especialista en derecho del consumidor español con 20 años de experiencia en despachos de primer nivel. Redacta un escrito de reclamación extrajudicial formal.
 
 DATOS:
 - Reclamante: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
@@ -160,52 +148,60 @@ ${importeTexto} ${referenciaTexto} ${fechaTexto}
 - Descripción: ${descripcion}
 ${textoDocumentos ? `- Documentos aportados: ${textoDocumentos}` : ''}
 
-LEGISLACIÓN VERIFICADA A APLICAR:
+LEGISLACIÓN VERIFICADA:
 ${leyesTexto}
 
-ESTRUCTURA OBLIGATORIA DEL ESCRITO:
+ESTRUCTURA OBLIGATORIA:
 
-Párrafo 1 - Presentación:
+1. Presentación:
 "${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante el Servicio de Atención al Cliente de ${empresa}, comparezco y como mejor proceda en Derecho, EXPONGO:"
 
-Párrafo 2 - Hechos (formato numerado):
-PRIMERO.- [Narración del primer hecho relevante con fecha concreta. Solo PRIMERO.- en negrita.]
+2. Hechos numerados:
+PRIMERO.- [primer hecho con fecha concreta]
+SEGUNDO.- [segundo hecho: respuesta recibida o ausencia de ella]
+TERCERO.- [perjuicio causado cuantificado si aplica]
 
-SEGUNDO.- [Segundo hecho: respuesta recibida o ausencia de respuesta. Solo SEGUNDO.- en negrita.]
+3. Fundamentos:
+"En virtud de los hechos expuestos, y al amparo de la normativa vigente:"
+— [ley y artículo concreto aplicable]
+— [ley y artículo concreto aplicable]
 
-TERCERO.- [Tercer hecho si procede: perjuicio causado cuantificado. Solo TERCERO.- en negrita.]
-
-Párrafo 3 - Fundamentos de derecho (introducido así):
-"En virtud de los hechos expuestos, y al amparo de la normativa vigente aplicable al presente caso:"
-[Lista cada ley con guion largo — y artículo concreto aplicable, una por línea]
-
-Párrafo 4 - Solicitud:
+4. Solicitud:
 "Por todo lo expuesto, SOLICITO:"
+PRIMERO.- [solicitud principal concreta con importe si aplica]
+SEGUNDO.- Que se dé respuesta formal en el plazo máximo de QUINCE (15) DÍAS HÁBILES.
+TERCERO.- Que de no obtener respuesta, queda reservado el derecho a reclamar ante ${fuentesNombres.join(' y/o ')}.
 
-PRIMERO.- [Solicitud principal concreta con importe si aplica. Solo PRIMERO.- en negrita.]
-
-SEGUNDO.- Que se dé respuesta formal y por escrito en el plazo máximo de QUINCE (15) DÍAS HÁBILES contados desde la recepción del presente escrito.
-
-TERCERO.- Que, de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a interponer las correspondientes reclamaciones ante ${fuentesNombres.join(' y/o ')}, así como a ejercer cuantas acciones legales procedan en defensa de los derechos vulnerados.
-
-Cierre:
+5. Cierre:
 "En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
 
 Atentamente,"
 
-[Espacio en blanco para firma manuscrita]
+REGLAS:
+- Solo PRIMERO/SEGUNDO/TERCERO en negrita, el resto en texto normal
+- Sin encabezados ni datos del remitente al inicio
+- Mínimo 400 palabras, tono técnico-jurídico profesional
+- Devuelve solo el cuerpo del escrito`;
 
-REGLAS ABSOLUTAS:
-- Solo los ordinales PRIMERO/SEGUNDO/TERCERO en negrita, todo lo demás en texto normal
-- Sin encabezados, sin datos del remitente al inicio, sin referencias internas, sin menciones a ReclamaYa
-- Extensión mínima: 400 palabras. Escrito completo y detallado como haría un abogado
-- Tono: formal, técnico-jurídico, firme y profesional
-- Devuelve exclusivamente el cuerpo del escrito`; }
+  try {
+    const mensajeContenido = [];
 
-    mensajeContenido.push({
-      type: 'text',
-      text: prompt
-    });
+    const imagenesYPdfs = documentos.filter(d => d.tipo === 'imagen' || d.tipo === 'pdf');
+    for (const doc of imagenesYPdfs) {
+      if (doc.tipo === 'imagen') {
+        mensajeContenido.push({
+          type: 'image',
+          source: { type: 'base64', media_type: doc.mediaType, data: doc.data }
+        });
+      } else if (doc.tipo === 'pdf') {
+        mensajeContenido.push({
+          type: 'document',
+          source: { type: 'base64', media_type: 'application/pdf', data: doc.data }
+        });
+      }
+    }
+
+    mensajeContenido.push({ type: 'text', text: prompt });
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -217,12 +213,7 @@ REGLAS ABSOLUTAS:
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 1500,
-        messages: [
-          {
-            role: 'user',
-            content: mensajeContenido
-          }
-        ]
+        messages: [{ role: 'user', content: mensajeContenido }]
       })
     });
 
