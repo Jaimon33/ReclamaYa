@@ -150,63 +150,38 @@ export default async function handler(req, res) {
     .join('\n\n');
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
-const prompt = `Eres un experto en derecho del consumidor y administrativo español con más de 20 años de experiencia redactando escritos de reclamación formales.
+const prompt = `Redacta un escrito de reclamación formal en español con estos datos:
 
-Redacta un ESCRITO DE RECLAMACIÓN FORMAL siguiendo estas instrucciones exactas:
+RECLAMANTE: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | ${email}
+DESTINATARIO: ${empresa} (${categoria})
+MOTIVO: ${problema}
+OBJETIVO: ${objetivo}
+${importeTexto}
+${referenciaTexto}
+${fechaTexto}
+DESCRIPCIÓN: ${descripcion}
+${textoDocumentos ? `DOCUMENTOS: ${textoDocumentos}` : ''}
 
-DATOS DEL RECLAMANTE:
-- Tipo: ${tipoTexto}
-- ${nombreTexto}: ${nombre}
-- ${docTexto}: ${documento}
-- Dirección: ${direccion}, ${cp} ${ciudad}
-- Teléfono: ${telefono}
-- Email: ${email}
-
-DATOS DE LA RECLAMACIÓN:
-- Categoría: ${categoria}
-- Destinatario: ${empresa}
-- Motivo: ${problema}
-- Objetivo: ${objetivo}
-- ${importeTexto}
-- ${referenciaTexto}
-- ${fechaTexto}
-
-DESCRIPCIÓN DEL CASO:
-${descripcion}
-
-${textoDocumentos ? `CONTENIDO DE DOCUMENTOS ADJUNTOS:\n${textoDocumentos}` : ''}
-
-LEGISLACIÓN VERIFICADA APLICABLE:
+LEGISLACIÓN APLICABLE:
 ${leyesTexto}
 
-INSTRUCCIONES DE FORMATO — SÍGUELAS AL PIE DE LA LETRA:
+FORMATO OBLIGATORIO — escribe exactamente en este orden:
 
-1. El escrito empieza directamente con el saludo "Muy señores míos:" sin ningún encabezado previo, sin fecha, sin datos del remitente, sin destinatario, sin asunto, sin referencia. Todo eso lo añade el sistema automáticamente. TÚ SOLO ESCRIBES EL CUERPO DEL ESCRITO.
+1. "Muy señores míos:" 
+2. Párrafo de presentación: "${nombre}, con ${docTexto} ${documento}, domicilio en ${direccion}, ${cp} ${ciudad}, EXPONGO:"
+3. PRIMERO.- [en negrita solo PRIMERO.-] texto del primer hecho. Tras cada hecho añade en cursiva la ley aplicable: "Al amparo del [ley y artículo concreto],"
+4. SEGUNDO.- igual
+5. TERCERO.- igual si procede
+6. "SOLICITO:"
+7. PRIMERO.- [en negrita solo PRIMERO.-] solicitud concreta con importe si aplica
+8. SEGUNDO.- "Que se dé respuesta en plazo máximo de QUINCE (15) DÍAS HÁBILES."
+9. TERCERO.- "Que de no obtener respuesta me reservo el derecho a reclamar ante ${fuentesNombres.join(' / ')}."
+10. "En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}."
+11. "Atentamente,"
+12. Línea en blanco para firma
 
-2. Tras el saludo, escribe la presentación del reclamante en un único párrafo.
-
-3. Escribe la palabra EXPONGO: sola en una línea.
-
-4. Para cada hecho expuesto usa este formato exacto:
-PRIMERO.- [solo el número en negrita, el resto del texto normal]
-El texto del hecho va en el mismo párrafo, sin negrita, a continuación del número.
-
-5. Después de los hechos, escribe DIRECTAMENTE la fundamentación legal intercalada con cada hecho al que corresponda. NO pongas un bloque de leyes al final. Cada ley va justo después del hecho al que da soporte, introducida con: "Al amparo de [ley concreta y artículo aplicable],"
-
-6. Escribe la palabra SOLICITO: sola en una línea.
-
-7. Para cada solicitud usa este formato exacto:
-PRIMERO.- [solo el número en negrita, el resto del texto normal]
-
-8. Termina con:
-En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
-
-Atentamente,
-
-[dejar espacio para firma]
-
-9. NO incluyas al final: datos del remitente, referencias internas, menciones a ReclamaYa, ni texto sobre legislación verificada. Solo la fecha, "Atentamente," y espacio para firma.
-
-10. Tono: formal, firme y profesional. Sin lenguaje coloquial.
-
-Devuelve únicamente el cuerpo del escrito como se indica, sin explicaciones adicionales.`;}
+REGLAS:
+- Solo el número PRIMERO/SEGUNDO/TERCERO en negrita, el resto normal
+- Sin encabezados, sin datos del remitente, sin referencias internas, sin menciones a ReclamaYa
+- Tono formal y firme
+- Solo el cuerpo del escrito, nada más`;
