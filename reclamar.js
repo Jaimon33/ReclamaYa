@@ -91,7 +91,7 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
   const textoOriginal = btnPagar.textContent;
 
   try {
-    btnPagar.textContent = '⏳ Generando tu PDF...';
+    btnPagar.textContent = '⏳ Generando y enviando tu escrito...';
     btnPagar.disabled = true;
 
     const respuesta = await fetch('/api/pdf', {
@@ -100,28 +100,57 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
       body: JSON.stringify({ carta, datos: datosUsuario })
     });
 
-    if (!respuesta.ok) throw new Error('Error al generar el PDF');
+    if (!respuesta.ok) throw new Error('Error al generar');
 
     const datos = await respuesta.json();
 
-    const ventana = window.open('', '_blank');
-    ventana.document.write(datos.html);
-    ventana.document.close();
+    if (datos.ok) {
+      btnPagar.textContent = `✓ Escrito enviado a ${datosUsuario.email}`;
+      btnPagar.style.background = '#5DCAA5';
+      btnPagar.style.color = '#1a1a2e';
+      btnPagar.disabled = true;
 
-    setTimeout(() => {
-      ventana.focus();
-      ventana.print();
-      btnPagar.textContent = '✓ PDF listo — Imprime o guarda como PDF';
-      btnPagar.disabled = false;
-    }, 800);
+      const avisoEnvio = document.createElement('div');
+      avisoEnvio.style.cssText = `
+        background: #f0f9f5;
+        border: 1px solid #5DCAA5;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+        font-size: 13px;
+        color: #2a8a6a;
+        line-height: 1.6;
+      `;
+      avisoEnvio.innerHTML = `
+        <p><strong>✓ Escrito generado y enviado correctamente</strong></p>
+        <p style="margin-top:4px;">Ref: <strong>${datos.ref}</strong> · Enviado a <strong>${datosUsuario.email}</strong></p>
+        <p style="margin-top:4px; font-size:12px; color:#555;">Revisa tu bandeja de entrada. Si no lo ves, comprueba la carpeta de spam.</p>
+      `;
+
+      btnPagar.parentNode.insertBefore(avisoEnvio, btnPagar.nextSibling);
+
+      if (datos.html) {
+        const blob = new Blob([datos.html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ReclamaYa-${nombreEmpresa.replace(/\s+/g, '-')}.html`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    }
 
   } catch (error) {
     console.error('Error:', error);
     btnPagar.textContent = 'Error. Inténtalo de nuevo.';
     btnPagar.style.background = '#e24b4a';
+    btnPagar.style.color = '#fff';
     setTimeout(() => {
       btnPagar.textContent = textoOriginal;
       btnPagar.style.background = '';
+      btnPagar.style.color = '';
       btnPagar.disabled = false;
     }, 3000);
   }
