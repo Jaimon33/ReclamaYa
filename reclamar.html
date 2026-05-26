@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Genera tu reclamación — ReclamaYa</title>
-  <meta name="description" content="Genera tu carta de reclamación profesional en segundos con respaldo legal verificado.">
+  <meta name="description" content="Genera tu escrito de reclamación profesional en segundos con respaldo legal verificado.">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="reclamar.css">
 </head>
@@ -27,8 +27,8 @@
     <div class="reclamar-inner">
 
       <div class="reclamar-header">
-        <h1>Genera tu carta de reclamación</h1>
-        <p>Describe tu caso y obtén tu escrito de reclamación con legislación verificada.</p>
+        <h1>Genera tu escrito de reclamación</h1>
+        <p>Describe tu caso y obtén tu escrito con legislación verificada.</p>
       </div>
 
       <div class="form-card">
@@ -40,12 +40,17 @@
           <div class="step-nav-line"></div>
           <div class="form-step-nav" id="nav-step-2">
             <span class="step-nav-num">2</span>
-            <span class="step-nav-label">La reclamación</span>
+            <span class="step-nav-label">Reclamación</span>
           </div>
           <div class="step-nav-line"></div>
           <div class="form-step-nav" id="nav-step-3">
             <span class="step-nav-num">3</span>
             <span class="step-nav-label">Documentos</span>
+          </div>
+          <div class="step-nav-line"></div>
+          <div class="form-step-nav" id="nav-step-4">
+            <span class="step-nav-num">4</span>
+            <span class="step-nav-label">Descargar</span>
           </div>
         </div>
 
@@ -201,7 +206,41 @@
             </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(2)">← Atrás</button>
-              <button type="submit" id="btn-generar">✨ Generar mi carta gratis</button>
+              <button type="button" class="btn-siguiente" onclick="irPaso(4)">Siguiente →</button>
+            </div>
+          </div>
+
+          <div class="form-step" id="step-4" style="display:none;">
+            <div class="opciones-precio">
+              <div class="opcion-precio" id="opcion-basica" onclick="seleccionarOpcion('basica')">
+                <div class="opcion-precio-header">
+                  <span class="opcion-precio-nombre">Solo escrito</span>
+                  <span class="opcion-precio-precio">3,99€</span>
+                </div>
+                <ul class="opcion-precio-lista">
+                  <li>✓ Escrito formal completo en PDF</li>
+                  <li>✓ Legislación verificada (BOE · EUR-Lex)</li>
+                  <li>✓ Enviado a tu email al instante</li>
+                  <li>✓ Listo para enviar sin modificaciones</li>
+                </ul>
+              </div>
+              <div class="opcion-precio opcion-recomendada" id="opcion-completa" onclick="seleccionarOpcion('completa')">
+                <div class="opcion-badge">Recomendado</div>
+                <div class="opcion-precio-header">
+                  <span class="opcion-precio-nombre">Escrito + Guía</span>
+                  <span class="opcion-precio-precio">7,99€</span>
+                </div>
+                <ul class="opcion-precio-lista">
+                  <li>✓ Todo lo del plan básico</li>
+                  <li>✓ Guía paso a paso personalizada</li>
+                  <li>✓ Canal correcto según empresa y CCAA</li>
+                  <li>✓ Qué hacer si no responden</li>
+                </ul>
+              </div>
+            </div>
+            <div class="form-nav-btns">
+              <button type="button" class="btn-atras" onclick="irPaso(3)">← Atrás</button>
+              <button type="submit" id="btn-generar">✨ Generar mi escrito gratis</button>
             </div>
           </div>
 
@@ -218,28 +257,25 @@
             <div class="form-header">
               <div class="form-icon">✅</div>
               <div>
-                <p class="form-title">Tu carta está lista</p>
-               <p class="form-subtitle">Aquí tienes una vista previa de tu escrito</p>
+                <p class="form-title">Tu escrito está listo</p>
+                <p class="form-subtitle">Aquí tienes una vista previa</p>
               </div>
             </div>
-
             <div class="carta-preview-wrapper">
               <div id="carta-visible"></div>
               <div class="carta-blur-overlay">
                 <div class="blur-content">
                   <div class="blur-icon">🔒</div>
                   <p class="blur-titulo">Tu escrito completo está listo</p>
-                  <p class="blur-sub">Descarga el PDF con tu escrito completo, referencias legales verificadas y listo para enviar o presentar.</p>
+                  <p class="blur-sub">Descarga el PDF completo con todas las referencias legales verificadas y listo para enviar.</p>
                   <button id="btn-pagar" class="btn-pagar">⬇️ Descargar escrito completo en PDF — 3,99€</button>
                   <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Descarga inmediata &nbsp;·&nbsp; ✓ Sin suscripción</p>
                 </div>
               </div>
             </div>
-
             <div class="descargo-legal">
-              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en esta carta han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). No obstante, ReclamaYa es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica. Se recomienda verificar la vigencia de la legislación citada antes de enviar la carta.</p>
+              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamaYa es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
             </div>
-
             <button id="btn-nueva">Generar otro escrito</button>
           </div>
         </div>
@@ -263,8 +299,9 @@
       <p class="footer-copy">© 2026 ReclamaYa. Todos los derechos reservados.<br>ReclamaYa no presta servicios de asesoría jurídica. Las cartas generadas son documentos de apoyo.</p>
     </div>
   </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="reclamar.js"></script>
@@ -296,9 +333,17 @@
       }
     }
 
+    function seleccionarOpcion(tipo) {
+      document.getElementById('opcion-basica').classList.remove('seleccionada');
+      document.getElementById('opcion-completa').classList.remove('seleccionada');
+      document.getElementById('opcion-' + tipo).classList.add('seleccionada');
+      window._opcionSeleccionada = tipo;
+    }
+
     function irPaso(num) {
       const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
       const campos2 = ['categoria-empresa','empresa','fecha-hecho','problema','objetivo','descripcion'];
+
       if (num === 2) {
         for (const id of campos1) {
           const el = document.getElementById(id);
@@ -310,27 +355,33 @@
           }
         }
       }
-      if (num === 3) {
+
+      if (num === 3 || num === 4) {
         for (const id of campos2) {
           const el = document.getElementById(id);
           if (el && el.required && !el.value.trim()) {
             el.focus();
             el.style.borderColor = '#e24b4a';
             setTimeout(() => { el.style.borderColor = ''; }, 2000);
+            irPaso(2);
             return;
           }
         }
       }
+
       document.getElementById('step-1').style.display = 'none';
       document.getElementById('step-2').style.display = 'none';
       document.getElementById('step-3').style.display = 'none';
+      document.getElementById('step-4').style.display = 'none';
       document.getElementById('step-' + num).style.display = 'block';
-      ['nav-step-1','nav-step-2','nav-step-3'].forEach((id, i) => {
+
+      ['nav-step-1','nav-step-2','nav-step-3','nav-step-4'].forEach((id, i) => {
         const el = document.getElementById(id);
         el.classList.remove('active','done');
         if (i + 1 < num) el.classList.add('done');
         if (i + 1 === num) el.classList.add('active');
       });
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -377,6 +428,8 @@
       if (window.scrollY > 50) navbar.classList.add('scrolled');
       else navbar.classList.remove('scrolled');
     });
+
+    seleccionarOpcion('completa');
   </script>
 </body>
 </html>
