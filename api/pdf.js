@@ -34,14 +34,42 @@ export default async function handler(req, res) {
   };
 
   const cuerpoHTML = carta.split('\n').map(linea => {
-    const e = escapar(linea);
+    const e = escapar(linea.trimEnd());
     if (!e.trim()) return '<p style="margin:6px 0">&nbsp;</p>';
-    if (/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|SOLICITO:|EXPONGO:|ASUNTO:|REF\.)/.test(e)) {
+
+    const soloNegrita = /^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO|SOLICITO:|EXPONGO:)(\.-)?$/;
+    if (soloNegrita.test(e.trim())) {
       return `<p style="margin:10px 0 4px; font-weight:bold;">${e}</p>`;
     }
-    if (/^[—–-]/.test(e)) {
+
+    const conTexto = /^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)\.-\s+(.+)$/;
+    const match = linea.trimEnd().match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
+    if (match) {
+      const numero = escapar(match[1] + match[2]);
+      const resto = escapar(match[3]);
+      return `<p style="margin:10px 0 4px;"><strong>${numero}</strong> ${resto}</p>`;
+    }
+
+    if (/^(SOLICITO:|EXPONGO:)/.test(e)) {
+      return `<p style="margin:14px 0 6px; font-weight:bold;">${e}</p>`;
+    }
+
+    if (/^(Muy señores|Atentamente)/.test(e)) {
+      return `<p style="margin:14px 0 4px;">${e}</p>`;
+    }
+
+    if (/^(En ${escapar(ciudad)}|En Madrid|En Barcelona|En Valencia|En Sevilla|En [A-Z])/.test(e) && e.includes('de 20')) {
+      return `<p style="margin:20px 0 4px;">${e}</p>`;
+    }
+
+    if (/^[—–]/.test(e)) {
       return `<p style="margin:4px 0 4px 20px;">${e}</p>`;
     }
+
+    if (/^Al amparo de/.test(e)) {
+      return `<p style="margin:6px 0 4px 0; font-style:italic; color:#333;">${e}</p>`;
+    }
+
     return `<p style="margin:5px 0; text-align:justify;">${e}</p>`;
   }).join('');
 
@@ -60,17 +88,40 @@ export default async function handler(req, res) {
     max-width: 800px;
     margin: 0 auto;
   }
-  .remitente { margin-bottom: 20px; font-size: 10.5pt; line-height: 1.75; }
+  .remitente {
+    margin-bottom: 20px;
+    font-size: 10.5pt;
+    line-height: 1.75;
+  }
   .remitente p { margin: 1px 0; }
-  hr { border: none; border-top: 0.5px solid #ccc; margin: 16px 0; }
-  .destinatario { margin-bottom: 16px; font-size: 10.5pt; line-height: 1.75; }
+  hr {
+    border: none;
+    border-top: 0.5px solid #ccc;
+    margin: 16px 0;
+  }
+  .destinatario {
+    margin-bottom: 16px;
+    font-size: 10.5pt;
+    line-height: 1.75;
+  }
   .destinatario p { margin: 1px 0; }
-  .fecha-lugar { margin-bottom: 20px; font-size: 10.5pt; }
-  .cuerpo { font-size: 11pt; line-height: 1.8; margin-bottom: 20px; }
-  .firma { margin-top: 32px; font-size: 10.5pt; line-height: 1.7; }
-  .firma-linea { width: 180px; border-top: 1px solid #333; margin: 30px 0 8px; }
+  .cuerpo {
+    font-size: 11pt;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .firma {
+    margin-top: 40px;
+    font-size: 10.5pt;
+    line-height: 1.7;
+  }
+  .firma-linea {
+    width: 180px;
+    border-top: 1px solid #333;
+    margin: 35px 0 8px;
+  }
   .pie-pagina {
-    margin-top: 50px;
+    margin-top: 60px;
     padding-top: 8px;
     border-top: 0.5px solid #ddd;
     font-family: Arial, sans-serif;
@@ -78,6 +129,13 @@ export default async function handler(req, res) {
     color: #bbb;
     line-height: 1.6;
     text-align: center;
+  }
+  @media print {
+    body { padding: 0; }
+    @page {
+      margin: 22mm 20mm 22mm 25mm;
+      size: A4;
+    }
   }
 </style>
 </head>
@@ -98,9 +156,7 @@ export default async function handler(req, res) {
   <p><strong>${escapar(empresa.toUpperCase())}</strong></p>
 </div>
 
-<div class="fecha-lugar">
-  <p>${escapar(ciudad)}, a ${escapar(fecha)}</p>
-</div>
+<hr>
 
 <div class="cuerpo">
   ${cuerpoHTML}
@@ -110,12 +166,10 @@ export default async function handler(req, res) {
   <div class="firma-linea"></div>
   <p><strong>${escapar(nombre)}</strong></p>
   <p>${escapar(documento)}</p>
-  <p>${escapar(fecha)}</p>
 </div>
 
 <div class="pie-pagina">
-  <p>Documento generado por ReclamaYa | reclamaya.es | Ref: ${escapar(refInterna)}</p>
-  <p>Legislación verificada: BOE (boe.es) · EUR-Lex (eur-lex.europa.eu) | Este escrito tiene carácter de reclamación extrajudicial</p>
+  <p>ReclamaYa · reclamaya.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaYa no presta servicios de asesoría jurídica.</p>
 </div>
 
 </body>
@@ -153,7 +207,6 @@ export default async function handler(req, res) {
     <p class="titulo">Tu escrito de reclamación está listo, ${escapar(nombre.split(' ')[0])}</p>
     <p class="texto">Hemos generado tu escrito de reclamación formal contra <strong>${escapar(empresa)}</strong> con legislación verificada en el BOE y EUR-Lex. Lo encontrarás adjunto a este email en formato PDF.</p>
     <div class="ref-box">
-      <p>✓ <strong>Referencia:</strong> ${escapar(refInterna)}</p>
       <p>✓ <strong>Fecha:</strong> ${escapar(fecha)}</p>
       <p>✓ <strong>Destinatario:</strong> ${escapar(empresa)}</p>
       <p>✓ <strong>Legislación verificada:</strong> BOE · EUR-Lex</p>
@@ -207,11 +260,11 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from: 'ReclamaYa <onboarding@resend.dev>',
       to: email,
-      subject: `Tu escrito de reclamación contra ${empresa} — Ref. ${refInterna}`,
+      subject: `Tu escrito de reclamación contra ${empresa} — ${fecha}`,
       html: htmlEmail,
       attachments: [
         {
-          filename: `ReclamaYa-${empresa.replace(/\s+/g, '-')}-${refInterna}.pdf`,
+          filename: `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`,
           content: pdfBase64,
           type: 'application/pdf'
         }
