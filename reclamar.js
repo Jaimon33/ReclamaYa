@@ -120,8 +120,12 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     addTexto(`Tel.: ${datosUsuario.telefono}`);
     addTexto(datosUsuario.email);
     addLinea(4);
-    addTexto('A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE', { bold: true });
-    addTexto(nombreEmpresa.toUpperCase(), { bold: true });
+   const destinatarioLineas = window._destinatarioReal
+  ? window._destinatarioReal.split('\n')
+  : ['A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE', nombreEmpresa.toUpperCase()];
+destinatarioLineas.forEach(linea => {
+  if (linea.trim()) addTexto(linea.trim(), { bold: true });
+});
     addLinea(4);
 
     const lineas = carta.split('\n');
