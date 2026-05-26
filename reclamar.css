@@ -1,9 +1,9 @@
 .reclamar-page {
-  background: #f0f2f7;
+  background: #f8f9fb;
 }
 
 .reclamar-main {
-  padding-top: 80px;
+  padding-top: 64px;
   min-height: 100vh;
 }
 
@@ -19,10 +19,11 @@
 }
 
 .reclamar-header h1 {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #1a1a2e;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.3px;
 }
 
 .reclamar-header p {
@@ -32,35 +33,39 @@
 
 .nav-mobile-btn-link {
   display: none;
-  color: rgba(255,255,255,0.7);
+  color: #555;
   font-size: 13px;
+  font-weight: 500;
 }
 
 .carta-preview-wrapper {
   position: relative;
   margin-bottom: 1.25rem;
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
-  border: 0.5px solid #e0e0e0;
+  border: 1px solid #e8e8e8;
 }
 
 #carta-visible {
-  background: #fafafa;
+  background: #fff;
   padding: 1.5rem;
-  font-size: 13px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
   line-height: 1.9;
   white-space: pre-wrap;
-  color: #1a1a2e;
+  color: #1a1a1a;
   min-height: 120px;
+  max-height: 160px;
+  overflow: hidden;
 }
 
 .carta-blur-overlay {
   position: relative;
   background: linear-gradient(
     to bottom,
-    rgba(250,250,250,0) 0%,
-    rgba(250,250,250,0.92) 25%,
-    rgba(250,250,250,1) 50%
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.95) 30%,
+    rgba(255,255,255,1) 55%
   );
   margin-top: -80px;
   padding: 80px 1.5rem 2rem;
@@ -68,12 +73,12 @@
 }
 
 .blur-content {
-  max-width: 380px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
 .blur-icon {
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-bottom: 0.75rem;
 }
 
@@ -95,10 +100,10 @@
   display: block;
   width: 100%;
   padding: 0.875rem;
-  background: #5DCAA5;
-  color: #1a1a2e;
+  background: #1a1a2e;
+  color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -114,10 +119,10 @@
 }
 
 .descargo-legal {
-  background: #fff9e6;
-  border: 0.5px solid #f0c040;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  background: #fffbf0;
+  border: 1px solid #e8d88a;
+  border-radius: 6px;
+  padding: 0.875rem 1.125rem;
   margin-bottom: 1rem;
 }
 
@@ -129,30 +134,22 @@
 }
 
 .fuentes-legales {
-  background: #f0f9f5;
-  border: 0.5px solid #5DCAA5;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  background: #f6faf8;
+  border: 1px solid #c3ddd0;
+  border-radius: 6px;
+  padding: 0.875rem 1.125rem;
   margin-bottom: 1rem;
 }
 
 .fuentes-legales p {
   font-size: 12px;
-  color: #555;
+  color: #2d6a4f;
   margin: 0 0 6px;
   font-weight: 700;
 }
 
-.fuentes-legales ul {
-  margin: 0;
-  padding-left: 1.25rem;
-}
-
-.fuentes-legales li {
-  font-size: 11px;
-  color: #666;
-  line-height: 1.7;
-}
+.fuentes-legales ul { margin: 0; padding-left: 1.25rem; }
+.fuentes-legales li { font-size: 11px; color: #555; line-height: 1.7; }
 
 #btn-nueva {
   width: 100%;
@@ -171,19 +168,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f0f9f5;
-  border: 0.5px solid #5DCAA5;
-  border-radius: 10px;
+  background: #f6faf8;
+  border: 1px solid #c3ddd0;
+  border-radius: 6px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 12px;
-  color: #555;
+  color: #2d6a4f;
 }
 
 .fuentes-loading-dot {
-  width: 8px;
-  height: 8px;
-  background: #5DCAA5;
+  width: 7px;
+  height: 7px;
+  background: #2d6a4f;
   border-radius: 50%;
   animation: pulse 1s infinite;
   flex-shrink: 0;
@@ -194,14 +191,6 @@
   50% { opacity: 0.3; }
 }
 
-@media (max-width: 768px) {
-  .nav-mobile-btn-link { display: block; }
-}
-
-@media (max-width: 480px) {
-  .reclamar-inner { padding: 2rem 1rem 4rem; }
-  .reclamar-header h1 { font-size: 1.4rem; }
-}
 .opciones-precio {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -211,7 +200,7 @@
 
 .opcion-precio {
   border: 1.5px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -231,13 +220,13 @@
 }
 
 .opcion-recomendada {
-  border-color: #5DCAA5;
-  background: #f0f9f5;
+  border-color: #2d6a4f;
+  background: #f6faf8;
 }
 
 .opcion-recomendada.seleccionada {
-  border-color: #5DCAA5;
-  box-shadow: 0 0 0 2px #5DCAA5;
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 2px #2d6a4f;
 }
 
 .opcion-badge {
@@ -245,8 +234,8 @@
   top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  background: #5DCAA5;
-  color: #1a1a2e;
+  background: #2d6a4f;
+  color: #fff;
   font-size: 10px;
   font-weight: 700;
   padding: 3px 10px;
@@ -273,20 +262,15 @@
   color: #1a1a2e;
 }
 
-.opcion-precio-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.opcion-precio-lista { list-style: none; padding: 0; margin: 0; }
+.opcion-precio-lista li { font-size: 11px; color: #555; line-height: 1.8; }
 
-.opcion-precio-lista li {
-  font-size: 11px;
-  color: #555;
-  line-height: 1.8;
+@media (max-width: 768px) {
+  .nav-mobile-btn-link { display: block; }
 }
 
 @media (max-width: 480px) {
-  .opciones-precio {
-    grid-template-columns: 1fr;
-  }
+  .reclamar-inner { padding: 2rem 1rem 4rem; }
+  .reclamar-header h1 { font-size: 1.3rem; }
+  .opciones-precio { grid-template-columns: 1fr; }
 }
