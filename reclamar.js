@@ -23,11 +23,7 @@ async function procesarArchivo(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        resolve({
-          tipo: 'imagen',
-          mediaType: file.type,
-          data: e.target.result.split(',')[1]
-        });
+        resolve({ tipo: 'imagen', mediaType: file.type, data: e.target.result.split(',')[1] });
       };
       reader.readAsDataURL(file);
     });
@@ -37,11 +33,7 @@ async function procesarArchivo(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        resolve({
-          tipo: 'pdf',
-          mediaType: 'application/pdf',
-          data: e.target.result.split(',')[1]
-        });
+        resolve({ tipo: 'pdf', mediaType: 'application/pdf', data: e.target.result.split(',')[1] });
       };
       reader.readAsDataURL(file);
     });
@@ -51,13 +43,9 @@ async function procesarArchivo(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        mammoth.extractRawText({ arrayBuffer: e.target.result })
-          .then((result) => {
-            resolve({
-              tipo: 'texto',
-              contenido: `[Documento Word: ${file.name}]\n${result.value}`
-            });
-          });
+        mammoth.extractRawText({ arrayBuffer: e.target.result }).then((result) => {
+          resolve({ tipo: 'texto', contenido: `[Documento Word: ${file.name}]\n${result.value}` });
+        });
       };
       reader.readAsArrayBuffer(file);
     });
@@ -70,14 +58,10 @@ async function procesarArchivo(file) {
         const workbook = XLSX.read(e.target.result, { type: 'array' });
         let texto = `[Documento Excel: ${file.name}]\n`;
         workbook.SheetNames.forEach((sheetName) => {
-          const sheet = workbook.Sheets[sheetName];
           texto += `\nHoja: ${sheetName}\n`;
-          texto += XLSX.utils.sheet_to_csv(sheet);
+          texto += XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName]);
         });
-        resolve({
-          tipo: 'texto',
-          contenido: texto
-        });
+        resolve({ tipo: 'texto', contenido: texto });
       };
       reader.readAsArrayBuffer(file);
     });
@@ -95,17 +79,11 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     btnPagar.disabled = true;
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
     const fecha = new Date().toLocaleDateString('es-ES', {
       day: 'numeric', month: 'long', year: 'numeric'
     });
-
-    const refInterna = `RY-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000) + 10000}`;
 
     const margenIzq = 25;
     const margenDer = 20;
@@ -113,39 +91,19 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     let y = 22;
 
     const addTexto = (texto, opciones = {}) => {
-      const {
-        fontSize = 11,
-        bold = false,
-        italic = false,
-        color = [26, 26, 26],
-        marginTop = 0,
-        align = 'left',
-        indent = 0
-      } = opciones;
-
+      const { fontSize = 11, bold = false, italic = false, color = [26, 26, 26], marginTop = 0, indent = 0 } = opciones;
       y += marginTop;
-
-      if (y > 267) {
-        doc.addPage();
-        y = 22;
-      }
-
+      if (y > 267) { doc.addPage(); y = 22; }
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
-
       if (bold && italic) doc.setFont('times', 'bolditalic');
       else if (bold) doc.setFont('times', 'bold');
       else if (italic) doc.setFont('times', 'italic');
       else doc.setFont('times', 'normal');
-
       const lineas = doc.splitTextToSize(texto, anchoUtil - indent);
       lineas.forEach((linea, i) => {
         if (y > 267) { doc.addPage(); y = 22; }
-        if (align === 'center') {
-          doc.text(linea, 105, y, { align: 'center' });
-        } else {
-          doc.text(linea, margenIzq + indent, y);
-        }
+        doc.text(linea, margenIzq + indent, y);
         if (i < lineas.length - 1) y += 6;
       });
       y += 6;
@@ -160,39 +118,32 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
       y += 4;
     };
 
-    // Datos del remitente
     addTexto(datosUsuario.nombre, { bold: true });
     addTexto(datosUsuario.documento);
     addTexto(`${datosUsuario.direccion}, ${datosUsuario.cp} ${datosUsuario.ciudad}`);
     addTexto(`Tel.: ${datosUsuario.telefono}`);
     addTexto(datosUsuario.email);
-
     addLinea(4);
-
-    // Destinatario
     addTexto('A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE', { bold: true });
     addTexto(nombreEmpresa.toUpperCase(), { bold: true });
-
     addLinea(4);
 
-    // Cuerpo del escrito
     const lineas = carta.split('\n');
     for (const linea of lineas) {
       const l = linea.trim();
       if (!l) { y += 3; continue; }
 
-      const matchHecho = l.match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
-      if (matchHecho) {
-        const numero = matchHecho[1] + matchHecho[2];
-        const resto = matchHecho[3];
+      const match = l.match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
+      if (match) {
         if (y > 267) { doc.addPage(); y = 22; }
         doc.setFontSize(11);
         doc.setFont('times', 'bold');
         doc.setTextColor(26, 26, 26);
+        const numero = match[1] + match[2];
         const anchoNumero = doc.getTextWidth(numero + ' ');
         doc.text(numero, margenIzq, y);
         doc.setFont('times', 'normal');
-        const restoLineas = doc.splitTextToSize(resto, anchoUtil - anchoNumero);
+        const restoLineas = doc.splitTextToSize(match[3], anchoUtil - anchoNumero);
         restoLineas.forEach((rl, i) => {
           if (y > 267) { doc.addPage(); y = 22; }
           doc.text(rl, margenIzq + anchoNumero, y);
@@ -202,30 +153,13 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
         continue;
       }
 
-      if (/^(SOLICITO:|EXPONGO:)/.test(l)) {
-        addTexto(l, { bold: true, marginTop: 4 });
-        continue;
-      }
-
-      if (/^Al amparo de/.test(l)) {
-        addTexto(l, { italic: true, color: [80, 80, 80], indent: 5 });
-        continue;
-      }
-
-      if (/^[—–]/.test(l)) {
-        addTexto(l, { indent: 8 });
-        continue;
-      }
-
-      if (/^(Muy señores|Atentamente)/.test(l)) {
-        addTexto(l, { marginTop: 4 });
-        continue;
-      }
-
+      if (/^(SOLICITO:|EXPONGO:)/.test(l)) { addTexto(l, { bold: true, marginTop: 4 }); continue; }
+      if (/^Al amparo de/.test(l)) { addTexto(l, { italic: true, color: [80, 80, 80], indent: 5 }); continue; }
+      if (/^[—–]/.test(l)) { addTexto(l, { indent: 8 }); continue; }
+      if (/^(Muy señores|Atentamente)/.test(l)) { addTexto(l, { marginTop: 4 }); continue; }
       addTexto(l);
     }
 
-    // Espacio para firma
     y += 15;
     if (y > 250) { doc.addPage(); y = 22; }
     doc.setDrawColor(80, 80, 80);
@@ -235,7 +169,6 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     addTexto(datosUsuario.nombre, { bold: true });
     addTexto(datosUsuario.documento);
 
-    // Pie de página en todas las páginas
     const totalPaginas = doc.getNumberOfPages();
     for (let i = 1; i <= totalPaginas; i++) {
       doc.setPage(i);
@@ -250,7 +183,6 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
 
     const pdfBase64 = doc.output('datauristring').split(',')[1];
     const nombreArchivo = `Escrito-Reclamacion-${nombreEmpresa.replace(/\s+/g, '-')}.pdf`;
-
     doc.save(nombreArchivo);
 
     btnPagar.textContent = '⏳ Enviando a tu email...';
@@ -258,12 +190,7 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     const respuesta = await fetch('/api/pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pdfBase64,
-        nombreArchivo,
-        datos: datosUsuario,
-        nombreEmpresa
-      })
+      body: JSON.stringify({ pdfBase64, nombreArchivo, datos: datosUsuario, nombreEmpresa })
     });
 
     if (!respuesta.ok) throw new Error('Error al enviar email');
@@ -272,25 +199,25 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
 
     if (datos.ok) {
       btnPagar.textContent = '✓ PDF descargado y enviado a tu email';
-      btnPagar.style.background = '#5DCAA5';
-      btnPagar.style.color = '#1a1a2e';
+      btnPagar.style.background = '#2d6a4f';
+      btnPagar.style.color = '#fff';
       btnPagar.disabled = true;
 
       const avisoEnvio = document.createElement('div');
       avisoEnvio.style.cssText = `
-        background: #f0f9f5;
-        border: 1px solid #5DCAA5;
-        border-radius: 10px;
-        padding: 16px 18px;
-        margin-top: 14px;
+        background: #f6faf8;
+        border: 1px solid #c3ddd0;
+        border-radius: 6px;
+        padding: 14px 16px;
+        margin-top: 12px;
         font-size: 13px;
         color: #1a1a2e;
         line-height: 1.7;
       `;
       avisoEnvio.innerHTML = `
-        <p style="font-weight:700; margin-bottom:6px;">✓ Escrito generado correctamente</p>
+        <p style="font-weight:700; margin-bottom:4px;">✓ Escrito generado y enviado correctamente</p>
         <p>El PDF se ha descargado en tu dispositivo y también lo hemos enviado a <strong>${datosUsuario.email}</strong>.</p>
-        <p style="margin-top:8px; font-size:12px; color:#666;">Si no lo ves en tu email en unos minutos, revisa la carpeta de spam.</p>
+        <p style="margin-top:6px; font-size:12px; color:#666;">Si no lo ves en tu email en unos minutos, revisa la carpeta de spam.</p>
       `;
       btnPagar.parentNode.insertBefore(avisoEnvio, btnPagar.nextSibling);
     }
@@ -298,7 +225,7 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
   } catch (error) {
     console.error('Error:', error);
     btnPagar.textContent = 'Error. Inténtalo de nuevo.';
-    btnPagar.style.background = '#e24b4a';
+    btnPagar.style.background = '#c0392b';
     btnPagar.style.color = '#fff';
     setTimeout(() => {
       btnPagar.textContent = textoOriginal;
@@ -348,10 +275,7 @@ form.addEventListener('submit', async (e) => {
 
   let i = 0;
   const interval = setInterval(() => {
-    if (i < pasos.length) {
-      loadingText.textContent = pasos[i];
-      i++;
-    }
+    if (i < pasos.length) { loadingText.textContent = pasos[i]; i++; }
   }, 1200);
 
   try {
@@ -366,10 +290,7 @@ form.addEventListener('submit', async (e) => {
     const respuesta = await fetch('/api/generar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...datosUsuario,
-        documentos: documentosProcesados
-      })
+      body: JSON.stringify({ ...datosUsuario, documentos: documentosProcesados })
     });
 
     const datos = await respuesta.json();
@@ -379,14 +300,12 @@ form.addEventListener('submit', async (e) => {
       loading.style.display = 'none';
       cartaGenerada.style.display = 'block';
 
-      const lineas = datos.carta.split('\n');
-      const preview = lineas.slice(0, 12).join('\n');
-      cartaVisible.textContent = preview;
+      const lineasPreview = datos.carta.split('\n');
+      cartaVisible.textContent = lineasPreview.slice(0, 6).join('\n');
 
       if (datos.fuentes && datos.fuentes.length > 0) {
         const fuentesExistente = document.querySelector('.fuentes-legales');
         if (fuentesExistente) fuentesExistente.remove();
-
         const fuentesDiv = document.createElement('div');
         fuentesDiv.className = 'fuentes-legales';
         fuentesDiv.innerHTML = `
@@ -394,23 +313,19 @@ form.addEventListener('submit', async (e) => {
           <ul>${datos.fuentes.map(f => `<li>${f}</li>`).join('')}</ul>
         `;
         const descargo = cartaGenerada.querySelector('.descargo-legal');
-        if (descargo) {
-          descargo.parentNode.insertBefore(fuentesDiv, descargo);
-        }
+        if (descargo) descargo.parentNode.insertBefore(fuentesDiv, descargo);
       }
 
       window._cartaCompleta = datos.carta;
       window._datosUsuario = datosUsuario;
 
+      const opcion = window._opcionSeleccionada || 'completa';
       const btnPagar = document.getElementById('btn-pagar');
       if (btnPagar) {
-        btnPagar.onclick = () => {
-          descargarPDF(
-            window._cartaCompleta,
-            window._datosUsuario,
-            empresa
-          );
-        };
+        btnPagar.textContent = opcion === 'completa'
+          ? '⬇️ Descargar escrito + guía en PDF — 7,99€'
+          : '⬇️ Descargar escrito en PDF — 3,99€';
+        btnPagar.onclick = () => descargarPDF(window._cartaCompleta, window._datosUsuario, empresa);
       }
 
       resultado.scrollIntoView({ behavior: 'smooth' });
@@ -436,7 +351,8 @@ btnNueva.addEventListener('click', () => {
   document.getElementById('step-1').style.display = 'block';
   document.getElementById('step-2').style.display = 'none';
   document.getElementById('step-3').style.display = 'none';
-  ['nav-step-1', 'nav-step-2', 'nav-step-3'].forEach((id, i) => {
+  document.getElementById('step-4').style.display = 'none';
+  ['nav-step-1', 'nav-step-2', 'nav-step-3', 'nav-step-4'].forEach((id, i) => {
     const el = document.getElementById(id);
     el.classList.remove('active', 'done');
     if (i === 0) el.classList.add('active');
@@ -448,5 +364,7 @@ btnNueva.addEventListener('click', () => {
   window._datosUsuario = null;
   const fuentesDiv = document.querySelector('.fuentes-legales');
   if (fuentesDiv) fuentesDiv.remove();
+  const avisoDiv = document.querySelector('[style*="f6faf8"]');
+  if (avisoDiv) avisoDiv.remove();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
