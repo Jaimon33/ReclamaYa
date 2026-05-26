@@ -150,66 +150,57 @@ export default async function handler(req, res) {
     .join('\n\n');
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
-const prompt = `Redacta un escrito de reclamación formal en español con estos datos:
+const prompt = `Eres un abogado especialista en derecho del consumidor español con 20 años de experiencia en despachos de abogados de primer nivel. Redacta un escrito de reclamación extrajudicial formal, siguiendo estrictamente el formato de un despacho profesional.
 
-RECLAMANTE: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | ${email}
-DESTINATARIO: ${empresa} (${categoria})
-MOTIVO: ${problema}
-OBJETIVO: ${objetivo}
-${importeTexto}
-${referenciaTexto}
-${fechaTexto}
-DESCRIPCIÓN: ${descripcion}
-${textoDocumentos ? `DOCUMENTOS: ${textoDocumentos}` : ''}
+DATOS:
+- Reclamante: ${nombre} | ${docTexto}: ${documento} | ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
+- Destinatario: ${empresa} | Categoría: ${categoria}
+- Motivo: ${problema} | Objetivo: ${objetivo}
+${importeTexto} ${referenciaTexto} ${fechaTexto}
+- Descripción: ${descripcion}
+${textoDocumentos ? `- Documentos aportados: ${textoDocumentos}` : ''}
 
-LEGISLACIÓN APLICABLE:
+LEGISLACIÓN VERIFICADA A APLICAR:
 ${leyesTexto}
 
-FORMATO OBLIGATORIO — escribe exactamente en este orden:
+ESTRUCTURA OBLIGATORIA DEL ESCRITO:
 
-1. "Muy señores míos:" 
-2. Párrafo de presentación: "${nombre}, con ${docTexto} ${documento}, domicilio en ${direccion}, ${cp} ${ciudad}, EXPONGO:"
-3. PRIMERO.- [en negrita solo PRIMERO.-] texto del primer hecho. Tras cada hecho añade en cursiva la ley aplicable: "Al amparo del [ley y artículo concreto],"
-4. SEGUNDO.- igual
-5. TERCERO.- igual si procede
-6. "SOLICITO:"
-7. PRIMERO.- [en negrita solo PRIMERO.-] solicitud concreta con importe si aplica
-8. SEGUNDO.- "Que se dé respuesta en plazo máximo de QUINCE (15) DÍAS HÁBILES."
-9. TERCERO.- "Que de no obtener respuesta me reservo el derecho a reclamar ante ${fuentesNombres.join(' / ')}."
-10. "En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}."
-11. "Atentamente,"
-12. Línea en blanco para firma
+Párrafo 1 - Presentación:
+"${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante el Servicio de Atención al Cliente de ${empresa}, comparezco y como mejor proceda en Derecho, EXPONGO:"
 
-REGLAS:
-- Solo el número PRIMERO/SEGUNDO/TERCERO en negrita, el resto normal
-- Sin encabezados, sin datos del remitente, sin referencias internas, sin menciones a ReclamaYa
-- Tono formal y firme
-- Solo el cuerpo del escrito, nada más`;
-try {
-    const mensajeContenido = [];
+Párrafo 2 - Hechos (formato numerado):
+PRIMERO.- [Narración del primer hecho relevante con fecha concreta. Solo PRIMERO.- en negrita.]
 
-    const imagenesYPdfs = documentos.filter(d => d.tipo === 'imagen' || d.tipo === 'pdf');
-    for (const doc of imagenesYPdfs) {
-      if (doc.tipo === 'imagen') {
-        mensajeContenido.push({
-          type: 'image',
-          source: {
-            type: 'base64',
-            media_type: doc.mediaType,
-            data: doc.data
-          }
-        });
-      } else if (doc.tipo === 'pdf') {
-        mensajeContenido.push({
-          type: 'document',
-          source: {
-            type: 'base64',
-            media_type: 'application/pdf',
-            data: doc.data
-          }
-        });
-      }
-    }
+SEGUNDO.- [Segundo hecho: respuesta recibida o ausencia de respuesta. Solo SEGUNDO.- en negrita.]
+
+TERCERO.- [Tercer hecho si procede: perjuicio causado cuantificado. Solo TERCERO.- en negrita.]
+
+Párrafo 3 - Fundamentos de derecho (introducido así):
+"En virtud de los hechos expuestos, y al amparo de la normativa vigente aplicable al presente caso:"
+[Lista cada ley con guion largo — y artículo concreto aplicable, una por línea]
+
+Párrafo 4 - Solicitud:
+"Por todo lo expuesto, SOLICITO:"
+
+PRIMERO.- [Solicitud principal concreta con importe si aplica. Solo PRIMERO.- en negrita.]
+
+SEGUNDO.- Que se dé respuesta formal y por escrito en el plazo máximo de QUINCE (15) DÍAS HÁBILES contados desde la recepción del presente escrito.
+
+TERCERO.- Que, de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a interponer las correspondientes reclamaciones ante ${fuentesNombres.join(' y/o ')}, así como a ejercer cuantas acciones legales procedan en defensa de los derechos vulnerados.
+
+Cierre:
+"En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
+
+Atentamente,"
+
+[Espacio en blanco para firma manuscrita]
+
+REGLAS ABSOLUTAS:
+- Solo los ordinales PRIMERO/SEGUNDO/TERCERO en negrita, todo lo demás en texto normal
+- Sin encabezados, sin datos del remitente al inicio, sin referencias internas, sin menciones a ReclamaYa
+- Extensión mínima: 400 palabras. Escrito completo y detallado como haría un abogado
+- Tono: formal, técnico-jurídico, firme y profesional
+- Devuelve exclusivamente el cuerpo del escrito`; }
 
     mensajeContenido.push({
       type: 'text',
