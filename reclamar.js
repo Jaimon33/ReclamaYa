@@ -97,32 +97,27 @@ async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
     const respuesta = await fetch('/api/pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        carta,
-        datos: datosUsuario
-      })
+      body: JSON.stringify({ carta, datos: datosUsuario })
     });
 
-    if (!respuesta.ok) {
-      throw new Error('Error al generar el PDF');
-    }
+    if (!respuesta.ok) throw new Error('Error al generar el PDF');
 
-    const blob = await respuesta.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ReclamaYa-${nombreEmpresa.replace(/\s+/g, '-')}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    const datos = await respuesta.json();
 
-    btnPagar.textContent = '✓ PDF descargado';
-    btnPagar.style.background = '#5DCAA5';
+    const ventana = window.open('', '_blank');
+    ventana.document.write(datos.html);
+    ventana.document.close();
+
+    setTimeout(() => {
+      ventana.focus();
+      ventana.print();
+      btnPagar.textContent = '✓ PDF listo — Imprime o guarda como PDF';
+      btnPagar.disabled = false;
+    }, 800);
 
   } catch (error) {
     console.error('Error:', error);
-    btnPagar.textContent = 'Error al generar. Inténtalo de nuevo.';
+    btnPagar.textContent = 'Error. Inténtalo de nuevo.';
     btnPagar.style.background = '#e24b4a';
     setTimeout(() => {
       btnPagar.textContent = textoOriginal;
