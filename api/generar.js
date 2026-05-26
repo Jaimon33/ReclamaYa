@@ -185,3 +185,68 @@ REGLAS:
 - Sin encabezados, sin datos del remitente, sin referencias internas, sin menciones a ReclamaYa
 - Tono formal y firme
 - Solo el cuerpo del escrito, nada más`;
+try {
+    const mensajeContenido = [];
+
+    const imagenesYPdfs = documentos.filter(d => d.tipo === 'imagen' || d.tipo === 'pdf');
+    for (const doc of imagenesYPdfs) {
+      if (doc.tipo === 'imagen') {
+        mensajeContenido.push({
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: doc.mediaType,
+            data: doc.data
+          }
+        });
+      } else if (doc.tipo === 'pdf') {
+        mensajeContenido.push({
+          type: 'document',
+          source: {
+            type: 'base64',
+            media_type: 'application/pdf',
+            data: doc.data
+          }
+        });
+      }
+    }
+
+    mensajeContenido.push({
+      type: 'text',
+      text: prompt
+    });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        messages: [
+          {
+            role: 'user',
+            content: mensajeContenido
+          }
+        ]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.content && data.content[0] && data.content[0].text) {
+      return res.status(200).json({
+        carta: data.content[0].text,
+        fuentes: fuentesVerificadas
+      });
+    } else {
+      throw new Error('Respuesta inesperada de la API');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ error: 'Error al generar el escrito' });
+  }
+}
