@@ -70,156 +70,34 @@ async function procesarArchivo(file) {
   return null;
 }
 
-async function descargarPDF(carta, datosUsuario, nombreEmpresa) {
+async function iniciarPago() {
   const btnPagar = document.getElementById('btn-pagar');
   const textoOriginal = btnPagar.textContent;
 
   try {
-    btnPagar.textContent = '⏳ Generando tu PDF...';
+    btnPagar.textContent = '⏳ Redirigiendo al pago...';
     btnPagar.disabled = true;
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const opcion = window._opcionSeleccionada || 'basica';
+    const email = window._datosUsuario?.email || '';
+    const empresa = window._datosUsuario?.empresa || '';
 
-    const margenIzq = 25;
-    const margenDer = 20;
-    const anchoUtil = 210 - margenIzq - margenDer;
-    let y = 22;
-
-    const addTexto = (texto, opciones = {}) => {
-      const { fontSize = 11, bold = false, italic = false, color = [26, 26, 26], marginTop = 0, indent = 0 } = opciones;
-      y += marginTop;
-      if (y > 267) { doc.addPage(); y = 22; }
-      doc.setFontSize(fontSize);
-      doc.setTextColor(...color);
-      if (bold && italic) doc.setFont('times', 'bolditalic');
-      else if (bold) doc.setFont('times', 'bold');
-      else if (italic) doc.setFont('times', 'italic');
-      else doc.setFont('times', 'normal');
-      const lineas = doc.splitTextToSize(texto, anchoUtil - indent);
-      lineas.forEach((linea, i) => {
-        if (y > 267) { doc.addPage(); y = 22; }
-        doc.text(linea, margenIzq + indent, y);
-        if (i < lineas.length - 1) y += 6;
-      });
-      y += 6;
-    };
-
-    const addLinea = (marginTop = 4) => {
-      y += marginTop;
-      if (y > 267) { doc.addPage(); y = 22; }
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.2);
-      doc.line(margenIzq, y, 210 - margenDer, y);
-      y += 4;
-    };
-
-    addTexto(datosUsuario.nombre, { bold: true });
-    addTexto(datosUsuario.documento);
-    addTexto(`${datosUsuario.direccion}, ${datosUsuario.cp} ${datosUsuario.ciudad}`);
-    addTexto(`Tel.: ${datosUsuario.telefono}`);
-    addTexto(datosUsuario.email);
-    addLinea(4);
-   const destinatarioLineas = window._destinatarioReal
-  ? window._destinatarioReal.split('\n')
-  : ['A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE', nombreEmpresa.toUpperCase()];
-destinatarioLineas.forEach(linea => {
-  if (linea.trim()) addTexto(linea.trim(), { bold: true });
-});
-    addLinea(4);
-
-    const lineas = carta.split('\n');
-    for (const linea of lineas) {
-      const l = linea.trim().replace(/\*\*/g, '');
-      if (!l) { y += 3; continue; }
-
-      const match = l.match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
-      if (match) {
-        if (y > 267) { doc.addPage(); y = 22; }
-        doc.setFontSize(11);
-        doc.setFont('times', 'bold');
-        doc.setTextColor(26, 26, 26);
-        const numero = match[1] + match[2];
-        const anchoNumero = doc.getTextWidth(numero + ' ');
-        doc.text(numero, margenIzq, y);
-        doc.setFont('times', 'normal');
-        const restoLineas = doc.splitTextToSize(match[3], anchoUtil - anchoNumero);
-        restoLineas.forEach((rl, i) => {
-          if (y > 267) { doc.addPage(); y = 22; }
-          doc.text(rl, margenIzq + anchoNumero, y);
-          if (i < restoLineas.length - 1) y += 6;
-        });
-        y += 7;
-        continue;
-      }
-
-      if (/^(SOLICITO:|EXPONGO:)/.test(l)) { addTexto(l, { bold: true, marginTop: 4 }); continue; }
-      if (/^Al amparo de/.test(l)) { addTexto(l, { italic: true, color: [80, 80, 80], indent: 5 }); continue; }
-      if (/^[—–]/.test(l)) { addTexto(l, { indent: 8 }); continue; }
-      if (/^(Muy señores|Atentamente)/.test(l)) { addTexto(l, { marginTop: 4 }); continue; }
-      addTexto(l);
-    }
-
-    y += 15;
-    if (y > 250) { doc.addPage(); y = 22; }
-    doc.setDrawColor(80, 80, 80);
-    doc.setLineWidth(0.3);
-    doc.line(margenIzq, y, margenIzq + 50, y);
-    y += 6;
-    addTexto(datosUsuario.nombre, { bold: true });
-    addTexto(datosUsuario.documento);
-
-    const totalPaginas = doc.getNumberOfPages();
-    for (let i = 1; i <= totalPaginas; i++) {
-      doc.setPage(i);
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(180, 180, 180);
-      doc.text(
-        'ReclamaYa · reclamaya.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaYa no presta servicios de asesoría jurídica.',
-        105, 287, { align: 'center', maxWidth: anchoUtil }
-      );
-    }
-
-    const pdfBase64 = doc.output('datauristring').split(',')[1];
-    const nombreArchivo = `Escrito-Reclamacion-${nombreEmpresa.replace(/\s+/g, '-')}.pdf`;
-    doc.save(nombreArchivo);
-
-    btnPagar.textContent = '⏳ Enviando a tu email...';
-
-    const respuesta = await fetch('/api/pdf', {
+    const respuesta = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pdfBase64, nombreArchivo, datos: datosUsuario, nombreEmpresa })
+      body: JSON.stringify({ opcion, email, empresa })
     });
 
-    if (!respuesta.ok) throw new Error('Error al enviar email');
+    if (!respuesta.ok) throw new Error('Error al crear sesión de pago');
 
     const datos = await respuesta.json();
 
-    if (datos.ok) {
-      btnPagar.textContent = '✓ PDF descargado y enviado a tu email';
-      btnPagar.style.background = '#2d6a4f';
-      btnPagar.style.color = '#fff';
-      btnPagar.disabled = true;
-
-      const avisoEnvio = document.createElement('div');
-      avisoEnvio.style.cssText = `
-        background: #f6faf8;
-        border: 1px solid #c3ddd0;
-        border-radius: 6px;
-        padding: 14px 16px;
-        margin-top: 12px;
-        font-size: 13px;
-        color: #1a1a2e;
-        line-height: 1.7;
-      `;
-      avisoEnvio.innerHTML = `
-        <p style="font-weight:700; margin-bottom:4px;">✓ Escrito generado y enviado correctamente</p>
-        <p>El PDF se ha descargado en tu dispositivo y también lo hemos enviado a <strong>${datosUsuario.email}</strong>.</p>
-        <p style="margin-top:6px; font-size:12px; color:#666;">Si no lo ves en tu email en unos minutos, revisa la carpeta de spam.</p>
-      `;
-      btnPagar.parentNode.insertBefore(avisoEnvio, btnPagar.nextSibling);
+    if (datos.url) {
+      window._cartaGuardada = window._cartaCompleta;
+      window._datosGuardados = window._datosUsuario;
+      window.location.href = datos.url;
+    } else {
+      throw new Error('No se recibió URL de pago');
     }
 
   } catch (error) {
@@ -317,16 +195,16 @@ form.addEventListener('submit', async (e) => {
       }
 
       window._cartaCompleta = datos.carta;
-      window._destinatarioReal = datos.destinatario || null;
       window._datosUsuario = datosUsuario;
+      window._destinatarioReal = datos.destinatario || null;
 
       const opcion = window._opcionSeleccionada || 'completa';
       const btnPagar = document.getElementById('btn-pagar');
       if (btnPagar) {
         btnPagar.textContent = opcion === 'completa'
-          ? '⬇️ Descargar escrito + guía en PDF — 7,99€'
-          : '⬇️ Descargar escrito en PDF — 3,99€';
-        btnPagar.onclick = () => descargarPDF(window._cartaCompleta, window._datosUsuario, empresa);
+          ? '⬇️ Pagar 7,99€ y recibir escrito + guía'
+          : '⬇️ Pagar 3,99€ y recibir escrito';
+        btnPagar.onclick = () => iniciarPago();
       }
 
       resultado.scrollIntoView({ behavior: 'smooth' });
@@ -363,6 +241,7 @@ btnNueva.addEventListener('click', () => {
   document.querySelector('.form-card').style.display = 'block';
   window._cartaCompleta = null;
   window._datosUsuario = null;
+  window._destinatarioReal = null;
   const fuentesDiv = document.querySelector('.fuentes-legales');
   if (fuentesDiv) fuentesDiv.remove();
   const avisoDiv = document.querySelector('[style*="f6faf8"]');
