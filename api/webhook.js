@@ -17,9 +17,19 @@ async function buffer(readable) {
   return Buffer.concat(chunks);
 }
 
+async function obtenerDeRedis(key) {
+  const url = process.env.STORAGE_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.STORAGE_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  const resp = await fetch(`${url}/get/${key}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  return data.result;
+}
+
 function generarPDFBase64(carta, datos) {
   const { nombre, documento, direccion, cp, ciudad, telefono, email, empresa } = datos;
-
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
   const margenIzq = 25;
@@ -141,37 +151,34 @@ export default async function handler(req, res) {
     const session = event.data.object;
     const email = session.customer_email;
     const empresa = session.metadata?.empresa || 'la empresa';
-    const opcion = session.metadata?.opcion || 'basica';
-    const nombre = session.metadata?.nombre || '';
-    const documento = session.metadata?.documento || '';
-    const direccion = session.metadata?.direccion || '';
-    const cp = session.metadata?.cp || '';
-    const ciudad = session.metadata?.ciudad || '';
-    const telefono = session.metadata?.telefono || '';
     const tempId = session.metadata?.tempId || '';
-let carta = '';
-let datosCompletos = {};
 
-if (tempId) {
-  try {
-    const { kv } = await import('@vercel/kv');
-    const datos = await kv.get(tempId);
-    if (datos) {
-      const parsed = JSON.parse(datos);
-      carta = parsed.carta || '';
-      datosCompletos = parsed.datosUsuario || {};
+    let carta = '';
+    let nombre = '';
+    let documento = '';
+    let direccion = '';
+    let cp = '';
+    let ciudad = '';
+    let telefono = '';
+
+    if (tempId) {
+      try {
+        const raw = await obtenerDeRedis(tempId);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          carta = parsed.carta || '';
+          const d = parsed.datosUsuario || {};
+          nombre = d.nombre || '';
+          documento = d.documento || '';
+          direccion = d.direccion || '';
+          cp = d.cp || '';
+          ciudad = d.ciudad || '';
+          telefono = d.telefono || '';
+        }
+      } catch (kvError) {
+        console.error('Error recuperando de Redis:', kvError);
+      }
     }
-  } catch (kvError) {
-    console.error('Error recuperando de KV:', kvError);
-  }
-}
-
-const nombre = datosCompletos.nombre || session.metadata?.nombre || '';
-const documento = datosCompletos.documento || session.metadata?.documento || '';
-const direccion = datosCompletos.direccion || session.metadata?.direccion || '';
-const cp = datosCompletos.cp || session.metadata?.cp || '';
-const ciudad = datosCompletos.ciudad || session.metadata?.ciudad || '';
-const telefono = datosCompletos.telefono || session.metadata?.telefono || '';
 
     const fecha = new Date().toLocaleDateString('es-ES', {
       day: 'numeric', month: 'long', year: 'numeric'
@@ -179,7 +186,7 @@ const telefono = datosCompletos.telefono || session.metadata?.telefono || '';
 
     try {
       let pdfBase64 = null;
-      let nombreArchivo = `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`;
+      const nombreArchivo = `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`;
 
       if (carta && nombre) {
         const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa };
@@ -195,7 +202,7 @@ const telefono = datosCompletos.telefono || session.metadata?.telefono || '';
     <span style="font-size:22px; font-weight:900; color:#fff;">Reclama<span style="color:#5DCAA5;">Ya</span></span>
   </div>
   <div style="padding:32px;">
-    <h2 style="font-size:18px; color:#1a1a2e; margin-bottom:12px;">Tu escrito está listo, ${nombre.split(' ')[0]}</h2>
+    <h2 style="font-size:18px; color:#1a1a2e; margin-bottom:12px;">Tu escrito está listo, ${nombre.split(' ')[0] || ''}</h2>
     <p style="font-size:14px; color:#444; line-height:1.7; margin-bottom:16px;">
       Hemos generado tu escrito de reclamación formal contra <strong>${empresa}</strong>. Lo encontrarás adjunto a este email en formato PDF.
     </p>
@@ -217,7 +224,6 @@ const telefono = datosCompletos.telefono || session.metadata?.telefono || '';
   </div>
   <div style="background:#f8f8f8; padding:16px 32px; text-align:center;">
     <p style="font-size:11px; color:#aaa; margin:2px 0;">ReclamaYa · reclamaya.es</p>
-    <p style="font-size:11px; color:#aaa; margin:2px 0;">© 2026 ReclamaYa. Todos los derechos reservados.</p>
   </div>
 </div>
 </body>
