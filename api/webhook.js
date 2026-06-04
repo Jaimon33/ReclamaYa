@@ -148,9 +148,30 @@ export default async function handler(req, res) {
     const cp = session.metadata?.cp || '';
     const ciudad = session.metadata?.ciudad || '';
     const telefono = session.metadata?.telefono || '';
-    const cartaParte1 = session.metadata?.carta || '';
-    const cartaParte2 = session.metadata?.cartaExtra || '';
-    const carta = cartaParte1 + cartaParte2;
+    const tempId = session.metadata?.tempId || '';
+let carta = '';
+let datosCompletos = {};
+
+if (tempId) {
+  try {
+    const { kv } = await import('@vercel/kv');
+    const datos = await kv.get(tempId);
+    if (datos) {
+      const parsed = JSON.parse(datos);
+      carta = parsed.carta || '';
+      datosCompletos = parsed.datosUsuario || {};
+    }
+  } catch (kvError) {
+    console.error('Error recuperando de KV:', kvError);
+  }
+}
+
+const nombre = datosCompletos.nombre || session.metadata?.nombre || '';
+const documento = datosCompletos.documento || session.metadata?.documento || '';
+const direccion = datosCompletos.direccion || session.metadata?.direccion || '';
+const cp = datosCompletos.cp || session.metadata?.cp || '';
+const ciudad = datosCompletos.ciudad || session.metadata?.ciudad || '';
+const telefono = datosCompletos.telefono || session.metadata?.telefono || '';
 
     const fecha = new Date().toLocaleDateString('es-ES', {
       day: 'numeric', month: 'long', year: 'numeric'
