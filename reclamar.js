@@ -81,11 +81,13 @@ async function iniciarPago() {
     const opcion = window._opcionSeleccionada || 'basica';
     const email = window._datosUsuario?.email || '';
     const empresa = window._datosUsuario?.empresa || '';
+    const carta = window._cartaCompleta || '';
+    const datosUsuario = window._datosUsuario || {};
 
     const respuesta = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ opcion, email, empresa })
+      body: JSON.stringify({ opcion, email, empresa, carta, datosUsuario })
     });
 
     if (!respuesta.ok) throw new Error('Error al crear sesión de pago');
@@ -93,8 +95,6 @@ async function iniciarPago() {
     const datos = await respuesta.json();
 
     if (datos.url) {
-      window._cartaGuardada = window._cartaCompleta;
-      window._datosGuardados = window._datosUsuario;
       window.location.href = datos.url;
     } else {
       throw new Error('No se recibió URL de pago');
