@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { kv } from '@vercel/kv';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -22,6 +23,9 @@ export default async function handler(req, res) {
     : 'http://localhost:3000';
 
   try {
+    const tempId = `carta_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    await kv.set(tempId, JSON.stringify({ carta, datosUsuario }), { ex: 3600 });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
@@ -30,14 +34,7 @@ export default async function handler(req, res) {
       metadata: {
         empresa: empresa || '',
         opcion: opcion,
-        carta: carta ? carta.substring(0, 4000) : '',
-        cartaExtra: carta ? carta.substring(4000, 8000) : '',
-        nombre: datosUsuario?.nombre || '',
-        documento: datosUsuario?.documento || '',
-        direccion: datosUsuario?.direccion || '',
-        cp: datosUsuario?.cp || '',
-        ciudad: datosUsuario?.ciudad || '',
-        telefono: datosUsuario?.telefono || '',
+        tempId: tempId
       },
       success_url: `${baseUrl}/exito.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/reclamar.html`
