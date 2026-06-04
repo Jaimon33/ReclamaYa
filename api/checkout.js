@@ -1,7 +1,20 @@
 import Stripe from 'stripe';
-import { kv } from '@vercel/kv';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+async function guardarEnRedis(key, valor) {
+  const url = process.env.STORAGE_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.STORAGE_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  await fetch(`${url}/set/${key}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ value: valor, ex: 3600 })
+  });
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,7 +37,7 @@ export default async function handler(req, res) {
 
   try {
     const tempId = `carta_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    await kv.set(tempId, JSON.stringify({ carta, datosUsuario }), { ex: 3600 });
+    await guardarEnRedis(tempId, JSON.stringify({ carta, datosUsuario }));
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
