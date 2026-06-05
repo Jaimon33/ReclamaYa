@@ -18,8 +18,8 @@ async function buffer(readable) {
 }
 
 async function obtenerDeRedis(key) {
-  const url = process.env.STORAGE_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.STORAGE_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
 
   const resp = await fetch(`${url}/get/${key}`, {
     headers: { Authorization: `Bearer ${token}` }
