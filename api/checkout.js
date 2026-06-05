@@ -3,8 +3,8 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 async function guardarEnRedis(key, valor) {
-  const url = process.env.STORAGE_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.STORAGE_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
 
   await fetch(`${url}/set/${key}`, {
     method: 'POST',
