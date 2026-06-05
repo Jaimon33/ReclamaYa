@@ -6,14 +6,14 @@ async function guardarEnRedis(key, valor) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
 
-  await fetch(`${url}/set/${key}`, {
-    method: 'POST',
+  const response = await fetch(`${url}/set/${key}/${encodeURIComponent(valor)}?EX=3600`, {
+    method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ value: valor, ex: 3600 })
+      Authorization: `Bearer ${token}`
+    }
   });
+  const data = await response.json();
+  console.log('Redis set response:', JSON.stringify(data));
 }
 
 export default async function handler(req, res) {
