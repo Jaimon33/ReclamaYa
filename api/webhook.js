@@ -22,9 +22,11 @@ async function obtenerDeRedis(key) {
   const token = process.env.KV_REST_API_TOKEN;
 
   const resp = await fetch(`${url}/get/${key}`, {
+    method: 'GET',
     headers: { Authorization: `Bearer ${token}` }
   });
   const data = await resp.json();
+  console.log('Redis get response:', JSON.stringify(data));
   return data.result;
 }
 
