@@ -1,5 +1,5 @@
 .reclamar-page {
-  background: #f8f9fb;
+  background: #FAFAF8;
 }
 
 .reclamar-main {
@@ -21,7 +21,7 @@
 .reclamar-header h1 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #0D1B2A;
   margin-bottom: 0.4rem;
   letter-spacing: -0.3px;
 }
@@ -33,7 +33,7 @@
 
 .nav-mobile-btn-link {
   display: none;
-  color: #555;
+  color: rgba(255,255,255,0.7);
   font-size: 13px;
   font-weight: 500;
 }
@@ -41,9 +41,9 @@
 .carta-preview-wrapper {
   position: relative;
   margin-bottom: 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #E8E4DC;
 }
 
 #carta-visible {
@@ -85,7 +85,7 @@
 .blur-titulo {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #0D1B2A;
   margin-bottom: 0.4rem;
 }
 
@@ -96,32 +96,16 @@
   margin-bottom: 1.25rem;
 }
 
-.btn-pagar {
-  display: block;
-  width: 100%;
-  padding: 0.875rem;
-  background: #1a1a2e;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  margin-bottom: 0.75rem;
-}
-
-.btn-pagar:hover { opacity: 0.85; }
-
 .blur-garantia {
   font-size: 11px;
   color: #999;
+  margin-top: 0.75rem;
 }
 
 .descargo-legal {
-  background: #fffbf0;
+  background: #fdf9f0;
   border: 1px solid #e8d88a;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.875rem 1.125rem;
   margin-bottom: 1rem;
 }
@@ -134,22 +118,22 @@
 }
 
 .fuentes-legales {
-  background: #f6faf8;
-  border: 1px solid #c3ddd0;
-  border-radius: 6px;
+  background: #fdf9f0;
+  border: 1px solid #C9A84C;
+  border-radius: 8px;
   padding: 0.875rem 1.125rem;
   margin-bottom: 1rem;
 }
 
 .fuentes-legales p {
   font-size: 12px;
-  color: #2d6a4f;
+  color: #8a6a1a;
   margin: 0 0 6px;
   font-weight: 700;
 }
 
 .fuentes-legales ul { margin: 0; padding-left: 1.25rem; }
-.fuentes-legales li { font-size: 11px; color: #555; line-height: 1.7; }
+.fuentes-legales li { font-size: 11px; color: #666; line-height: 1.7; }
 
 #btn-nueva {
   width: 100%;
@@ -163,107 +147,6 @@
 }
 
 #btn-nueva:hover { color: #666; }
-
-.fuentes-loading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f6faf8;
-  border: 1px solid #c3ddd0;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  font-size: 12px;
-  color: #2d6a4f;
-}
-
-.fuentes-loading-dot {
-  width: 7px;
-  height: 7px;
-  background: #2d6a4f;
-  border-radius: 50%;
-  animation: pulse 1s infinite;
-  flex-shrink: 0;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.opciones-precio {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.opcion-precio {
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.25rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  background: #fafafa;
-}
-
-.opcion-precio:hover {
-  border-color: #1a1a2e;
-  background: #fff;
-}
-
-.opcion-precio.seleccionada {
-  border-color: #1a1a2e;
-  background: #fff;
-  box-shadow: 0 0 0 2px #1a1a2e;
-}
-
-.opcion-recomendada {
-  border-color: #2d6a4f;
-  background: #f6faf8;
-}
-
-.opcion-recomendada.seleccionada {
-  border-color: #2d6a4f;
-  box-shadow: 0 0 0 2px #2d6a4f;
-}
-
-.opcion-badge {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #2d6a4f;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 10px;
-  white-space: nowrap;
-}
-
-.opcion-precio-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.opcion-precio-nombre {
-  font-size: 12px;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-
-.opcion-precio-precio {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-
-.opcion-precio-lista { list-style: none; padding: 0; margin: 0; }
-.opcion-precio-lista li { font-size: 11px; color: #555; line-height: 1.8; }
 
 @media (max-width: 768px) {
   .nav-mobile-btn-link { display: block; }
