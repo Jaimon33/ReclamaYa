@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Genera tu reclamación — ReclamaYa</title>
-  <meta name="description" content="Genera tu escrito de reclamación profesional en segundos con respaldo legal verificado.">
+  <title>Genera tu escrito — ReclamaIA</title>
+  <meta name="description" content="Genera tu escrito de reclamación profesional con legislación verificada en el BOE y EUR-Lex.">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="reclamar.css">
 </head>
@@ -13,8 +13,7 @@
   <nav id="navbar">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
-        <div class="nav-logo-icon">⚡</div>
-        <span>ReclamaYa</span>
+        <img src="logo-reclamaia.png" alt="ReclamaIA" class="nav-logo-img">
       </a>
       <div class="nav-links">
         <a href="/">← Volver al inicio</a>
@@ -28,7 +27,7 @@
 
       <div class="reclamar-header">
         <h1>Genera tu escrito de reclamación</h1>
-        <p>Describe tu caso y obtén tu escrito de reclamación con legislación verificada.</p>
+        <p>Describe tu caso y obtén tu escrito con legislación verificada en el BOE y EUR-Lex.</p>
       </div>
 
       <div class="form-card">
@@ -187,6 +186,20 @@
               <label for="descripcion">Describe brevemente qué ocurrió</label>
               <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
             </div>
+            <div class="campo">
+              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa?</label>
+              <select id="reclamacion-previa" onchange="toggleReclamacionPrevia(this.value)">
+                <option value="">Selecciona...</option>
+                <option value="no">No, es mi primera reclamación</option>
+                <option value="si-sin-respuesta">Sí, pero no he obtenido respuesta</option>
+                <option value="si-respuesta-negativa">Sí, y la respuesta fue negativa</option>
+                <option value="si-respuesta-insatisfactoria">Sí, y la respuesta fue insatisfactoria</option>
+              </select>
+            </div>
+            <div class="campo" id="campo-respuesta-previa" style="display:none;">
+              <label for="respuesta-previa">Describe brevemente la respuesta que recibiste</label>
+              <textarea id="respuesta-previa" rows="2" placeholder="Ej: Me dijeron que no era su responsabilidad..."></textarea>
+            </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
               <button type="button" class="btn-siguiente" onclick="irPaso(3)">Siguiente →</button>
@@ -195,11 +208,12 @@
 
           <div class="form-step" id="step-3" style="display:none;">
             <div class="campo">
-              <label>Adjunta documentos relacionados (opcional)</label>
+              <label>Adjunta documentos relacionados (opcional pero recomendado)</label>
+              <p style="font-size:12px; color:#888; margin-bottom:8px; margin-top:-4px;">Cuantos más documentos adjuntes, más preciso y contundente será tu escrito.</p>
               <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
                 <span class="upload-icon">📎</span>
                 <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
-                <p class="upload-sub">JPG, PNG, PDF, Word, Excel — Máx. 10MB por archivo</p>
+                <p class="upload-sub">Notificaciones, facturas, contratos, capturas — JPG, PNG, PDF, Word, Excel</p>
               </div>
               <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
               <div id="lista-archivos"></div>
@@ -240,7 +254,7 @@
             </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(3)">← Atrás</button>
-              <button type="submit" id="btn-generar">✨ Generar mi escrito</button>
+              <button type="submit" id="btn-generar">Generar mi escrito →</button>
             </div>
           </div>
 
@@ -258,7 +272,7 @@
               <div class="form-icon">✅</div>
               <div>
                 <p class="form-title">Tu escrito está listo</p>
-                <p class="form-subtitle">Aquí tienes una vista previa</p>
+                <p class="form-subtitle">Vista previa — el documento completo llegará a tu email</p>
               </div>
             </div>
             <div class="carta-preview-wrapper">
@@ -267,14 +281,14 @@
                 <div class="blur-content">
                   <div class="blur-icon">🔒</div>
                   <p class="blur-titulo">Tu escrito completo está listo</p>
-                  <p class="blur-sub">Descarga el PDF completo con todas las referencias legales verificadas y listo para enviar.</p>
+                  <p class="blur-sub">Descarga el PDF con todas las referencias legales verificadas y listo para presentar.</p>
                   <button id="btn-pagar" class="btn-pagar">⬇️ Descargar escrito completo en PDF — 3,99€</button>
-                  <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Descarga inmediata &nbsp;·&nbsp; ✓ Sin suscripción</p>
+                  <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Envío inmediato por email &nbsp;·&nbsp; ✓ Sin suscripción</p>
                 </div>
               </div>
             </div>
             <div class="descargo-legal">
-              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamaYa es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
+              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamaIA es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
             </div>
             <button id="btn-nueva">Generar otro escrito</button>
           </div>
@@ -287,21 +301,19 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-logo">
-        <div class="nav-logo-icon">⚡</div>
-        <span>ReclamaYa</span>
+        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:28px; width:auto; filter:brightness(0) invert(1);">
       </div>
-      <p class="footer-sub">Defiende tus derechos. En segundos.</p>
+      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
       <div class="footer-links">
         <a href="/legal.html">Aviso Legal</a>
         <a href="/privacidad.html">Política de Privacidad</a>
-        <a href="mailto:hola@reclamaya.es">Contacto</a>
+        <a href="mailto:hola@reclamaia.es">Contacto</a>
       </div>
-      <p class="footer-copy">© 2026 ReclamaYa. Todos los derechos reservados.<br>ReclamaYa no presta servicios de asesoría jurídica. Las cartas generadas son documentos de apoyo.</p>
+      <p class="footer-copy">© 2026 ReclamaIA. Todos los derechos reservados.<br>ReclamaIA no presta servicios de asesoría jurídica. Los escritos generados son documentos de apoyo.</p>
     </div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="reclamar.js"></script>
@@ -333,6 +345,15 @@
       }
     }
 
+    function toggleReclamacionPrevia(valor) {
+      const campo = document.getElementById('campo-respuesta-previa');
+      if (valor && valor !== 'no' && valor !== '') {
+        campo.style.display = 'block';
+      } else {
+        campo.style.display = 'none';
+      }
+    }
+
     function seleccionarOpcion(tipo) {
       document.getElementById('opcion-basica').classList.remove('seleccionada');
       document.getElementById('opcion-completa').classList.remove('seleccionada');
@@ -349,7 +370,7 @@
           const el = document.getElementById(id);
           if (el && el.required && !el.value.trim()) {
             el.focus();
-            el.style.borderColor = '#e24b4a';
+            el.style.borderColor = '#c0392b';
             setTimeout(() => { el.style.borderColor = ''; }, 2000);
             return;
           }
@@ -361,7 +382,7 @@
           const el = document.getElementById(id);
           if (el && el.required && !el.value.trim()) {
             el.focus();
-            el.style.borderColor = '#e24b4a';
+            el.style.borderColor = '#c0392b';
             setTimeout(() => { el.style.borderColor = ''; }, 2000);
             irPaso(2);
             return;
@@ -390,7 +411,7 @@
       const area = document.getElementById('upload-area');
       lista.innerHTML = '';
       if (files.length === 0) return;
-      area.style.borderColor = '#1a1a2e';
+      area.style.borderColor = '#0D1B2A';
       Array.from(files).forEach((file) => {
         const item = document.createElement('div');
         item.className = 'archivo-item';
@@ -415,7 +436,7 @@
     const uploadArea = document.getElementById('upload-area');
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
-      uploadArea.style.borderColor = '#1a1a2e';
+      uploadArea.style.borderColor = '#0D1B2A';
     });
     uploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
