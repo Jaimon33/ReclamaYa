@@ -41,8 +41,7 @@ function generarHTMLEscrito(carta, datos) {
 
   const cuerpoHTML = carta.split('\n').map(linea => {
     const l = escaparHTML(linea.trimEnd()).replace(/\*\*/g, '');
-    if (!l.trim()) return '<p style="margin:5px 0">&nbsp;</p>';
-
+    if (!l.trim()) return '<p style="margin:6px 0">&nbsp;</p>';
     const match = linea.trimEnd().replace(/\*\*/g, '').match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
     if (match) {
       return `<p style="margin:10px 0 4px;"><strong>${escaparHTML(match[1] + match[2])}</strong> ${escaparHTML(match[3])}</p>`;
@@ -56,8 +55,7 @@ function generarHTMLEscrito(carta, datos) {
 
   return `<!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
+<head><meta charset="UTF-8">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:40px 50px 60px; max-width:800px; margin:0 auto; }
@@ -95,8 +93,66 @@ function generarHTMLEscrito(carta, datos) {
   <p>${escaparHTML(documento)}</p>
 </div>
 <div class="pie">
-  <p>ReclamaYa · reclamaya.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaYa no presta servicios de asesoría jurídica.</p>
+  <p>ReclamaIA · reclamaia.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaIA no presta servicios de asesoría jurídica.</p>
 </div>
+</body>
+</html>`;
+}
+
+function generarHTMLGuia(guiaData, datos) {
+  const { nombre, empresa, categoriaEmpresa, ciudad } = datos;
+  const { guia, fecha } = guiaData;
+
+  const pasosHTML = guia.pasos.map(paso => `
+    <div style="margin-bottom:24px; padding:20px; background:#fafaf8; border-left:3px solid #C9A84C; border-radius:0 8px 8px 0;">
+      <h3 style="font-family:Arial,sans-serif; font-size:11pt; font-weight:700; color:#0D1B2A; margin:0 0 12px;">${escaparHTML(paso.titulo)}</h3>
+      ${paso.contenido.map(linea => `<p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#333; line-height:1.7; margin:4px 0;">${linea.startsWith('—') ? `<span style="margin-left:16px; display:block;">${escaparHTML(linea)}</span>` : escaparHTML(linea)}</p>`).join('')}
+    </div>
+  `).join('');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:40px 50px 60px; max-width:800px; margin:0 auto; }
+  @media print { body { padding:0; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
+</style>
+</head>
+<body>
+
+<div style="border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
+  <h1 style="font-family:Arial,sans-serif; font-size:18pt; font-weight:700; color:#0D1B2A; margin:0 0 4px;">GUÍA DE PRESENTACIÓN</h1>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#C9A84C; font-weight:600; margin:0;">Escrito de reclamación contra ${escaparHTML(empresa)} — ${escaparHTML(categoriaEmpresa)}</p>
+</div>
+
+<div style="background:#f0f4ff; border:1px solid #b0c4f0; border-radius:8px; padding:14px 16px; margin-bottom:24px;">
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Preparado para:</strong> ${escaparHTML(nombre)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Empresa reclamada:</strong> ${escaparHTML(empresa)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Categoría:</strong> ${escaparHTML(categoriaEmpresa)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0;"><strong>Organismo regulador:</strong> ${escaparHTML(guia.organismo)}</p>
+</div>
+
+<div style="background:#fdf9f0; border:1px solid #C9A84C; border-radius:8px; padding:14px 16px; margin-bottom:24px;">
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#8a6a1a; font-weight:700; margin:0 0 6px;">⚠️ LEE ESTO ANTES DE EMPEZAR</p>
+  <p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#555; line-height:1.6; margin:0;">Esta guía te explica exactamente qué hacer después de enviar tu escrito de reclamación a ${escaparHTML(empresa)}. Sigue los pasos en orden. No saltes al siguiente paso sin haber completado el anterior.</p>
+</div>
+
+${pasosHTML}
+
+${guia.enlace ? `
+<div style="margin-top:24px; padding:16px; background:#f0f4ff; border-radius:8px; border:1px solid #b0c4f0;">
+  <p style="font-family:Arial,sans-serif; font-size:10pt; font-weight:700; color:#0D1B2A; margin:0 0 6px;">🔗 Enlace oficial del organismo regulador</p>
+  <p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#1a3a6a; margin:0;">${escaparHTML(guia.organismo)}: <strong>${escaparHTML(guia.enlace)}</strong></p>
+  ${guia.telefono ? `<p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#1a3a6a; margin:4px 0 0;">Teléfono: <strong>${escaparHTML(guia.telefono)}</strong></p>` : ''}
+</div>
+` : ''}
+
+<div style="margin-top:40px; padding-top:12px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6;">
+  <p>ReclamaIA · reclamaia.es | Esta guía es orientativa. ReclamaIA no presta servicios de asesoría jurídica.</p>
+  <p>Los plazos y procedimientos están verificados a fecha ${escaparHTML(fecha)}. Se recomienda verificar posibles actualizaciones en las webs oficiales indicadas.</p>
+</div>
+
 </body>
 </html>`;
 }
@@ -121,6 +177,7 @@ export default async function handler(req, res) {
     const session = event.data.object;
     const email = session.customer_email;
     const empresa = session.metadata?.empresa || 'la empresa';
+    const opcion = session.metadata?.opcion || 'basica';
     const tempId = session.metadata?.tempId || '';
 
     let carta = '';
@@ -130,6 +187,7 @@ export default async function handler(req, res) {
     let cp = '';
     let ciudad = '';
     let telefono = '';
+    let categoriaEmpresa = '';
 
     if (tempId) {
       try {
@@ -144,6 +202,7 @@ export default async function handler(req, res) {
           cp = d.cp || '';
           ciudad = d.ciudad || '';
           telefono = d.telefono || '';
+          categoriaEmpresa = d.categoriaEmpresa || '';
         }
       } catch (kvError) {
         console.error('Error recuperando de Redis:', kvError);
@@ -155,32 +214,82 @@ export default async function handler(req, res) {
     });
 
     try {
-      let pdfBase64 = null;
-      const nombreArchivo = `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`;
+      const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa };
 
-      if (carta && nombre) {
-        const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa };
-        const htmlEscrito = generarHTMLEscrito(carta, datos);
+      const htmlEscrito = generarHTMLEscrito(carta, datos);
+      const pdfEscritoResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          source: htmlEscrito,
+          format: 'A4',
+          margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
+        })
+      });
 
-        const pdfResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            source: htmlEscrito,
-            format: 'A4',
-            margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
-          })
-        });
+      let pdfEscritoBase64 = null;
+      if (pdfEscritoResponse.ok) {
+        const pdfBuffer = await pdfEscritoResponse.arrayBuffer();
+        pdfEscritoBase64 = Buffer.from(pdfBuffer).toString('base64');
+      }
 
-        if (pdfResponse.ok) {
-          const pdfBuffer = await pdfResponse.arrayBuffer();
-          pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
-        } else {
-          console.error('PDFShift error:', await pdfResponse.text());
+      let pdfGuiaBase64 = null;
+      if (opcion === 'completa' && categoriaEmpresa) {
+        try {
+          const baseUrl = process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : 'https://reclama-ya.vercel.app';
+
+          const guiaResponse = await fetch(`${baseUrl}/api/guia`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ categoria: categoriaEmpresa, empresa, ciudad, nombre, fecha })
+          });
+
+          if (guiaResponse.ok) {
+            const guiaData = await guiaResponse.json();
+            const htmlGuia = generarHTMLGuia(guiaData, datos);
+
+            const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                source: htmlGuia,
+                format: 'A4',
+                margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
+              })
+            });
+
+            if (pdfGuiaResponse.ok) {
+              const guiaBuffer = await pdfGuiaResponse.arrayBuffer();
+              pdfGuiaBase64 = Buffer.from(guiaBuffer).toString('base64');
+            }
+          }
+        } catch (guiaError) {
+          console.error('Error generando guía:', guiaError);
         }
+      }
+
+      const adjuntos = [];
+      if (pdfEscritoBase64) {
+        adjuntos.push({
+          filename: `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`,
+          content: pdfEscritoBase64,
+          type: 'application/pdf'
+        });
+      }
+      if (pdfGuiaBase64) {
+        adjuntos.push({
+          filename: `Guia-Presentacion-${empresa.replace(/\s+/g, '-')}.pdf`,
+          content: pdfGuiaBase64,
+          type: 'application/pdf'
+        });
       }
 
       const htmlEmail = `<!DOCTYPE html>
@@ -188,54 +297,51 @@ export default async function handler(req, res) {
 <head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;background:#f0f2f7;margin:0;padding:0;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;">
-  <div style="background:#1a1a2e;padding:28px 32px;">
-    <span style="font-size:22px;font-weight:900;color:#fff;">Reclama<span style="color:#5DCAA5;">Ya</span></span>
+  <div style="background:#0D1B2A;padding:28px 32px;">
+    <img src="https://reclama-ya.vercel.app/logo-reclamaia.png" alt="ReclamaIA" style="height:36px;width:auto;">
   </div>
   <div style="padding:32px;">
-    <h2 style="font-size:18px;color:#1a1a2e;margin-bottom:12px;">Tu escrito está listo${nombre ? ', ' + nombre.split(' ')[0] : ''}</h2>
+    <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">Tu ${opcion === 'completa' ? 'escrito y guía están listos' : 'escrito está listo'}, ${escaparHTML(nombre.split(' ')[0] || '')}</h2>
     <p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:16px;">
-      Hemos generado tu escrito de reclamación formal contra <strong>${empresa}</strong>. Lo encontrarás adjunto a este email en formato PDF.
+      Hemos generado tu escrito de reclamación formal contra <strong>${escaparHTML(empresa)}</strong> con legislación verificada en el BOE y EUR-Lex.
+      ${opcion === 'completa' ? 'También encontrarás adjunta la guía paso a paso para presentar tu reclamación correctamente.' : ''}
     </p>
-    <div style="background:#f6faf8;border:1px solid #c3ddd0;border-radius:8px;padding:12px 16px;margin:20px 0;">
-      <p style="font-size:13px;color:#2d6a4f;margin:3px 0;">✓ <strong>Fecha:</strong> ${fecha}</p>
-      <p style="font-size:13px;color:#2d6a4f;margin:3px 0;">✓ <strong>Destinatario:</strong> ${empresa}</p>
-      <p style="font-size:13px;color:#2d6a4f;margin:3px 0;">✓ <strong>Legislación verificada:</strong> BOE · EUR-Lex</p>
+    <div style="background:#fdf9f0;border:1px solid #C9A84C;border-radius:8px;padding:12px 16px;margin:20px 0;">
+      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Fecha:</strong> ${escaparHTML(fecha)}</p>
+      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Destinatario:</strong> ${escaparHTML(empresa)}</p>
+      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Legislación verificada:</strong> BOE · EUR-Lex</p>
+      ${opcion === 'completa' ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Guía de presentación:</strong> incluida en PDF adjunto</p>` : ''}
     </div>
     <div style="background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;">
-      <p style="font-size:13px;color:#1a1a2e;font-weight:bold;margin-bottom:8px;">¿Qué hago ahora?</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF adjunto</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">2. Envíalo a ${empresa} por email con acuse de recibo o correo certificado</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">3. Guarda el justificante de envío</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">4. Si no responden en 15 días hábiles, acude al organismo regulador</p>
+      <p style="font-size:13px;color:#0D1B2A;font-weight:bold;margin-bottom:8px;">¿Qué hago ahora?</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF del escrito adjunto</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">2. Envíalo a ${escaparHTML(empresa)} siguiendo las instrucciones${opcion === 'completa' ? ' de la guía adjunta' : ''}</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">3. Guarda siempre el justificante de envío</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">4. Si no responden en 15 días hábiles, sigue los pasos indicados${opcion === 'completa' ? ' en la guía' : ''}</p>
     </div>
     <p style="font-size:11px;color:#999;line-height:1.6;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
-      ReclamaYa es una herramienta de asistencia en la redacción de escritos. No presta servicios de asesoría jurídica.
+      ReclamaIA es una herramienta de asistencia en la redacción de escritos. No presta servicios de asesoría jurídica.
     </p>
   </div>
   <div style="background:#f8f8f8;padding:16px 32px;text-align:center;">
-    <p style="font-size:11px;color:#aaa;margin:2px 0;">ReclamaYa · reclamaya.es</p>
+    <p style="font-size:11px;color:#aaa;margin:2px 0;">ReclamaIA · reclamaia.es</p>
+    <p style="font-size:11px;color:#aaa;margin:2px 0;">© 2026 ReclamaIA. Todos los derechos reservados.</p>
   </div>
 </div>
 </body>
 </html>`;
 
-      const emailPayload = {
-        from: 'ReclamaYa <onboarding@resend.dev>',
+      await resend.emails.send({
+        from: 'ReclamaIA <onboarding@resend.dev>',
         to: email,
-        subject: `Tu escrito de reclamación contra ${empresa}`,
-        html: htmlEmail
-      };
+        subject: opcion === 'completa'
+          ? `Tu escrito + guía de presentación contra ${empresa}`
+          : `Tu escrito de reclamación contra ${empresa}`,
+        html: htmlEmail,
+        attachments: adjuntos
+      });
 
-      if (pdfBase64) {
-        emailPayload.attachments = [{
-          filename: nombreArchivo,
-          content: pdfBase64,
-          type: 'application/pdf'
-        }];
-      }
-
-      await resend.emails.send(emailPayload);
-      console.log('Email enviado correctamente a:', email);
+      console.log('Email enviado correctamente a:', email, '| Opción:', opcion);
 
     } catch (emailError) {
       console.error('Error enviando email:', emailError);
