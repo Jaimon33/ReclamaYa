@@ -3,63 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aviso Legal — ReclamaYa</title>
+  <title>Aviso Legal — ReclamaIA</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .legal-container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .legal-header { margin-bottom: 2rem; }
-    .legal-header h1 { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
-    .legal-header p { font-size: 0.9rem; color: #666; }
-    .legal-card { background: #fff; border-radius: 16px; border: 0.5px solid #e0e0e0; padding: 2rem; margin-bottom: 1rem; }
-    .legal-card h2 { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid #f0f0f0; }
-    .legal-card p, .legal-card li { font-size: 13px; color: #444; line-height: 1.8; margin-bottom: 0.75rem; }
-    .legal-card ul { padding-left: 1.25rem; }
-    .legal-card li { margin-bottom: 0.4rem; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a2e; text-decoration: none; margin-bottom: 1.5rem; opacity: 0.7; }
-    .back-link:hover { opacity: 1; }
+    .legal-main {
+      padding-top: 64px;
+      min-height: 100vh;
+      background: #FAFAF8;
+    }
+    .legal-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    .legal-header {
+      border-bottom: 2px solid #0D1B2A;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .legal-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.3px;
+    }
+    .legal-header p {
+      font-size: 13px;
+      color: #999;
+    }
+    .legal-seccion {
+      margin-bottom: 2.5rem;
+    }
+    .legal-seccion h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #E8E4DC;
+    }
+    .legal-seccion p {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+    .legal-seccion ul {
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .legal-seccion ul li {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 0.25rem;
+    }
+    .legal-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      font-size: 13px;
+    }
+    .legal-tabla th {
+      background: #0D1B2A;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    .legal-tabla td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #E8E4DC;
+      color: #444;
+      vertical-align: top;
+    }
+    .legal-tabla tr:nth-child(even) td {
+      background: #fdf9f0;
+    }
+    .aviso-destacado {
+      background: #fdf9f0;
+      border-left: 3px solid #C9A84C;
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1rem;
+    }
+    .aviso-destacado p {
+      margin: 0 !important;
+      font-size: 13px !important;
+      color: #8a6a1a !important;
+    }
   </style>
 </head>
-<body style="background:#f0f2f7;">
-  <div class="legal-container">
-    <a href="/" class="back-link">← Volver a ReclamaYa</a>
-    <div class="legal-header">
-      <h1>Aviso Legal</h1>
-      <p>Última actualización: Mayo 2026</p>
-    </div>
+<body>
 
-    <div class="legal-card">
-      <h2>1. Datos identificativos del titular</h2>
-      <p>En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se informa que el presente sitio web es titularidad de:</p>
-      <ul>
-        <li><strong>Titular:</strong> [TU NOMBRE COMPLETO]</li>
-        <li><strong>NIF/DNI:</strong> [TU DNI]</li>
-        <li><strong>Domicilio:</strong> [TU DIRECCIÓN]</li>
-        <li><strong>Email de contacto:</strong> [TU EMAIL]</li>
-        <li><strong>Web:</strong> reclamaya.es</li>
-      </ul>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img src="logo-reclamaia.png" alt="ReclamaIA" class="nav-logo-img">
+      </a>
+      <div class="nav-links">
+        <a href="/">← Volver al inicio</a>
+      </div>
     </div>
+  </nav>
 
-    <div class="legal-card">
-      <h2>2. Objeto y ámbito de aplicación</h2>
-      <p>ReclamaYa es un servicio de generación automática de cartas de reclamación mediante inteligencia artificial. El servicio tiene carácter meramente informativo y de asistencia en la redacción de documentos.</p>
-      <p>ReclamaYa no presta servicios de asesoría jurídica ni actúa como despacho de abogados. Las cartas generadas son documentos de apoyo que el usuario puede utilizar como base para sus reclamaciones, pero no constituyen asesoramiento legal personalizado.</p>
-    </div>
+  <main class="legal-main">
+    <div class="legal-inner">
 
-    <div class="legal-card">
-      <h2>3. Propiedad intelectual</h2>
-      <p>Todos los contenidos del sitio web, incluyendo textos, imágenes, diseño gráfico, código fuente y demás elementos, son propiedad del titular o dispone de licencia para su uso. Queda prohibida su reproducción, distribución o modificación sin autorización expresa.</p>
-    </div>
+      <div class="legal-header">
+        <h1>Aviso Legal</h1>
+        <p>Última actualización: junio de 2026 · En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE)</p>
+      </div>
 
-    <div class="legal-card">
-      <h2>4. Limitación de responsabilidad</h2>
-      <p>ReclamaYa no garantiza el éxito de ninguna reclamación. Las cartas generadas son documentos de apoyo redactados por inteligencia artificial y pueden requerir adaptaciones por parte del usuario.</p>
-      <p>El usuario es responsable de verificar la exactitud de los datos introducidos y de la utilización que haga de los documentos generados.</p>
-    </div>
+      <div class="legal-seccion">
+        <h2>1. Datos identificativos del titular</h2>
+        <p>En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se facilitan a continuación los datos identificativos del titular del sitio web:</p>
+        <table class="legal-tabla">
+          <tr><th>Dato</th><th>Información</th></tr>
+          <tr><td>Titular</td><td>Jaime Porras Rodríguez</td></tr>
+          <tr><td>NIF</td><td>51141641Z</td></tr>
+          <tr><td>Domicilio</td><td>Camino de la Huerta 209, 28055 Madrid, España</td></tr>
+          <tr><td>Correo electrónico</td><td>hola@reclamaia.es</td></tr>
+          <tr><td>Sitio web</td><td>reclamaia.es</td></tr>
+          <tr><td>Nombre comercial</td><td>ReclamaIA</td></tr>
+        </table>
+      </div>
 
-    <div class="legal-card">
-      <h2>5. Legislación aplicable</h2>
-      <p>Las presentes condiciones se rigen por la legislación española. Para cualquier controversia derivada del uso de este sitio web, las partes se someten a los juzgados y tribunales del domicilio del usuario.</p>
+      <div class="legal-seccion">
+        <h2>2. Objeto y ámbito de aplicación</h2>
+        <p>El presente Aviso Legal regula el acceso y uso del sitio web <strong>reclamaia.es</strong> (en adelante, "el Sitio Web") y de los servicios ofrecidos a través del mismo por Jaime Porras Rodríguez (en adelante, "ReclamaIA").</p>
+        <p>El acceso al Sitio Web y la utilización de sus servicios implica la aceptación plena y sin reservas de todas las disposiciones incluidas en este Aviso Legal, así como en la Política de Privacidad y la Política de Cookies. Si no está de acuerdo con alguna de estas condiciones, debe abstenerse de utilizar el Sitio Web.</p>
+        <p>ReclamaIA se reserva el derecho de modificar, en cualquier momento y sin previo aviso, el contenido del presente Aviso Legal. Por ello, se recomienda al usuario que lo consulte periódicamente.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>3. Descripción del servicio</h2>
+        <p>ReclamaIA es una herramienta de asistencia tecnológica basada en inteligencia artificial que facilita la redacción de escritos de reclamación extrajudicial mediante el uso de modelos de lenguaje de gran escala y consulta de fuentes legislativas oficiales (BOE y EUR-Lex).</p>
+        <div class="aviso-destacado">
+          <p>⚠️ <strong>Limitación importante:</strong> ReclamaIA NO presta servicios de asesoría jurídica, consultoría legal ni representación procesal. Los escritos generados son documentos de apoyo en la redacción y no constituyen consejo legal profesional. El usuario es el único responsable del uso que haga del documento generado y de las decisiones que adopte en relación con su reclamación.</p>
+        </div>
+        <p>ReclamaIA no garantiza el éxito de ninguna reclamación. El resultado de cualquier proceso de reclamación depende de múltiples factores ajenos al control de ReclamaIA, incluyendo la respuesta de la empresa reclamada, los organismos reguladores y los tribunales competentes.</p>
+        <p>Las referencias legislativas incluidas en los documentos generados se obtienen mediante consulta a fuentes oficiales (BOE y EUR-Lex) en el momento de la generación. Sin embargo, ReclamaIA no garantiza la vigencia absoluta de dichas referencias, ya que la legislación puede ser modificada o derogada con posterioridad. Se recomienda verificar la vigencia de las referencias legales antes de utilizar el documento.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>4. Condiciones de uso</h2>
+        <p>El usuario se compromete a utilizar el Sitio Web y los servicios ofrecidos de conformidad con la ley, el presente Aviso Legal y el orden público. Queda expresamente prohibido:</p>
+        <ul>
+          <li>Utilizar el servicio para fines ilícitos, fraudulentos o contrarios a la buena fe.</li>
+          <li>Introducir datos falsos o de terceros sin su consentimiento en los formularios del Sitio Web.</li>
+          <li>Utilizar los documentos generados para presentar reclamaciones fraudulentas o sin fundamento real.</li>
+          <li>Reproducir, copiar, distribuir o comercializar los contenidos del Sitio Web sin autorización expresa.</li>
+          <li>Intentar acceder a sistemas o bases de datos de ReclamaIA mediante técnicas no autorizadas.</li>
+          <li>Introducir virus, malware o cualquier otro elemento dañino en el Sitio Web.</li>
+        </ul>
+        <p>El incumplimiento de estas condiciones podrá dar lugar a la suspensión o cancelación del acceso al servicio, sin perjuicio de las responsabilidades legales que pudieran derivarse.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>5. Propiedad intelectual e industrial</h2>
+        <p>Todos los contenidos del Sitio Web, incluyendo textos, imágenes, logotipos, iconos, código fuente, diseño y arquitectura de la plataforma, son propiedad de Jaime Porras Rodríguez o de terceros que han autorizado su uso, y están protegidos por la legislación española e internacional sobre propiedad intelectual e industrial.</p>
+        <p>El usuario puede visualizar los contenidos del Sitio Web para uso personal y privado. Queda expresamente prohibida cualquier reproducción, distribución, transformación o comunicación pública de dichos contenidos sin autorización expresa y por escrito del titular.</p>
+        <p>Los escritos de reclamación generados mediante el servicio son propiedad del usuario que los ha generado, sin perjuicio de que ReclamaIA haya facilitado la herramienta tecnológica para su creación. ReclamaIA no retiene ningún derecho de propiedad sobre los documentos generados.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>6. Exclusión de responsabilidad</h2>
+        <p>ReclamaIA no se hace responsable de:</p>
+        <ul>
+          <li>El resultado o eficacia de los escritos de reclamación generados mediante el servicio.</li>
+          <li>La exactitud, vigencia o integridad de las referencias legislativas incluidas en los documentos generados, más allá del momento de su generación.</li>
+          <li>Las decisiones que el usuario adopte basándose en los documentos generados.</li>
+          <li>Los daños y perjuicios derivados del uso indebido o fraudulento del servicio.</li>
+          <li>Las interrupciones, errores o fallos técnicos del Sitio Web debidos a causas ajenas a ReclamaIA.</li>
+          <li>Los contenidos de sitios web de terceros enlazados desde el Sitio Web.</li>
+          <li>Los daños causados por virus u otros elementos dañinos introducidos por terceros.</li>
+        </ul>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>7. Uso de inteligencia artificial</h2>
+        <p>El servicio de ReclamaIA utiliza modelos de inteligencia artificial de terceros (Anthropic Claude API) para la generación de los escritos de reclamación. El uso de estos modelos se realiza conforme a sus condiciones de servicio y a la normativa aplicable, incluyendo el Reglamento (UE) 2024/1689 sobre Inteligencia Artificial (Reglamento IA).</p>
+        <p>El usuario debe ser consciente de que los sistemas de inteligencia artificial pueden cometer errores o generar contenido impreciso. Por ello, se recomienda revisar el documento generado antes de su envío y verificar que los datos introducidos son correctos y que las referencias legales son aplicables a su caso concreto.</p>
+        <p>ReclamaIA no almacena los escritos generados más allá del tiempo estrictamente necesario para su entrega al usuario (máximo 1 hora). Los datos personales introducidos en el formulario se tratan conforme a lo establecido en la Política de Privacidad.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>8. Legislación aplicable y jurisdicción</h2>
+        <p>El presente Aviso Legal se rige por la legislación española. Para la resolución de cualquier controversia derivada del acceso o uso del Sitio Web, las partes se someten expresamente a los Juzgados y Tribunales de Madrid, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.</p>
+        <p>No obstante lo anterior, cuando el usuario tenga la condición de consumidor, se estará a lo dispuesto en la normativa de protección de consumidores y usuarios vigente, pudiendo acudir a los tribunales del lugar de su domicilio.</p>
+        <p>Para la resolución de litigios en línea, la Comisión Europea pone a disposición de los consumidores la plataforma de Resolución de Litigios en Línea, accesible en: <a href="https://ec.europa.eu/consumers/odr" style="color:#C9A84C;">https://ec.europa.eu/consumers/odr</a></p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>9. Contacto</h2>
+        <p>Para cualquier consulta, reclamación o ejercicio de derechos en relación con el presente Aviso Legal, el usuario puede dirigirse a:</p>
+        <p><strong>Jaime Porras Rodríguez</strong><br>
+        Camino de la Huerta 209, 28055 Madrid<br>
+        Correo electrónico: <a href="mailto:hola@reclamaia.es" style="color:#C9A84C;">hola@reclamaia.es</a></p>
+      </div>
+
     </div>
-  </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:28px; width:auto;">
+      </div>
+      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="mailto:hola@reclamaia.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamaIA — Jaime Porras Rodríguez. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+  </script>
+
 </body>
 </html>
