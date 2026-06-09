@@ -239,19 +239,19 @@ export default async function handler(req, res) {
       let pdfGuiaBase64 = null;
       if (opcion === 'completa' && categoriaEmpresa) {
         try {
-          const baseUrl = process.env.VERCEL_URL
-            ? `https://${process.env.VERCEL_URL}`
-            : 'https://reclama-ya.vercel.app';
+          const { default: guiaHandler } = await import('./guia.js');
+const guiaReq = { method: 'POST', body: { categoria: categoriaEmpresa, empresa, ciudad, nombre, fecha } };
+const guiaData = { guia: null, fecha };
 
-          const guiaResponse = await fetch(`${baseUrl}/api/guia`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ categoria: categoriaEmpresa, empresa, ciudad, nombre, fecha })
-          });
+await new Promise((resolve) => {
+  const guiaRes = {
+    status: () => ({ json: (data) => { Object.assign(guiaData, data); resolve(); } })
+  };
+  guiaHandler(guiaReq, guiaRes);
+});
 
-          if (guiaResponse.ok) {
-            const guiaData = await guiaResponse.json();
-            const htmlGuia = generarHTMLGuia(guiaData, datos);
+if (guiaData.guia) {
+  const htmlGuia = generarHTMLGuia(guiaData, datos);
 
             const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
               method: 'POST',
