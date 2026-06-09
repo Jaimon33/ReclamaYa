@@ -76,17 +76,17 @@ a { text-decoration: none; color: inherit; }
 }
 
 .nav-links a {
-  color: rgba(255,255,255,0.6);
+  color: #555;
   font-size: 13px;
   font-weight: 500;
   transition: color 0.2s;
 }
 
-.nav-links a:hover { color: #fff; }
+.nav-links a:hover { color: #0D1B2A; }
 
 .nav-cta {
-  background: #C9A84C !important;
-  color: #0D1B2A !important;
+  background: #0D1B2A !important;
+  color: #fff !important;
   padding: 8px 20px;
   border-radius: 6px;
   font-size: 13px !important;
@@ -98,8 +98,8 @@ a { text-decoration: none; color: inherit; }
 
 .nav-mobile-btn {
   display: none;
-  background: #C9A84C;
-  color: #0D1B2A;
+  background: #0D1B2A;
+  color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
