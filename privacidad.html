@@ -3,102 +3,324 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidad — ReclamaYa</title>
+  <title>Política de Privacidad — ReclamaIA</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .legal-container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .legal-header { margin-bottom: 2rem; }
-    .legal-header h1 { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
-    .legal-header p { font-size: 0.9rem; color: #666; }
-    .legal-card { background: #fff; border-radius: 16px; border: 0.5px solid #e0e0e0; padding: 2rem; margin-bottom: 1rem; }
-    .legal-card h2 { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid #f0f0f0; }
-    .legal-card p, .legal-card li { font-size: 13px; color: #444; line-height: 1.8; margin-bottom: 0.75rem; }
-    .legal-card ul { padding-left: 1.25rem; }
-    .legal-card li { margin-bottom: 0.4rem; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #1a1a2e; text-decoration: none; margin-bottom: 1.5rem; opacity: 0.7; }
-    .back-link:hover { opacity: 1; }
-    .highlight { background: #f0f2f7; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-    .highlight p { margin: 0; font-size: 13px; color: #444; }
+    .legal-main {
+      padding-top: 64px;
+      min-height: 100vh;
+      background: #FAFAF8;
+    }
+    .legal-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    .legal-header {
+      border-bottom: 2px solid #0D1B2A;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .legal-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.3px;
+    }
+    .legal-header p {
+      font-size: 13px;
+      color: #999;
+    }
+    .legal-seccion {
+      margin-bottom: 2.5rem;
+    }
+    .legal-seccion h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #E8E4DC;
+    }
+    .legal-seccion h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      margin: 1.25rem 0 0.5rem;
+    }
+    .legal-seccion p {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 0.75rem;
+    }
+    .legal-seccion ul {
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .legal-seccion ul li {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 0.25rem;
+    }
+    .legal-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      font-size: 13px;
+    }
+    .legal-tabla th {
+      background: #0D1B2A;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    .legal-tabla td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #E8E4DC;
+      color: #444;
+      vertical-align: top;
+    }
+    .legal-tabla tr:nth-child(even) td {
+      background: #fdf9f0;
+    }
+    .aviso-destacado {
+      background: #fdf9f0;
+      border-left: 3px solid #C9A84C;
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1rem;
+    }
+    .aviso-destacado p {
+      margin: 0 !important;
+      font-size: 13px !important;
+      color: #8a6a1a !important;
+    }
+    .derechos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .derecho-card {
+      background: #fff;
+      border: 1px solid #E8E4DC;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .derecho-card strong {
+      display: block;
+      font-size: 13px;
+      color: #0D1B2A;
+      margin-bottom: 4px;
+    }
+    .derecho-card span {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+    }
+    @media (max-width: 480px) {
+      .derechos-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
-<body style="background:#f0f2f7;">
-  <div class="legal-container">
-    <a href="/" class="back-link">← Volver a ReclamaYa</a>
-    <div class="legal-header">
-      <h1>Política de Privacidad</h1>
-      <p>Última actualización: Mayo 2026</p>
-    </div>
+<body>
 
-    <div class="legal-card">
-      <div class="highlight">
-        <p>🔒 <strong>Resumen:</strong> Tus datos se usan exclusivamente para generar tu carta de reclamación. No los almacenamos, no los vendemos ni los compartimos con terceros.</p>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img src="logo-reclamaia.png" alt="ReclamaIA" class="nav-logo-img">
+      </a>
+      <div class="nav-links">
+        <a href="/">← Volver al inicio</a>
       </div>
     </div>
+  </nav>
 
-    <div class="legal-card">
-      <h2>1. Responsable del tratamiento</h2>
-      <ul>
-        <li><strong>Titular:</strong> [TU NOMBRE COMPLETO]</li>
-        <li><strong>NIF/DNI:</strong> [TU DNI]</li>
-        <li><strong>Email:</strong> [TU EMAIL]</li>
-      </ul>
-    </div>
+  <main class="legal-main">
+    <div class="legal-inner">
 
-    <div class="legal-card">
-      <h2>2. Datos que recogemos</h2>
-      <p>Para generar tu carta de reclamación recogemos los siguientes datos:</p>
-      <ul>
-        <li>Nombre completo o razón social</li>
-        <li>DNI, NIF o CIF</li>
-        <li>Dirección postal</li>
-        <li>Teléfono y email</li>
-        <li>Descripción del caso y documentos adjuntos</li>
-      </ul>
-      <p>Estos datos se transmiten de forma segura a la API de Anthropic (Claude) para generar el documento. No se almacenan en ninguna base de datos propia.</p>
-    </div>
+      <div class="legal-header">
+        <h1>Política de Privacidad</h1>
+        <p>Última actualización: junio de 2026 · En cumplimiento del Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD)</p>
+      </div>
 
-    <div class="legal-card">
-      <h2>3. Finalidad del tratamiento</h2>
-      <p>Los datos se usan exclusivamente para:</p>
-      <ul>
-        <li>Generar la carta de reclamación personalizada</li>
-        <li>Procesar el pago de la descarga en PDF (a través de Stripe)</li>
-      </ul>
-    </div>
+      <div class="legal-seccion">
+        <h2>1. Responsable del tratamiento</h2>
+        <table class="legal-tabla">
+          <tr><th>Dato</th><th>Información</th></tr>
+          <tr><td>Responsable</td><td>Jaime Porras Rodríguez</td></tr>
+          <tr><td>NIF</td><td>51141641Z</td></tr>
+          <tr><td>Domicilio</td><td>Camino de la Huerta 209, 28055 Madrid, España</td></tr>
+          <tr><td>Correo electrónico</td><td>hola@reclamaia.es</td></tr>
+          <tr><td>Sitio web</td><td>reclamaia.es</td></tr>
+        </table>
+      </div>
 
-    <div class="legal-card">
-      <h2>4. Base legal</h2>
-      <p>El tratamiento se basa en el consentimiento del usuario al utilizar el servicio, de acuerdo con el Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018 de Protección de Datos Personales (LOPDGDD).</p>
-    </div>
+      <div class="legal-seccion">
+        <h2>2. Datos que recogemos y finalidad del tratamiento</h2>
+        <p>ReclamaIA recoge y trata los siguientes datos personales de sus usuarios:</p>
 
-    <div class="legal-card">
-      <h2>5. Conservación de datos</h2>
-      <p>Los datos introducidos en el formulario no se almacenan en ninguna base de datos. Se procesan en tiempo real para generar la carta y no se conservan una vez finalizada la sesión.</p>
-      <p>Los datos de pago son gestionados íntegramente por Stripe y no son accesibles por ReclamaYa.</p>
-    </div>
+        <h3>2.1 Datos del formulario de reclamación</h3>
+        <table class="legal-tabla">
+          <tr><th>Categoría de datos</th><th>Finalidad</th><th>Base legal</th></tr>
+          <tr><td>Nombre y apellidos, DNI/CIF</td><td>Identificación del reclamante en el escrito generado</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+          <tr><td>Dirección postal</td><td>Inclusión en el escrito de reclamación</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+          <tr><td>Teléfono y email</td><td>Entrega del documento generado y comunicaciones del servicio</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+          <tr><td>Descripción del caso y datos de la reclamación</td><td>Generación del escrito mediante IA</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+          <tr><td>Documentos adjuntos (facturas, contratos, etc.)</td><td>Enriquecer el contenido del escrito generado</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+        </table>
 
-    <div class="legal-card">
-      <h2>6. Transferencias internacionales</h2>
-      <p>Para la generación de la carta se utiliza la API de Anthropic (Estados Unidos), empresa adherida al Marco de Privacidad de Datos UE-EE.UU. y que cumple con las garantías adecuadas establecidas por el RGPD.</p>
-    </div>
+        <h3>2.2 Datos de pago</h3>
+        <p>Los datos de pago (tarjeta de crédito/débito) son procesados directamente por <strong>Stripe, Inc.</strong>, nuestro proveedor de servicios de pago. ReclamaIA no almacena ni tiene acceso a los datos completos de su tarjeta. Stripe actúa como encargado del tratamiento y cumple con la normativa PCI DSS. Puede consultar la política de privacidad de Stripe en <a href="https://stripe.com/es/privacy" style="color:#C9A84C;">stripe.com/es/privacy</a>.</p>
 
-    <div class="legal-card">
-      <h2>7. Tus derechos</h2>
-      <p>Como usuario tienes derecho a:</p>
-      <ul>
-        <li><strong>Acceso:</strong> conocer qué datos tratamos sobre ti</li>
-        <li><strong>Rectificación:</strong> corregir datos inexactos</li>
-        <li><strong>Supresión:</strong> solicitar la eliminación de tus datos</li>
-        <li><strong>Portabilidad:</strong> recibir tus datos en formato estructurado</li>
-        <li><strong>Oposición:</strong> oponerte al tratamiento de tus datos</li>
-      </ul>
-      <p>Puedes ejercer estos derechos escribiendo a <strong>[TU EMAIL]</strong>. También puedes presentar una reclamación ante la Agencia Española de Protección de Datos (aepd.es).</p>
-    </div>
+        <h3>2.3 Datos de navegación</h3>
+        <p>Con carácter general, el Sitio Web puede recoger datos técnicos de navegación (dirección IP, tipo de navegador, páginas visitadas) con fines estadísticos y de seguridad, al amparo del interés legítimo del responsable (art. 6.1.f RGPD).</p>
+      </div>
 
-    <div class="legal-card">
-      <h2>8. Cookies</h2>
-      <p>Este sitio web únicamente utiliza cookies técnicas necesarias para el funcionamiento del servicio. No utiliza cookies de seguimiento ni publicidad.</p>
+      <div class="legal-seccion">
+        <h2>3. Conservación de los datos</h2>
+        <table class="legal-tabla">
+          <tr><th>Tipo de datos</th><th>Plazo de conservación</th></tr>
+          <tr><td>Datos del formulario y escritos generados (almacenamiento temporal)</td><td>Máximo 1 hora desde la generación, para permitir la entrega por email</td></tr>
+          <tr><td>Email del usuario (para entrega del documento)</td><td>Hasta la entrega del documento. No se conserva para comunicaciones posteriores salvo consentimiento expreso</td></tr>
+          <tr><td>Datos de transacción (a efectos contables y fiscales)</td><td>5 años, conforme a la normativa tributaria y mercantil española</td></tr>
+          <tr><td>Datos de navegación</td><td>Máximo 13 meses</td></tr>
+        </table>
+        <div class="aviso-destacado">
+          <p>ℹ️ ReclamaIA <strong>no crea perfiles de usuario</strong>, no almacena los escritos generados de forma permanente ni utiliza los datos de los formularios para fines distintos a los indicados en esta política.</p>
+        </div>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>4. Cesión de datos a terceros</h2>
+        <p>ReclamaIA puede comunicar datos personales a los siguientes terceros, estrictamente en la medida necesaria para la prestación del servicio:</p>
+        <table class="legal-tabla">
+          <tr><th>Destinatario</th><th>Finalidad</th><th>País</th></tr>
+          <tr><td>Anthropic, PBC (Claude API)</td><td>Generación del escrito mediante IA</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
+          <tr><td>Stripe, Inc.</td><td>Procesamiento del pago</td><td>EE.UU. (Privacy Shield / cláusulas tipo)</td></tr>
+          <tr><td>Resend, Inc.</td><td>Envío del documento por email</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
+          <tr><td>PDFShift</td><td>Conversión del documento a PDF</td><td>Francia (UE)</td></tr>
+          <tr><td>Upstash</td><td>Almacenamiento temporal de datos</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
+          <tr><td>Vercel, Inc.</td><td>Hospedaje del Sitio Web</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
+        </table>
+        <p>No se realizan cesiones de datos a terceros para fines comerciales o publicitarios. Todos los proveedores mencionados actúan como encargados del tratamiento y están sujetos a contratos de encargo que garantizan el cumplimiento del RGPD.</p>
+        <p>Para las transferencias internacionales de datos a países fuera del Espacio Económico Europeo, ReclamaIA aplica las garantías adecuadas previstas en el artículo 46 del RGPD, principalmente mediante la firma de cláusulas contractuales tipo adoptadas por la Comisión Europea.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>5. Derechos del usuario</h2>
+        <p>Conforme al RGPD y la LOPDGDD, el usuario tiene derecho a:</p>
+        <div class="derechos-grid">
+          <div class="derecho-card">
+            <strong>Acceso</strong>
+            <span>Conocer qué datos personales suyos están siendo tratados.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Rectificación</strong>
+            <span>Corregir datos inexactos o incompletos.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Supresión ("derecho al olvido")</strong>
+            <span>Solicitar la eliminación de sus datos cuando ya no sean necesarios.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Oposición</strong>
+            <span>Oponerse al tratamiento de sus datos en determinadas circunstancias.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Limitación del tratamiento</strong>
+            <span>Solicitar que se restrinja el tratamiento de sus datos.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Portabilidad</strong>
+            <span>Recibir sus datos en formato estructurado y de uso común.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>No ser objeto de decisiones automatizadas</strong>
+            <span>No estar sujeto a decisiones con efectos jurídicos basadas únicamente en tratamiento automatizado.</span>
+          </div>
+          <div class="derecho-card">
+            <strong>Retirada del consentimiento</strong>
+            <span>Retirar el consentimiento en cualquier momento, sin efecto retroactivo.</span>
+          </div>
+        </div>
+        <p>Para ejercer cualquiera de estos derechos, el usuario puede dirigirse a <a href="mailto:hola@reclamaia.es" style="color:#C9A84C;">hola@reclamaia.es</a>, adjuntando copia de su documento de identidad. ReclamaIA responderá en el plazo máximo de un mes desde la recepción de la solicitud.</p>
+        <p>Si considera que el tratamiento de sus datos no se ajusta a la normativa vigente, tiene derecho a presentar una reclamación ante la <strong>Agencia Española de Protección de Datos (AEPD)</strong>, a través de su sede electrónica en <a href="https://www.aepd.es" style="color:#C9A84C;">www.aepd.es</a>.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>6. Seguridad de los datos</h2>
+        <p>ReclamaIA ha adoptado las medidas técnicas y organizativas necesarias para garantizar la seguridad e integridad de los datos personales tratados, y para evitar su pérdida, alteración o acceso por parte de terceros no autorizados, teniendo en cuenta el estado de la tecnología, la naturaleza de los datos y los riesgos a los que están expuestos.</p>
+        <p>Entre las medidas implementadas se incluyen:</p>
+        <ul>
+          <li>Cifrado de las comunicaciones mediante protocolo HTTPS/TLS.</li>
+          <li>Almacenamiento temporal de datos sensibles con expiración automática máxima de 1 hora.</li>
+          <li>Acceso restringido a los datos mediante tokens de autenticación.</li>
+          <li>No almacenamiento permanente de escritos generados ni de datos de pago.</li>
+        </ul>
+        <p>No obstante, el usuario debe ser consciente de que las medidas de seguridad en Internet no son inexpugnables. En caso de que ReclamaIA detecte una violación de seguridad que afecte a datos personales, lo notificará a las autoridades competentes y, si fuera necesario, a los usuarios afectados, en los plazos establecidos por el RGPD.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>7. Uso de inteligencia artificial y decisiones automatizadas</h2>
+        <p>El servicio de ReclamaIA utiliza sistemas de inteligencia artificial (Anthropic Claude API) para la generación automatizada de escritos de reclamación. Este proceso implica el tratamiento automatizado de los datos personales introducidos en el formulario.</p>
+        <p>Sin embargo, el escrito generado <strong>no produce efectos jurídicos significativos ni afecta de forma similar al usuario</strong>, en el sentido del artículo 22 del RGPD, ya que únicamente constituye un documento de apoyo en la redacción que el propio usuario decide si utiliza o no. Por tanto, no resulta aplicable la prohibición de decisiones automatizadas del artículo 22.1 RGPD.</p>
+        <p>Los datos introducidos en el formulario son transmitidos a la API de Anthropic para la generación del escrito. Anthropic procesa estos datos conforme a sus propias políticas de privacidad y condiciones de servicio para uso de API, que no permiten el uso de datos de la API para entrenar sus modelos sin consentimiento expreso.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>8. Cookies</h2>
+        <p>El Sitio Web puede utilizar cookies técnicas estrictamente necesarias para su funcionamiento. No se utilizan cookies de seguimiento, publicidad o perfilado de usuarios.</p>
+        <p>Los pagos procesados a través de Stripe pueden generar cookies propias de Stripe en el proceso de pago. Estas cookies están sujetas a la política de cookies de Stripe.</p>
+        <p>El usuario puede configurar su navegador para rechazar o eliminar las cookies. Sin embargo, la desactivación de cookies técnicas puede afectar al correcto funcionamiento del Sitio Web.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>9. Modificaciones de la política de privacidad</h2>
+        <p>ReclamaIA se reserva el derecho de modificar la presente Política de Privacidad para adaptarla a novedades legislativas, jurisprudenciales o técnicas. En caso de modificaciones sustanciales, se informará a los usuarios a través del Sitio Web. Se recomienda revisar esta política periódicamente.</p>
+        <p>La fecha de la última actualización figura en el encabezado de este documento.</p>
+      </div>
+
+      <div class="legal-seccion">
+        <h2>10. Contacto y DPO</h2>
+        <p>Para cualquier consulta relacionada con el tratamiento de sus datos personales o para el ejercicio de sus derechos, puede contactar con el responsable del tratamiento en:</p>
+        <p><strong>Jaime Porras Rodríguez</strong><br>
+        Camino de la Huerta 209, 28055 Madrid<br>
+        Correo electrónico: <a href="mailto:hola@reclamaia.es" style="color:#C9A84C;">hola@reclamaia.es</a></p>
+        <p>Dado que ReclamaIA no realiza tratamientos de datos a gran escala ni trata categorías especiales de datos de forma sistemática, no está obligada a designar un Delegado de Protección de Datos (DPD/DPO) conforme al artículo 37 del RGPD. No obstante, cualquier cuestión relativa a protección de datos puede dirigirse al responsable del tratamiento en la dirección indicada.</p>
+      </div>
+
     </div>
-  </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:28px; width:auto;">
+      </div>
+      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="mailto:hola@reclamaia.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamaIA — Jaime Porras Rodríguez. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+  </script>
+
 </body>
 </html>
