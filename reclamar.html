@@ -484,7 +484,10 @@
       const campos = document.getElementById('campos-representacion');
       campos.style.display = valor === 'representacion' ? 'block' : 'none';
     }
-
+function toggleOtroProblema(valor) {
+  const campo = document.getElementById('campo-otro-problema');
+  campo.style.display = valor === 'otro' ? 'block' : 'none';
+}
     function toggleOtroObjetivo(valor) {
       const campo = document.getElementById('campo-otro-objetivo');
       const input = document.getElementById('otro-objetivo');
