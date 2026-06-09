@@ -18,7 +18,8 @@ a { text-decoration: none; color: inherit; }
   left: 0;
   right: 0;
   z-index: 100;
-  background: #0D1B2A;
+  background: #FAFAF8;
+  border-bottom: 1px solid #E8E4DC;
   transition: box-shadow 0.3s;
 }
 
