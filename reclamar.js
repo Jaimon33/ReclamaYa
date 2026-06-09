@@ -242,9 +242,12 @@ btnNueva.addEventListener('click', () => {
   window._cartaCompleta = null;
   window._datosUsuario = null;
   window._destinatarioReal = null;
+  window._opcionSeleccionada = 'completa';
+  document.getElementById('carta-visible').textContent = '';
   const fuentesDiv = document.querySelector('.fuentes-legales');
   if (fuentesDiv) fuentesDiv.remove();
-  const avisoDiv = document.querySelector('[style*="f6faf8"]');
+  const avisoDiv = document.querySelector('.aviso-envio');
   if (avisoDiv) avisoDiv.remove();
+  seleccionarOpcion('completa');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
