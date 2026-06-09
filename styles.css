@@ -48,9 +48,7 @@ a { text-decoration: none; color: inherit; }
   height: 36px;
   width: auto;
   display: block;
-  filter: brightness(0) invert(1);
 }
-
 .nav-logo-svg {
   display: flex;
   align-items: center;
