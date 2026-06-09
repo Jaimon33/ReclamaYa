@@ -55,6 +55,7 @@
 
         <form id="reclamacion-form">
 
+          <!-- PASO 1: DATOS PERSONALES -->
           <div class="form-step" id="step-1">
             <div class="campo">
               <label>Tipo de reclamante</label>
@@ -67,6 +68,34 @@
                   <input type="radio" name="tipo" value="empresa" onchange="toggleTipo(this.value)">
                   <span>Empresa</span>
                 </label>
+              </div>
+            </div>
+            <div class="campo">
+              <label>¿Actúas en nombre propio o en representación de otra persona?</label>
+              <div class="radio-group">
+                <label class="radio-opcion">
+                  <input type="radio" name="representacion" value="propio" checked onchange="toggleRepresentacion(this.value)">
+                  <span>En nombre propio</span>
+                </label>
+                <label class="radio-opcion">
+                  <input type="radio" name="representacion" value="representacion" onchange="toggleRepresentacion(this.value)">
+                  <span>En representación</span>
+                </label>
+              </div>
+            </div>
+            <div id="campos-representacion" style="display:none;">
+              <div class="aviso-info">
+                <p>ℹ️ En el paso 3 podrás adjuntar el documento de autorización firmado por el titular.</p>
+              </div>
+              <div class="grid-2">
+                <div class="campo">
+                  <label for="rep-nombre">Nombre del representado</label>
+                  <input type="text" id="rep-nombre" placeholder="Nombre completo del titular">
+                </div>
+                <div class="campo">
+                  <label for="rep-documento">DNI/CIF del representado</label>
+                  <input type="text" id="rep-documento" placeholder="12345678A">
+                </div>
               </div>
             </div>
             <div class="grid-2">
@@ -109,10 +138,11 @@
             </div>
           </div>
 
+          <!-- PASO 2: LA RECLAMACIÓN -->
           <div class="form-step" id="step-2" style="display:none;">
             <div class="campo">
               <label for="categoria-empresa">Categoría</label>
-              <select id="categoria-empresa" required>
+              <select id="categoria-empresa" required onchange="mostrarCamposCategoria(this.value)">
                 <option value="">Selecciona una categoría...</option>
                 <option value="Telecomunicaciones">Telecomunicaciones</option>
                 <option value="Energía y suministros">Energía y suministros</option>
@@ -140,6 +170,10 @@
                 <input type="date" id="fecha-hecho" required>
               </div>
             </div>
+
+            <!-- CAMPOS DINÁMICOS POR CATEGORÍA -->
+            <div id="campos-categoria"></div>
+
             <div class="campo">
               <label for="problema">Tipo de problema</label>
               <select id="problema" required>
@@ -183,22 +217,42 @@
               <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
             </div>
             <div class="campo">
-              <label for="descripcion">Describe brevemente qué ocurrió</label>
+              <label for="descripcion">Describe qué ocurrió</label>
               <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
             </div>
             <div class="campo">
-              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa?</label>
+              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa o entidad?</label>
               <select id="reclamacion-previa" onchange="toggleReclamacionPrevia(this.value)">
                 <option value="">Selecciona...</option>
                 <option value="no">No, es mi primera reclamación</option>
-                <option value="si-sin-respuesta">Sí, pero no he obtenido respuesta</option>
-                <option value="si-respuesta-negativa">Sí, y la respuesta fue negativa</option>
-                <option value="si-respuesta-insatisfactoria">Sí, y la respuesta fue insatisfactoria</option>
+                <option value="si-sin-respuesta">Sí, por teléfono o presencialmente, sin respuesta</option>
+                <option value="si-email">Sí, por email o formulario web, sin respuesta satisfactoria</option>
+                <option value="si-respuesta-negativa">Sí, y la respuesta fue negativa o insatisfactoria</option>
               </select>
             </div>
-            <div class="campo" id="campo-respuesta-previa" style="display:none;">
-              <label for="respuesta-previa">Describe brevemente la respuesta que recibiste</label>
-              <textarea id="respuesta-previa" rows="2" placeholder="Ej: Me dijeron que no era su responsabilidad..."></textarea>
+            <div id="campos-reclamacion-previa" style="display:none;">
+              <div class="campo">
+                <label for="num-reclamacion-previa">Nº de reclamación o expediente previo (si lo tienes)</label>
+                <input type="text" id="num-reclamacion-previa" placeholder="Ej: INC-2026-123456">
+              </div>
+              <div class="campo">
+                <label for="respuesta-previa">Resumen de la respuesta recibida</label>
+                <textarea id="respuesta-previa" rows="2" placeholder="Ej: Me dijeron que no era su responsabilidad..."></textarea>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="tiene-documentacion">¿Tienes documentación que acredite lo que reclamas?</label>
+              <select id="tiene-documentacion" onchange="toggleAvisoDocumentacion(this.value)">
+                <option value="">Selecciona...</option>
+                <option value="si">Sí, tengo facturas, contratos, capturas u otros documentos</option>
+                <option value="no">No tengo documentación</option>
+                <option value="parcial">Tengo alguna documentación pero no toda</option>
+              </select>
+            </div>
+            <div id="aviso-documentacion" style="display:none;">
+              <div class="aviso-exito">
+                <p>✓ Perfecto — en el paso 3 podrás adjuntar esos documentos. Cuantos más adjuntes, más contundente y preciso será tu escrito.</p>
+              </div>
             </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
@@ -206,14 +260,15 @@
             </div>
           </div>
 
+          <!-- PASO 3: DOCUMENTOS -->
           <div class="form-step" id="step-3" style="display:none;">
             <div class="campo">
-              <label>Adjunta documentos relacionados (opcional pero recomendado)</label>
-              <p style="font-size:12px; color:#888; margin-bottom:8px; margin-top:-4px;">Cuantos más documentos adjuntes, más preciso y contundente será tu escrito.</p>
+              <label>Adjunta documentos relacionados</label>
+              <p style="font-size:12px; color:#888; margin-bottom:10px; margin-top:-4px; line-height:1.6;">Cuantos más documentos adjuntes, más preciso y contundente será tu escrito. Puedes adjuntar notificaciones, facturas, contratos, emails, capturas de pantalla o cualquier documento relevante.</p>
               <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
                 <span class="upload-icon">📎</span>
                 <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
-                <p class="upload-sub">Notificaciones, facturas, contratos, capturas — JPG, PNG, PDF, Word, Excel</p>
+                <p class="upload-sub">JPG, PNG, PDF, Word, Excel — Máx. 10MB por archivo</p>
               </div>
               <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
               <div id="lista-archivos"></div>
@@ -224,6 +279,7 @@
             </div>
           </div>
 
+          <!-- PASO 4: DESCARGAR -->
           <div class="form-step" id="step-4" style="display:none;">
             <div class="opciones-precio">
               <div class="opcion-precio" id="opcion-basica" onclick="seleccionarOpcion('basica')">
@@ -301,7 +357,7 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-logo">
-        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:28px; width:auto; filter:brightness(0) invert(1);">
+        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:32px; width:auto;">
       </div>
       <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
       <div class="footer-links">
@@ -318,6 +374,93 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="reclamar.js"></script>
   <script>
+
+    const CAMPOS_CATEGORIA = {
+      'Telecomunicaciones': `
+        <div class="campo"><label for="cat-linea">Número de línea o contrato afectado</label><input type="text" id="cat-linea" placeholder="Ej: 612345678 o CTR-123456"></div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-servicio">Tipo de servicio afectado</label><select id="cat-servicio"><option value="">Selecciona...</option><option>Móvil</option><option>Fibra/ADSL</option><option>Televisión</option><option>Pack combinado</option></select></div>
+          <div class="campo"><label for="cat-baja">¿Sigues siendo cliente?</label><select id="cat-baja"><option value="">Selecciona...</option><option value="si">Sí, sigo siendo cliente</option><option value="no">No, ya me di de baja</option><option value="intentando">Intento darme de baja y no puedo</option></select></div>
+        </div>
+        <div class="campo"><label for="cat-incidencia">Nº de incidencia abierta (si tienes)</label><input type="text" id="cat-incidencia" placeholder="Ej: INC-2026-123456"></div>`,
+
+      'Aerolíneas y transporte': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-vuelo">Número de vuelo</label><input type="text" id="cat-vuelo" placeholder="Ej: VY1234 o IB3456"></div>
+          <div class="campo"><label for="cat-localizador">Localizador de reserva</label><input type="text" id="cat-localizador" placeholder="Ej: ABC123"></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-origen">Aeropuerto de origen</label><input type="text" id="cat-origen" placeholder="Ej: Madrid (MAD)"></div>
+          <div class="campo"><label for="cat-destino">Aeropuerto de destino</label><input type="text" id="cat-destino" placeholder="Ej: Barcelona (BCN)"></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-retraso">Horas de retraso (si aplica)</label><input type="number" id="cat-retraso" placeholder="Ej: 4" min="0"></div>
+          <div class="campo"><label for="cat-compensacion">¿La aerolínea ofreció compensación?</label><select id="cat-compensacion"><option value="">Selecciona...</option><option value="no">No ofreció nada</option><option value="voucher">Ofreció voucher o bono</option><option value="parcial">Ofreció compensación insuficiente</option><option value="si">Sí, la acepté</option></select></div>
+        </div>`,
+
+      'Banca y seguros': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-producto">Tipo de producto</label><select id="cat-producto"><option value="">Selecciona...</option><option>Hipoteca</option><option>Préstamo personal</option><option>Tarjeta de crédito/débito</option><option>Seguro de vida</option><option>Seguro de hogar</option><option>Plan de pensiones</option><option>Cuenta corriente</option><option>Otro</option></select></div>
+          <div class="campo"><label for="cat-cuenta">Últimos 4 dígitos de cuenta/póliza</label><input type="text" id="cat-cuenta" placeholder="Ej: 4521" maxlength="4"></div>
+        </div>
+        <div class="campo"><label for="cat-sat-banco">¿Reclamaste antes al Servicio de Atención al Cliente del banco?</label><select id="cat-sat-banco"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-respuesta">Sí, sin respuesta</option><option value="si-negativa">Sí, con respuesta negativa</option></select></div>`,
+
+      'Administración pública': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-organismo">Organismo concreto</label><select id="cat-organismo"><option value="">Selecciona...</option><option>AEAT (Agencia Tributaria)</option><option>DGT (Tráfico)</option><option>Seguridad Social / TGSS</option><option>SEPE (Desempleo)</option><option>Ayuntamiento</option><option>Comunidad Autónoma</option><option>Otro organismo</option></select></div>
+          <div class="campo"><label for="cat-expediente">Nº de expediente administrativo</label><input type="text" id="cat-expediente" placeholder="Ej: 2026/EXP/123456"></div>
+        </div>
+        <div class="campo"><label for="cat-tipo-recurso">¿Es una reclamación nueva o un recurso?</label><select id="cat-tipo-recurso"><option value="">Selecciona...</option><option value="nueva">Reclamación nueva</option><option value="reposicion">Recurso de reposición</option><option value="alzada">Recurso de alzada</option><option value="revision">Solicitud de revisión de oficio</option></select></div>`,
+
+      'Energía y suministros': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-cups">Código CUPS (en tu factura)</label><input type="text" id="cat-cups" placeholder="Ej: ES0021000012345678AB"></div>
+          <div class="campo"><label for="cat-suministro">Tipo de suministro</label><select id="cat-suministro"><option value="">Selecciona...</option><option>Electricidad</option><option>Gas natural</option><option>Ambos</option><option>Agua</option></select></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-corte">¿El suministro fue interrumpido?</label><select id="cat-corte"><option value="">Selecciona...</option><option value="no">No, sigue activo</option><option value="si">Sí, fue cortado</option><option value="amenaza">Me amenazan con cortarlo</option></select></div>
+          <div class="campo"><label for="cat-meses">¿Cuántos meses lleva el problema?</label><input type="number" id="cat-meses" placeholder="Ej: 3" min="0"></div>
+        </div>`,
+
+      'Comercio y tiendas online': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-pedido">Número de pedido</label><input type="text" id="cat-pedido" placeholder="Ej: PED-2026-123456"></div>
+          <div class="campo"><label for="cat-vendedor">¿Quién es el vendedor?</label><select id="cat-vendedor"><option value="">Selecciona...</option><option value="plataforma">La propia plataforma (Amazon, etc.)</option><option value="tercero">Un vendedor tercero en la plataforma</option><option value="tienda">Tienda online independiente</option></select></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-recibido">¿Recibiste el producto?</label><select id="cat-recibido"><option value="">Selecciona...</option><option value="no">No llegó</option><option value="defectuoso">Llegó defectuoso</option><option value="incorrecto">Llegó pero no era lo pedido</option><option value="si">Sí llegó pero hay otro problema</option></select></div>
+          <div class="campo"><label for="cat-devuelto">¿Ya devolviste el producto?</label><select id="cat-devuelto"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-reembolso">Sí, pero no me han reembolsado</option><option value="si-reembolso-parcial">Sí, con reembolso parcial</option></select></div>
+        </div>`,
+
+      'Inmobiliaria y alquiler': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-rol">¿Eres arrendador o arrendatario?</label><select id="cat-rol"><option value="">Selecciona...</option><option value="arrendatario">Arrendatario (inquilino)</option><option value="arrendador">Arrendador (propietario)</option><option value="comprador">Comprador</option><option value="vendedor">Vendedor</option></select></div>
+          <div class="campo"><label for="cat-contrato">¿Tienes contrato vigente?</label><select id="cat-contrato"><option value="">Selecciona...</option><option value="si">Sí</option><option value="no">No</option><option value="vencido">Venció y no se renovó</option></select></div>
+        </div>
+        <div class="campo"><label for="cat-inmueble">Dirección del inmueble afectado</label><input type="text" id="cat-inmueble" placeholder="Calle y número del inmueble"></div>`,
+
+      'Sanidad y salud': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-tipo-sanidad">Tipo de asistencia</label><select id="cat-tipo-sanidad"><option value="">Selecciona...</option><option>Sanidad pública</option><option>Seguro médico privado</option><option>Clínica privada</option></select></div>
+          <div class="campo"><label for="cat-nhc">Nº de historia clínica o expediente</label><input type="text" id="cat-nhc" placeholder="Ej: HC-2026-123456"></div>
+        </div>`,
+
+      'Educación': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-tipo-centro">Tipo de centro</label><select id="cat-tipo-centro"><option value="">Selecciona...</option><option>Universidad pública</option><option>Universidad privada</option><option>Centro de formación</option><option>Academia</option><option>Colegio público</option><option>Colegio concertado/privado</option></select></div>
+          <div class="campo"><label for="cat-expediente-edu">Nº de expediente o matrícula</label><input type="text" id="cat-expediente-edu" placeholder="Ej: MAT-2026-123"></div>
+        </div>`
+    };
+
+    function mostrarCamposCategoria(categoria) {
+      const contenedor = document.getElementById('campos-categoria');
+      if (CAMPOS_CATEGORIA[categoria]) {
+        contenedor.innerHTML = `<div class="campos-categoria-wrapper">${CAMPOS_CATEGORIA[categoria]}</div>`;
+      } else {
+        contenedor.innerHTML = '';
+      }
+    }
+
     function toggleTipo(valor) {
       const labelNombre = document.getElementById('label-nombre');
       const labelDoc = document.getElementById('label-documento');
@@ -333,6 +476,11 @@
       }
     }
 
+    function toggleRepresentacion(valor) {
+      const campos = document.getElementById('campos-representacion');
+      campos.style.display = valor === 'representacion' ? 'block' : 'none';
+    }
+
     function toggleOtroObjetivo(valor) {
       const campo = document.getElementById('campo-otro-objetivo');
       const input = document.getElementById('otro-objetivo');
@@ -346,12 +494,13 @@
     }
 
     function toggleReclamacionPrevia(valor) {
-      const campo = document.getElementById('campo-respuesta-previa');
-      if (valor && valor !== 'no' && valor !== '') {
-        campo.style.display = 'block';
-      } else {
-        campo.style.display = 'none';
-      }
+      const campos = document.getElementById('campos-reclamacion-previa');
+      campos.style.display = (valor && valor !== 'no') ? 'block' : 'none';
+    }
+
+    function toggleAvisoDocumentacion(valor) {
+      const aviso = document.getElementById('aviso-documentacion');
+      aviso.style.display = (valor === 'si' || valor === 'parcial') ? 'block' : 'none';
     }
 
     function seleccionarOpcion(tipo) {
