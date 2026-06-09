@@ -46,6 +46,8 @@ a { text-decoration: none; color: inherit; }
 .nav-logo-img {
   height: 36px;
   width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
 }
 
 .nav-logo-svg {
