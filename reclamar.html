@@ -174,25 +174,29 @@
             <!-- CAMPOS DINÁMICOS POR CATEGORÍA -->
             <div id="campos-categoria"></div>
 
-            <div class="campo">
-              <label for="problema">Tipo de problema</label>
-              <select id="problema" required>
-                <option value="">Selecciona...</option>
-                <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
-                <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
-                <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
-                <option value="retraso o cancelación de vuelo sin compensación">Retraso o cancelación de vuelo</option>
-                <option value="devolución no realizada tras devolución de producto">Devolución no realizada</option>
-                <option value="imposibilidad de darme de baja del servicio">No me dejan darme de baja</option>
-                <option value="multa o sanción que considero improcedente">Multa o sanción improcedente</option>
-                <option value="embargo o retención de cuenta que considero indebido">Embargo o retención indebida</option>
-                <option value="prestación denegada o reducida sin justificación">Prestación denegada o reducida</option>
-                <option value="subida de tarifa no comunicada previamente">Subida de tarifa sin previo aviso</option>
-                <option value="uso indebido de mis datos personales">Uso indebido de datos personales</option>
-                <option value="producto defectuoso o que no corresponde a lo anunciado">Producto defectuoso o no conforme</option>
-                <option value="otro problema no listado">Otro problema</option>
-              </select>
-            </div>
+           <div class="campo">
+  <label for="problema">Tipo de problema</label>
+  <select id="problema" required onchange="toggleOtroProblema(this.value)">
+    <option value="">Selecciona...</option>
+    <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
+    <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
+    <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
+    <option value="retraso o cancelación de vuelo sin compensación">Retraso o cancelación de vuelo</option>
+    <option value="devolución no realizada tras devolución de producto">Devolución no realizada</option>
+    <option value="imposibilidad de darme de baja del servicio">No me dejan darme de baja</option>
+    <option value="multa o sanción que considero improcedente">Multa o sanción improcedente</option>
+    <option value="embargo o retención de cuenta que considero indebido">Embargo o retención indebida</option>
+    <option value="prestación denegada o reducida sin justificación">Prestación denegada o reducida</option>
+    <option value="subida de tarifa no comunicada previamente">Subida de tarifa sin previo aviso</option>
+    <option value="uso indebido de mis datos personales">Uso indebido de datos personales</option>
+    <option value="producto defectuoso o que no corresponde a lo anunciado">Producto defectuoso o no conforme</option>
+    <option value="otro">Otro problema</option>
+  </select>
+</div>
+<div class="campo" id="campo-otro-problema" style="display:none;">
+  <label for="otro-problema">Describe tu problema</label>
+  <textarea id="otro-problema" rows="2" placeholder="Explica brevemente cuál es el problema..."></textarea>
+</div>
             <div class="campo">
               <label for="importe">Importe reclamado en euros (si aplica)</label>
               <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
