@@ -332,7 +332,7 @@ if (guiaData.guia) {
 </html>`;
 
       await resend.emails.send({
-        from: 'ReclamaIA <onboarding@resend.dev>',
+        from: 'ReclamaIA <hola@reclamaia.es>',
         to: email,
         subject: opcion === 'completa'
           ? `Tu escrito + guía de presentación contra ${empresa}`
