@@ -93,7 +93,7 @@ function generarHTMLEscrito(carta, datos) {
   <p>${escaparHTML(documento)}</p>
 </div>
 <div class="pie">
-  <p>ReclamaIA · reclamaia.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamaIA no presta servicios de asesoría jurídica.</p>
+  <p>ReclamoIA · reclamoia.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamoIA no presta servicios de asesoría jurídica.</p>
 </div>
 </body>
 </html>`;
@@ -149,7 +149,7 @@ ${guia.enlace ? `
 ` : ''}
 
 <div style="margin-top:40px; padding-top:12px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6;">
-  <p>ReclamaIA · reclamaia.es | Esta guía es orientativa. ReclamaIA no presta servicios de asesoría jurídica.</p>
+  <p>ReclamoIA · reclamoia.es | Esta guía es orientativa. ReclamoIA no presta servicios de asesoría jurídica.</p>
   <p>Los plazos y procedimientos están verificados a fecha ${escaparHTML(fecha)}. Se recomienda verificar posibles actualizaciones en las webs oficiales indicadas.</p>
 </div>
 
@@ -298,7 +298,7 @@ if (guiaData.guia) {
 <body style="font-family:Arial,sans-serif;background:#f0f2f7;margin:0;padding:0;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;">
   <div style="background:#0D1B2A;padding:28px 32px;">
-    <img src="https://reclama-ya.vercel.app/logo-reclamaia.png" alt="ReclamaIA" style="height:36px;width:auto;">
+    <img src="https://reclamoia.es/logo-reclamaia.png" alt="ReclamoIA" style="height:36px;width:auto;">
   </div>
   <div style="padding:32px;">
     <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">Tu ${opcion === 'completa' ? 'escrito y guía están listos' : 'escrito está listo'}, ${escaparHTML(nombre.split(' ')[0] || '')}</h2>
@@ -320,19 +320,19 @@ if (guiaData.guia) {
       <p style="font-size:13px;color:#555;margin:6px 0;">4. Si no responden en 15 días hábiles, sigue los pasos indicados${opcion === 'completa' ? ' en la guía' : ''}</p>
     </div>
     <p style="font-size:11px;color:#999;line-height:1.6;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
-      ReclamaIA es una herramienta de asistencia en la redacción de escritos. No presta servicios de asesoría jurídica.
+      ReclamoIA es una herramienta de asistencia en la redacción de escritos. No presta servicios de asesoría jurídica.
     </p>
   </div>
   <div style="background:#f8f8f8;padding:16px 32px;text-align:center;">
-    <p style="font-size:11px;color:#aaa;margin:2px 0;">ReclamaIA · reclamaia.es</p>
-    <p style="font-size:11px;color:#aaa;margin:2px 0;">© 2026 ReclamaIA. Todos los derechos reservados.</p>
+    <p style="font-size:11px;color:#aaa;margin:2px 0;">ReclamoIA · reclamoia.es</p>
+    <p style="font-size:11px;color:#aaa;margin:2px 0;">© 2026 ReclamoIA. Todos los derechos reservados.</p>
   </div>
 </div>
 </body>
 </html>`;
 
       await resend.emails.send({
-        from: 'ReclamaIA <hola@reclamaia.es>',
+        from: 'ReclamoIA <hola@reclamoia.es>',
         to: email,
         subject: opcion === 'completa'
           ? `Tu escrito + guía de presentación contra ${empresa}`

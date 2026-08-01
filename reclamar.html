@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Genera tu escrito — ReclamaIA</title>
+  <title>Genera tu escrito — ReclamoIA</title>
   <meta name="description" content="Genera tu escrito de reclamación profesional con legislación verificada en el BOE y EUR-Lex.">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="reclamar.css">
@@ -13,7 +13,7 @@
   <nav id="navbar">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
-        <img src="logo-reclamaia.png" alt="ReclamaIA" class="nav-logo-img">
+        <img src="logo-reclamaia.png" alt="ReclamoIA" class="nav-logo-img">
       </a>
       <div class="nav-links">
         <a href="/">← Volver al inicio</a>
@@ -312,6 +312,12 @@
                 </ul>
               </div>
             </div>
+            <div class="campo">
+              <label class="check-opcion" id="wrap-check-privacidad">
+                <input type="checkbox" id="check-privacidad">
+                <span>He leído y acepto la <a href="/privacidad.html" target="_blank">Política de Privacidad</a>. Entiendo que mis datos personales se usarán para generar mi escrito de reclamación.</span>
+              </label>
+            </div>
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(3)">← Atrás</button>
               <button type="submit" id="btn-generar">Generar mi escrito →</button>
@@ -342,13 +348,17 @@
                   <div class="blur-icon">🔒</div>
                   <p class="blur-titulo">Tu escrito completo está listo</p>
                   <p class="blur-sub">Descarga el PDF con todas las referencias legales verificadas y listo para presentar.</p>
+                  <label class="check-opcion check-opcion-pago" id="wrap-check-venta">
+                    <input type="checkbox" id="check-condiciones-venta">
+                    <span>He leído y acepto las <a href="/condiciones-venta.html" target="_blank">Condiciones de Venta</a>. Solicito la ejecución inmediata del servicio y entiendo que, al ser contenido digital de entrega inmediata, pierdo mi derecho de desistimiento en cuanto reciba el escrito por email.</span>
+                  </label>
                   <button id="btn-pagar" class="btn-pagar">⬇️ Descargar escrito completo en PDF — 3,99€</button>
                   <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Envío inmediato por email &nbsp;·&nbsp; ✓ Sin suscripción</p>
                 </div>
               </div>
             </div>
             <div class="descargo-legal">
-              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamaIA es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
+              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamoIA es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
             </div>
             <button id="btn-nueva">Generar otro escrito</button>
           </div>
@@ -361,15 +371,16 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-logo">
-        <img src="logo-reclamaia.png" alt="ReclamaIA" style="height:32px; width:auto;">
+        <img src="logo-reclamaia.png" alt="ReclamoIA" style="height:32px; width:auto;">
       </div>
       <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
       <div class="footer-links">
         <a href="/legal.html">Aviso Legal</a>
         <a href="/privacidad.html">Política de Privacidad</a>
-        <a href="mailto:hola@reclamaia.es">Contacto</a>
+        <a href="/condiciones-venta.html">Condiciones de Venta</a>
+        <a href="mailto:hola@reclamoia.es">Contacto</a>
       </div>
-      <p class="footer-copy">© 2026 ReclamaIA. Todos los derechos reservados.<br>ReclamaIA no presta servicios de asesoría jurídica. Los escritos generados son documentos de apoyo.</p>
+      <p class="footer-copy">© 2026 ReclamoIA. Todos los derechos reservados.<br>ReclamoIA no presta servicios de asesoría jurídica. Los escritos generados son documentos de apoyo.</p>
     </div>
   </footer>
 
@@ -608,5 +619,6 @@ function toggleOtroProblema(valor) {
 
     seleccionarOpcion('completa');
   </script>
+  <script src="cookies.js"></script>
 </body>
 </html>

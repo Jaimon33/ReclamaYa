@@ -70,7 +70,19 @@ async function procesarArchivo(file) {
   return null;
 }
 
+function validarCheck(inputId, wrapId) {
+  const input = document.getElementById(inputId);
+  if (input.checked) return true;
+  const wrap = document.getElementById(wrapId);
+  wrap.classList.add('check-error');
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => wrap.classList.remove('check-error'), 2500);
+  return false;
+}
+
 async function iniciarPago() {
+  if (!validarCheck('check-condiciones-venta', 'wrap-check-venta')) return;
+
   const btnPagar = document.getElementById('btn-pagar');
   const textoOriginal = btnPagar.textContent;
 
@@ -116,6 +128,8 @@ async function iniciarPago() {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  if (!validarCheck('check-privacidad', 'wrap-check-privacidad')) return;
 
   const tipo = document.querySelector('input[name="tipo"]:checked').value;
   const nombre = document.getElementById('nombre').value;
@@ -226,6 +240,7 @@ form.addEventListener('submit', async (e) => {
 
 btnNueva.addEventListener('click', () => {
   form.reset();
+  document.getElementById('check-condiciones-venta').checked = false;
   document.getElementById('lista-archivos').innerHTML = '';
   document.getElementById('step-1').style.display = 'block';
   document.getElementById('step-2').style.display = 'none';

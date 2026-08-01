@@ -195,3 +195,41 @@
   line-height: 1.6;
   font-weight: 600;
 }
+
+.check-opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.875rem 1.125rem;
+  border: 1px solid #E8E4DC;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #FAFAF8;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.check-opcion input[type="checkbox"] {
+  width: auto;
+  flex-shrink: 0;
+  margin: 3px 0 0;
+  accent-color: #0D1B2A;
+}
+
+.check-opcion span {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.check-opcion span a { color: #C9A84C; text-decoration: underline; }
+
+.check-opcion.check-error {
+  border-color: #c0392b;
+  background: #fdf1f0;
+}
+
+.check-opcion-pago {
+  margin-bottom: 0.875rem;
+  text-align: left;
+}
