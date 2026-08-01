@@ -31,7 +31,7 @@ a { text-decoration: none; color: inherit; }
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 2rem;
-  height: 64px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,7 +45,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .nav-logo-img {
-  height: 48px;
+  height: 58px;
   width: auto;
   display: block;
 }
@@ -75,7 +75,7 @@ a { text-decoration: none; color: inherit; }
 
 .nav-links a {
   color: #555;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -85,9 +85,9 @@ a { text-decoration: none; color: inherit; }
 .nav-cta {
   background: #0D1B2A !important;
   color: #fff !important;
-  padding: 8px 20px;
+  padding: 10px 24px;
   border-radius: 6px;
-  font-size: 13px !important;
+  font-size: 15px !important;
   font-weight: 700 !important;
   transition: opacity 0.2s !important;
 }
@@ -99,9 +99,9 @@ a { text-decoration: none; color: inherit; }
   background: #0D1B2A;
   color: #fff;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
