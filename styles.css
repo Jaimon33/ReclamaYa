@@ -45,7 +45,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .nav-logo-img {
-  height: 36px;
+  height: 48px;
   width: auto;
   display: block;
 }
@@ -108,14 +108,43 @@ a { text-decoration: none; color: inherit; }
 }
 
 #hero {
-  background: #0D1B2A;
+  background: linear-gradient(135deg, #0D1B2A 0%, #16293f 55%, #0D1B2A 100%);
   padding: 8rem 2rem 5rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#hero::before {
+  content: '';
+  position: absolute;
+  top: -140px;
+  right: -140px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0) 70%);
+  pointer-events: none;
+}
+
+#hero::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -110px;
+  width: 420px;
+  height: 540px;
+  background-image: url('icon-watermark.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  pointer-events: none;
 }
 
 .hero-inner {
   max-width: 660px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-badge {
@@ -157,8 +186,21 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.hero-trust {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
   margin-bottom: 3rem;
 }
+
+.hero-trust span { display: inline-flex; align-items: center; gap: 5px; }
 
 .btn-primary {
   background: #C9A84C;
