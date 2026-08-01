@@ -186,46 +186,10 @@ a { text-decoration: none; color: inherit; }
 
 .btn-secondary:hover { border-color: rgba(255,255,255,0.6); }
 
-.hero-stats {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 3rem;
-  flex-wrap: wrap;
-}
-
-.hero-stat { text-align: center; }
-
-.stat-num {
-  display: block;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.stat-label {
-  display: block;
-  font-size: 11px;
-  color: rgba(255,255,255,0.45);
-  margin-top: 3px;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 36px;
-  background: rgba(255,255,255,0.12);
-}
-
 section { padding: 5rem 2rem; }
 
 #categorias {
   background: #fff;
-  border-top: 1px solid #E8E4DC;
-  border-bottom: 1px solid #E8E4DC;
-}
-
-#testimonios {
-  background: #FAFAF8;
   border-top: 1px solid #E8E4DC;
   border-bottom: 1px solid #E8E4DC;
 }
@@ -339,41 +303,6 @@ section { padding: 5rem 2rem; }
 .cat-icon { font-size: 22px; display: block; margin-bottom: 0.5rem; }
 .cat-titulo { font-size: 12px; font-weight: 700; color: #0D1B2A; margin: 0 0 3px; transition: color 0.2s; }
 .cat-sub { font-size: 11px; color: #999; margin: 0; transition: color 0.2s; }
-
-.testimonios-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 2.5rem;
-}
-
-.testimonio-card {
-  background: #fff;
-  border: 1px solid #E8E4DC;
-  border-radius: 10px;
-  padding: 1.5rem;
-}
-
-.testimonio-estrellas { color: #C9A84C; font-size: 13px; margin-bottom: 0.75rem; }
-.testimonio-texto { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 1rem; font-style: italic; }
-.testimonio-autor { display: flex; align-items: center; gap: 10px; }
-
-.testimonio-avatar {
-  width: 36px;
-  height: 36px;
-  background: #0D1B2A;
-  color: #C9A84C;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.testimonio-nombre { font-size: 12px; font-weight: 700; color: #0D1B2A; margin: 0 0 2px; }
-.testimonio-ciudad { font-size: 11px; color: #999; margin: 0; }
 
 #diferenciadores { background: #fff; }
 
@@ -792,12 +721,9 @@ footer {
   .nav-mobile-btn { display: block; }
   #hero h1 { font-size: 1.9rem; }
   .categorias-grid { grid-template-columns: repeat(2, 1fr); }
-  .testimonios-grid { grid-template-columns: 1fr; }
   .dif-grid { grid-template-columns: repeat(2, 1fr); }
   .pasos-grid { flex-direction: column; }
   .paso-arrow { transform: rotate(90deg); }
-  .stat-divider { width: 36px; height: 1px; }
-  .hero-stats { gap: 1.5rem; }
 }
 
 @media (max-width: 480px) {

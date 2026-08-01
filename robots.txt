@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /exito.html
+Disallow: /api/
+
+Sitemap: https://reclamoia.es/sitemap.xml

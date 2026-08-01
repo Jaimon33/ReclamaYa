@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada — ReclamoIA</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .error-main {
+      padding-top: 64px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAFAF8;
+    }
+    .error-card {
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      margin: 1.5rem;
+    }
+    .error-code {
+      font-size: 4.5rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      letter-spacing: -1px;
+    }
+    .error-titulo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      margin-bottom: 0.75rem;
+    }
+    .error-texto {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img src="logo-reclamoia.png" alt="ReclamoIA" class="nav-logo-img">
+      </a>
+      <div class="nav-links">
+        <a href="/">← Volver al inicio</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="error-main">
+    <div class="error-card">
+      <p class="error-code">404</p>
+      <p class="error-titulo">Esta página no existe</p>
+      <p class="error-texto">El enlace puede estar roto o la página se ha movido. Vuelve al inicio o genera tu escrito de reclamación.</p>
+      <a href="/reclamar.html" class="btn-primary" style="display:inline-block;">Generar mi escrito →</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo-reclamoia.png" alt="ReclamoIA" style="height:28px; width:auto; filter:brightness(0) invert(1);">
+      </div>
+      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="/condiciones-venta.html">Condiciones de Venta</a>
+        <a href="mailto:hola@reclamoia.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamoIA. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+  </script>
+  <script src="cookies.js"></script>
+
+</body>
+</html>

@@ -298,7 +298,7 @@ if (guiaData.guia) {
 <body style="font-family:Arial,sans-serif;background:#f0f2f7;margin:0;padding:0;">
 <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;">
   <div style="background:#0D1B2A;padding:28px 32px;">
-    <img src="https://reclamoia.es/logo-reclamaia.png" alt="ReclamoIA" style="height:36px;width:auto;">
+    <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA" style="height:36px;width:auto;">
   </div>
   <div style="padding:32px;">
     <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">Tu ${opcion === 'completa' ? 'escrito y guía están listos' : 'escrito está listo'}, ${escaparHTML(nombre.split(' ')[0] || '')}</h2>
