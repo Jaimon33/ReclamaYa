@@ -36,8 +36,27 @@ function escaparHTML(str) {
     .replace(/"/g, '&quot;');
 }
 
+function generarRefExpediente() {
+  const fecha = new Date();
+  const codigo = fecha.getFullYear().toString() +
+    (fecha.getMonth() + 1).toString().padStart(2, '0') +
+    fecha.getDate().toString().padStart(2, '0') +
+    '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `RC-${codigo}`;
+}
+
 function generarHTMLEscrito(carta, datos) {
-  const { nombre, documento, direccion, cp, ciudad, telefono, email, empresa } = datos;
+  const { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa } = datos;
+  const refExpediente = generarRefExpediente();
+
+  const lineasRemitente = [`<p><strong>${escaparHTML(nombre)}</strong></p>`];
+  if (documento) lineasRemitente.push(`<p>${escaparHTML(documento)}</p>`);
+  if (direccion || ciudad || cp) {
+    const domicilio = [escaparHTML(direccion), [escaparHTML(cp), escaparHTML(ciudad)].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    lineasRemitente.push(`<p>${domicilio}</p>`);
+  }
+  if (telefono) lineasRemitente.push(`<p>Tel.: ${escaparHTML(telefono)}</p>`);
+  if (email) lineasRemitente.push(`<p>${escaparHTML(email)}</p>`);
 
   const cuerpoHTML = carta.split('\n').map(linea => {
     const l = escaparHTML(linea.trimEnd()).replace(/\*\*/g, '');
@@ -58,39 +77,53 @@ function generarHTMLEscrito(carta, datos) {
 <head><meta charset="UTF-8">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:40px 50px 60px; max-width:800px; margin:0 auto; }
+  body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:0 50px 60px; max-width:800px; margin:0 auto; position:relative; }
+  .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
+  .marca-agua span { font-family:Arial,sans-serif; font-size:92px; font-weight:700; color:rgba(13,27,42,0.045); transform:rotate(-38deg); white-space:nowrap; letter-spacing:4px; }
+  .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:flex-start; }
+  .cabecera-formal .marca { font-family:Arial,sans-serif; font-size:9pt; font-weight:700; color:#0D1B2A; letter-spacing:1px; }
+  .cabecera-formal .marca span { color:#C9A84C; }
+  .cabecera-formal .ref { font-family:Arial,sans-serif; font-size:8pt; color:#888; text-align:right; line-height:1.6; }
+  .contenido { position:relative; z-index:1; }
   .remitente { margin-bottom:20px; font-size:10.5pt; line-height:1.75; }
   .remitente p { margin:1px 0; }
   hr { border:none; border-top:0.5px solid #ccc; margin:16px 0; }
   .destinatario { margin-bottom:16px; font-size:10.5pt; line-height:1.75; }
   .destinatario p { margin:1px 0; }
+  .asunto { margin-bottom:16px; font-size:10.5pt; line-height:1.6; padding:8px 12px; background:#fafaf8; border-left:2px solid #C9A84C; }
   .fecha-lugar { margin-bottom:20px; font-size:10.5pt; }
-  .cuerpo { font-size:11pt; line-height:1.8; margin-bottom:20px; }
+  .cuerpo { font-size:11pt; line-height:1.8; margin-bottom:20px; text-align:justify; }
   .firma { margin-top:32px; font-size:10.5pt; line-height:1.7; }
   .firma-linea { width:180px; border-top:1px solid #333; margin:30px 0 8px; }
-  .pie { margin-top:50px; padding-top:8px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6; }
-  @media print { body { padding:0; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
+  .pie { position:relative; z-index:1; margin-top:50px; padding-top:8px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6; }
+  @media print { body { padding:0 50px 60px; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
 </style>
 </head>
 <body>
+<div class="marca-agua"><span>RECLAMOIA</span></div>
+<div class="contenido">
+<div class="cabecera-formal">
+  <div class="marca">Reclamo<span>IA</span> · Escrito de reclamación</div>
+  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaEmpresa || 'General')}</div>
+</div>
 <div class="remitente">
-  <p><strong>${escaparHTML(nombre)}</strong></p>
-  <p>${escaparHTML(documento)}</p>
-  <p>${escaparHTML(direccion)}, ${escaparHTML(cp)} ${escaparHTML(ciudad)}</p>
-  <p>Tel.: ${escaparHTML(telefono)}</p>
-  <p>${escaparHTML(email)}</p>
+  ${lineasRemitente.join('\n  ')}
 </div>
 <hr>
 <div class="destinatario">
   <p><strong>A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE</strong></p>
   <p><strong>${escaparHTML(empresa.toUpperCase())}</strong></p>
 </div>
+<div class="asunto">
+  <strong>Asunto:</strong> Reclamación formal en materia de ${escaparHTML((categoriaEmpresa || 'consumo').toLowerCase())}
+</div>
 <hr>
 <div class="cuerpo">${cuerpoHTML}</div>
 <div class="firma">
   <div class="firma-linea"></div>
   <p><strong>${escaparHTML(nombre)}</strong></p>
-  <p>${escaparHTML(documento)}</p>
+  ${documento ? `<p>${escaparHTML(documento)}</p>` : ''}
+</div>
 </div>
 <div class="pie">
   <p>ReclamoIA · reclamoia.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamoIA no presta servicios de asesoría jurídica.</p>

@@ -120,28 +120,75 @@
                 <input type="text" id="nombre" placeholder="Juan García López" required>
               </div>
               <div class="campo">
-                <label for="documento" id="label-documento">DNI</label>
-                <input type="text" id="documento" placeholder="12345678A" required>
+                <label for="documento" id="label-documento">DNI <span class="campo-opcional">(opcional)</span></label>
+                <input type="text" id="documento" placeholder="12345678A">
               </div>
             </div>
             <div class="campo">
-              <label for="direccion">Dirección completa</label>
-              <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B" required>
+              <label for="direccion">Dirección completa <span class="campo-opcional">(opcional)</span></label>
+              <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B">
             </div>
             <div class="grid-2">
               <div class="campo">
-                <label for="ciudad">Ciudad</label>
-                <input type="text" id="ciudad" placeholder="Madrid" required>
+                <label for="ciudad">Ciudad <span class="campo-opcional">(opcional)</span></label>
+                <input type="text" id="ciudad" placeholder="Madrid">
               </div>
               <div class="campo">
-                <label for="cp">Código postal</label>
-                <input type="text" id="cp" placeholder="28001" required>
+                <label for="cp">Código postal <span class="campo-opcional">(opcional)</span></label>
+                <input type="text" id="cp" placeholder="28001">
               </div>
             </div>
             <div class="grid-2">
               <div class="campo">
-                <label for="telefono">Teléfono</label>
-                <input type="tel" id="telefono" placeholder="600 123 456" required>
+                <label for="telefono">Teléfono <span class="campo-opcional">(opcional)</span></label>
+                <div class="telefono-grupo">
+                  <select id="prefijo-telefono" aria-label="Prefijo del país">
+                    <option value="+34" selected>🇪🇸 +34</option>
+                    <option value="+351">🇵🇹 +351</option>
+                    <option value="+33">🇫🇷 +33</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+39">🇮🇹 +39</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+376">🇦🇩 +376</option>
+                    <option value="+212">🇲🇦 +212</option>
+                    <option value="+31">🇳🇱 +31</option>
+                    <option value="+32">🇧🇪 +32</option>
+                    <option value="+41">🇨🇭 +41</option>
+                    <option value="+353">🇮🇪 +353</option>
+                    <option value="+48">🇵🇱 +48</option>
+                    <option value="+40">🇷🇴 +40</option>
+                    <option value="+46">🇸🇪 +46</option>
+                    <option value="+47">🇳🇴 +47</option>
+                    <option value="+45">🇩🇰 +45</option>
+                    <option value="+358">🇫🇮 +358</option>
+                    <option value="+43">🇦🇹 +43</option>
+                    <option value="+30">🇬🇷 +30</option>
+                    <option value="+420">🇨🇿 +420</option>
+                    <option value="+36">🇭🇺 +36</option>
+                    <option value="+1">🇺🇸/🇨🇦 +1</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+57">🇨🇴 +57</option>
+                    <option value="+56">🇨🇱 +56</option>
+                    <option value="+51">🇵🇪 +51</option>
+                    <option value="+58">🇻🇪 +58</option>
+                    <option value="+55">🇧🇷 +55</option>
+                    <option value="+593">🇪🇨 +593</option>
+                    <option value="+598">🇺🇾 +598</option>
+                    <option value="+591">🇧🇴 +591</option>
+                    <option value="+595">🇵🇾 +595</option>
+                    <option value="+506">🇨🇷 +506</option>
+                    <option value="+507">🇵🇦 +507</option>
+                    <option value="+502">🇬🇹 +502</option>
+                    <option value="+53">🇨🇺 +53</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+86">🇨🇳 +86</option>
+                    <option value="+81">🇯🇵 +81</option>
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+7">🇷🇺 +7</option>
+                  </select>
+                  <input type="tel" id="telefono" placeholder="600 123 456">
+                </div>
               </div>
               <div class="campo">
                 <label for="email">Email</label>
@@ -156,9 +203,10 @@
 
           <!-- PASO 2: LA RECLAMACIÓN -->
           <div class="form-step" id="step-2" style="display:none;">
+            <div class="seccion-titulo">1. Expone — qué ha ocurrido</div>
             <div class="campo">
-              <label for="categoria-empresa">Categoría</label>
-              <select id="categoria-empresa" required onchange="mostrarCamposCategoria(this.value)">
+              <label for="categoria-empresa">Categoría <span class="campo-opcional">(opcional)</span></label>
+              <select id="categoria-empresa" onchange="mostrarCamposCategoria(this.value)">
                 <option value="">Selecciona una categoría...</option>
                 <option value="Telecomunicaciones">Telecomunicaciones</option>
                 <option value="Energía y suministros">Energía y suministros</option>
@@ -178,12 +226,12 @@
             </div>
             <div class="grid-2">
               <div class="campo">
-                <label for="referencia">Nº contrato o referencia</label>
+                <label for="referencia">Nº contrato o referencia <span class="campo-opcional">(opcional)</span></label>
                 <input type="text" id="referencia" placeholder="Ej: 123456789">
               </div>
               <div class="campo">
-                <label for="fecha-hecho">Fecha del hecho</label>
-                <input type="date" id="fecha-hecho" required>
+                <label for="fecha-hecho">Fecha del hecho <span class="campo-opcional">(opcional)</span></label>
+                <input type="date" id="fecha-hecho">
               </div>
             </div>
 
@@ -191,8 +239,8 @@
             <div id="campos-categoria"></div>
 
            <div class="campo">
-  <label for="problema">Tipo de problema</label>
-  <select id="problema" required onchange="toggleOtroProblema(this.value)">
+  <label for="problema">Motivo principal <span class="campo-opcional">(opcional)</span></label>
+  <select id="problema" onchange="toggleOtroProblema(this.value)">
     <option value="">Selecciona...</option>
     <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
     <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
@@ -214,34 +262,15 @@
   <textarea id="otro-problema" rows="2" placeholder="Explica brevemente cuál es el problema..."></textarea>
 </div>
             <div class="campo">
-              <label for="importe">Importe reclamado en euros (si aplica)</label>
+              <label for="importe">Importe reclamado en euros <span class="campo-opcional">(opcional)</span></label>
               <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
             </div>
             <div class="campo">
-              <label for="objetivo">Objetivo de la reclamación</label>
-              <select id="objetivo" required onchange="toggleOtroObjetivo(this.value)">
-                <option value="">Selecciona...</option>
-                <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
-                <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
-                <option value="que solucionen el problema técnico o de servicio de forma inmediata">Solución inmediata del problema</option>
-                <option value="darme de baja del servicio sin penalización ni coste adicional">Baja sin penalización</option>
-                <option value="anular la multa o sanción impuesta">Anulación de multa o sanción</option>
-                <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
-                <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
-                <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
-                <option value="otro">Otro objetivo</option>
-              </select>
-            </div>
-            <div class="campo" id="campo-otro-objetivo" style="display:none;">
-              <label for="otro-objetivo">Describe tu objetivo</label>
-              <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
-            </div>
-            <div class="campo">
-              <label for="descripcion">Describe qué ocurrió</label>
+              <label for="descripcion">Cuéntanos con detalle qué ha ocurrido</label>
               <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
             </div>
             <div class="campo">
-              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa o entidad?</label>
+              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa o entidad? <span class="campo-opcional">(opcional)</span></label>
               <select id="reclamacion-previa" onchange="toggleReclamacionPrevia(this.value)">
                 <option value="">Selecciona...</option>
                 <option value="no">No, es mi primera reclamación</option>
@@ -261,7 +290,7 @@
               </div>
             </div>
             <div class="campo">
-              <label for="tiene-documentacion">¿Tienes documentación que acredite lo que reclamas?</label>
+              <label for="tiene-documentacion">¿Tienes documentación que acredite lo que reclamas? <span class="campo-opcional">(opcional)</span></label>
               <select id="tiene-documentacion" onchange="toggleAvisoDocumentacion(this.value)">
                 <option value="">Selecciona...</option>
                 <option value="si">Sí, tengo facturas, contratos, capturas u otros documentos</option>
@@ -274,6 +303,28 @@
                 <p>✓ Perfecto — en el paso 3 podrás adjuntar esos documentos. Cuantos más adjuntes, más contundente y preciso será tu escrito.</p>
               </div>
             </div>
+
+            <div class="seccion-titulo">2. Solicita — qué pides a la empresa</div>
+            <div class="campo">
+              <label for="objetivo">¿Qué solicitas? <span class="campo-opcional">(opcional)</span></label>
+              <select id="objetivo" onchange="toggleOtroObjetivo(this.value)">
+                <option value="">Selecciona...</option>
+                <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
+                <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
+                <option value="que solucionen el problema técnico o de servicio de forma inmediata">Solución inmediata del problema</option>
+                <option value="darme de baja del servicio sin penalización ni coste adicional">Baja sin penalización</option>
+                <option value="anular la multa o sanción impuesta">Anulación de multa o sanción</option>
+                <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
+                <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
+                <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
+                <option value="otro">Otro objetivo</option>
+              </select>
+            </div>
+            <div class="campo" id="campo-otro-objetivo" style="display:none;">
+              <label for="otro-objetivo">Describe tu objetivo</label>
+              <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
+            </div>
+
             <div class="form-nav-btns">
               <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
               <button type="button" class="btn-siguiente" onclick="irPaso(3)">Siguiente →</button>
@@ -341,6 +392,77 @@
           </div>
 
         </form>
+
+        <datalist id="lista-aeropuertos">
+          <option value="Madrid (MAD)">
+          <option value="Barcelona (BCN)">
+          <option value="Palma de Mallorca (PMI)">
+          <option value="Málaga (AGP)">
+          <option value="Gran Canaria (LPA)">
+          <option value="Tenerife Sur (TFS)">
+          <option value="Tenerife Norte (TFN)">
+          <option value="Alicante (ALC)">
+          <option value="Valencia (VLC)">
+          <option value="Sevilla (SVQ)">
+          <option value="Bilbao (BIO)">
+          <option value="Ibiza (IBZ)">
+          <option value="Menorca (MAH)">
+          <option value="Lanzarote (ACE)">
+          <option value="Fuerteventura (FUE)">
+          <option value="Santiago de Compostela (SCQ)">
+          <option value="Vigo (VGO)">
+          <option value="Asturias (OVD)">
+          <option value="Santander (SDR)">
+          <option value="Zaragoza (ZAZ)">
+          <option value="A Coruña (LCG)">
+          <option value="Girona (GRO)">
+          <option value="Almería (LEI)">
+          <option value="Murcia-Corvera (RMU)">
+          <option value="Jerez (XRY)">
+          <option value="Granada (GRX)">
+          <option value="Reus (REU)">
+          <option value="Vitoria (VIT)">
+          <option value="Pamplona (PNA)">
+          <option value="Valladolid (VLL)">
+          <option value="San Sebastián (EAS)">
+          <option value="Melilla (MLN)">
+          <option value="Badajoz (BJZ)">
+          <option value="Lisboa (LIS)">
+          <option value="Oporto (OPO)">
+          <option value="París Charles de Gaulle (CDG)">
+          <option value="París Orly (ORY)">
+          <option value="Londres Heathrow (LHR)">
+          <option value="Londres Gatwick (LGW)">
+          <option value="Ámsterdam (AMS)">
+          <option value="Fráncfort (FRA)">
+          <option value="Múnich (MUC)">
+          <option value="Roma Fiumicino (FCO)">
+          <option value="Milán Malpensa (MXP)">
+          <option value="Bruselas (BRU)">
+          <option value="Zúrich (ZRH)">
+          <option value="Viena (VIE)">
+          <option value="Dublín (DUB)">
+          <option value="Copenhague (CPH)">
+          <option value="Estocolmo (ARN)">
+          <option value="Oslo (OSL)">
+          <option value="Helsinki (HEL)">
+          <option value="Varsovia (WAW)">
+          <option value="Praga (PRG)">
+          <option value="Budapest (BUD)">
+          <option value="Atenas (ATH)">
+          <option value="Estambul (IST)">
+          <option value="Nueva York JFK (JFK)">
+          <option value="Miami (MIA)">
+          <option value="Los Ángeles (LAX)">
+          <option value="Ciudad de México (MEX)">
+          <option value="Buenos Aires Ezeiza (EZE)">
+          <option value="Bogotá (BOG)">
+          <option value="Lima (LIM)">
+          <option value="Santiago de Chile (SCL)">
+          <option value="São Paulo Guarulhos (GRU)">
+          <option value="Casablanca (CMN)">
+          <option value="Dubái (DXB)">
+        </datalist>
       </div>
 
       <div id="resultado" style="display:none;">
@@ -421,8 +543,8 @@
           <div class="campo"><label for="cat-localizador">Localizador de reserva</label><input type="text" id="cat-localizador" placeholder="Ej: ABC123"></div>
         </div>
         <div class="grid-2">
-          <div class="campo"><label for="cat-origen">Aeropuerto de origen</label><input type="text" id="cat-origen" placeholder="Ej: Madrid (MAD)"></div>
-          <div class="campo"><label for="cat-destino">Aeropuerto de destino</label><input type="text" id="cat-destino" placeholder="Ej: Barcelona (BCN)"></div>
+          <div class="campo"><label for="cat-origen">Aeropuerto de origen</label><input type="text" id="cat-origen" list="lista-aeropuertos" placeholder="Escribe la ciudad o el código..." autocomplete="off"></div>
+          <div class="campo"><label for="cat-destino">Aeropuerto de destino</label><input type="text" id="cat-destino" list="lista-aeropuertos" placeholder="Escribe la ciudad o el código..." autocomplete="off"></div>
         </div>
         <div class="grid-2">
           <div class="campo"><label for="cat-retraso">Horas de retraso (si aplica)</label><input type="number" id="cat-retraso" placeholder="Ej: 4" min="0"></div>
@@ -517,14 +639,7 @@ function toggleOtroProblema(valor) {
 }
     function toggleOtroObjetivo(valor) {
       const campo = document.getElementById('campo-otro-objetivo');
-      const input = document.getElementById('otro-objetivo');
-      if (valor === 'otro') {
-        campo.style.display = 'block';
-        input.required = true;
-      } else {
-        campo.style.display = 'none';
-        input.required = false;
-      }
+      campo.style.display = valor === 'otro' ? 'block' : 'none';
     }
 
     function toggleReclamacionPrevia(valor) {

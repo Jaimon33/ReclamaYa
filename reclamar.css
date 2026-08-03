@@ -209,10 +209,19 @@
 }
 
 .check-opcion input[type="checkbox"] {
-  width: auto;
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
   flex-shrink: 0;
-  margin: 3px 0 0;
+  margin: 2px 0 0;
   accent-color: #0D1B2A;
+  cursor: pointer;
 }
 
 .check-opcion span {
@@ -232,4 +241,39 @@
 .check-opcion-pago {
   margin-bottom: 0.875rem;
   text-align: left;
+}
+
+.campo-opcional {
+  font-weight: 400;
+  color: #aaa;
+  font-size: 11px;
+  text-transform: none;
+}
+
+.seccion-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C9A84C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 1.75rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #E8E4DC;
+}
+
+.seccion-titulo:first-child { margin-top: 0; }
+
+.telefono-grupo {
+  display: flex;
+  gap: 6px;
+}
+
+.telefono-grupo select {
+  flex: 0 0 92px;
+  width: 92px;
+}
+
+.telefono-grupo input {
+  flex: 1;
+  min-width: 0;
 }

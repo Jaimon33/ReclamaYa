@@ -110,8 +110,7 @@ export default async function handler(req, res) {
     objetivo, descripcion, documentos
   } = req.body;
 
-  if (!nombre || !documento || !direccion || !ciudad || !cp ||
-      !telefono || !email || !empresa || !problema || !objetivo || !descripcion) {
+  if (!nombre || !email || !empresa || !descripcion) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
@@ -130,6 +129,10 @@ export default async function handler(req, res) {
   const importeTexto = importe ? `El importe reclamado es de ${parseFloat(importe).toFixed(2)}€.` : '';
   const referenciaTexto = referencia ? `Número de contrato o referencia: ${referencia}.` : '';
   const fechaTexto = fechaHecho ? `Los hechos ocurrieron el ${fechaHecho}.` : '';
+  const problemaTexto = problema ? `Motivo: ${problema}` : '';
+  const objetivoTexto = objetivo
+    ? `Objetivo: ${objetivo}`
+    : 'Objetivo: no lo especifica — infiere la petición más razonable a partir de la descripción de los hechos.';
 
   const textoDocumentos = documentos
     .filter(d => d.tipo === 'texto')
@@ -138,14 +141,30 @@ export default async function handler(req, res) {
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
 
-  const prompt = `Eres un abogado especialista en derecho del consumidor español. Redacta un escrito de reclamación extrajudicial formal.
+  // Construye la identificación del reclamante solo con los datos que realmente ha aportado
+  const identificacionPartes = [nombre];
+  if (documento) identificacionPartes.push(`con ${docTexto} número ${documento}`);
+  if (direccion || ciudad || cp) {
+    const domicilio = [direccion, [cp, ciudad].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    identificacionPartes.push(`y domicilio a efectos de notificaciones en ${domicilio}`);
+  }
+  if (telefono) identificacionPartes.push(`teléfono ${telefono}`);
+  identificacionPartes.push(`correo electrónico ${email}`);
+  const identificacionReclamante = identificacionPartes.join(', ');
 
-DATOS DEL RECLAMANTE:
-Nombre: ${nombre} | ${docTexto}: ${documento} | Dirección: ${direccion}, ${cp} ${ciudad} | Tel: ${telefono} | Email: ${email}
+  const lugarFecha = ciudad
+    ? `En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.`
+    : `A ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.`;
+
+  const prompt = `Eres un abogado especialista en derecho del consumidor español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta un escrito de reclamación extrajudicial formal.
+
+DATOS DEL RECLAMANTE (usa únicamente los que se indican; si algún dato no aparece aquí, el reclamante no lo ha facilitado y NO debes inventarlo ni dejar huecos o corchetes en su lugar):
+Nombre: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${direccion ? ` | Dirección: ${direccion}, ${cp} ${ciudad}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}
 
 RECLAMACIÓN:
 Empresa indicada: ${empresa} | Categoría: ${categoria}
-Motivo: ${problema} | Objetivo: ${objetivo}
+${problemaTexto}
+${objetivoTexto}
 ${importeTexto} ${referenciaTexto} ${fechaTexto}
 Descripción: ${descripcion}
 ${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
@@ -159,13 +178,14 @@ REGLAS ABSOLUTAS DE FORMATO — incumplirlas invalida el escrito:
 3. El escrito empieza DIRECTAMENTE con el párrafo de presentación del reclamante
 4. Los ordinales PRIMERO.- SEGUNDO.- TERCERO.- van en mayúsculas seguidos de punto y guión, sin ningún símbolo adicional
 5. Todo el texto en formato plano, sin negritas markdown
+6. PROHIBIDO dejar corchetes [ ] o huecos en blanco en el texto final: si falta un dato (DNI, dirección, teléfono, fecha, importe...), redacta la frase de forma natural omitiendo ese dato, nunca dejes el hueco visible
 
 DESTINATARIO:
 Si en los documentos adjuntos aparece el nombre exacto del organismo, departamento y dirección postal a quien va dirigido el escrito, úsalos. Si no hay documentos, usa: ${empresa}. En cualquier caso NO escribas el destinatario en el cuerpo del escrito, ese bloque lo añade el sistema automáticamente.
 
 ESTRUCTURA DEL CUERPO DEL ESCRITO:
 
-${nombre}, con ${docTexto} número ${documento}, y domicilio a efectos de notificaciones en ${direccion}, ${cp} ${ciudad}, teléfono ${telefono} y correo electrónico ${email}, ante [destinatario real], comparezco y como mejor proceda en Derecho, EXPONGO:
+${identificacionReclamante}, ante [destinatario real], comparezco y como mejor proceda en Derecho, EXPONGO:
 
 PRIMERO.- [primer hecho con fecha concreta y datos del documento si los hay]
 
@@ -185,13 +205,13 @@ SEGUNDO.- Que se dé respuesta formal y por escrito en el plazo máximo de QUINC
 
 TERCERO.- Que de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a interponer las correspondientes reclamaciones ante ${fuentesNombres.join(' y/o ')}, así como a ejercer cuantas acciones legales procedan.
 
-En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
+${lugarFecha}
 
 Atentamente,
 
 INSTRUCCIONES FINALES:
 - Extensión mínima 400 palabras
-- Tono técnico-jurídico, formal y firme
+- Tono técnico-jurídico, MUY formal y firme, como un escrito redactado por un despacho de abogados — cuida especialmente la precisión terminológica y la estructura
 - Devuelve ÚNICAMENTE el cuerpo del escrito, nada más`;
 
   try {
