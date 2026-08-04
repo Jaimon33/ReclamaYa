@@ -45,9 +45,8 @@ function generarRefExpediente() {
   return `RC-${codigo}`;
 }
 
-function generarHTMLEscrito(carta, datos) {
+function generarHTMLEscrito(carta, datos, refExpediente) {
   const { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa } = datos;
-  const refExpediente = generarRefExpediente();
 
   const lineasRemitente = [`<p><strong>${escaparHTML(nombre)}</strong></p>`];
   if (documento) lineasRemitente.push(`<p>${escaparHTML(documento)}</p>`);
@@ -137,7 +136,7 @@ function generarHTMLEscrito(carta, datos) {
 </html>`;
 }
 
-function generarHTMLGuia(guiaData, datos) {
+function generarHTMLGuia(guiaData, datos, refExpediente) {
   const { nombre, empresa, categoriaEmpresa, ciudad } = datos;
   const { guia, fecha } = guiaData;
 
@@ -153,14 +152,32 @@ function generarHTMLGuia(guiaData, datos) {
 <head><meta charset="UTF-8">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:40px 50px 60px; max-width:800px; margin:0 auto; }
-  @media print { body { padding:0; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
+  body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:0 50px 60px; max-width:800px; margin:0 auto; position:relative; }
+  .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
+  .marca-agua span { font-family:Arial,sans-serif; font-size:92px; font-weight:700; color:rgba(13,27,42,0.045); transform:rotate(-38deg); white-space:nowrap; letter-spacing:4px; }
+  .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
+  .cabecera-formal .marca { display:flex; align-items:center; gap:8px; }
+  .cabecera-formal .marca img { height:22px; width:auto; display:block; }
+  .cabecera-formal .marca-texto { font-family:Arial,sans-serif; font-size:9pt; font-weight:700; color:#0D1B2A; letter-spacing:1px; }
+  .cabecera-formal .marca-texto span { color:#C9A84C; }
+  .cabecera-formal .ref { font-family:Arial,sans-serif; font-size:8pt; color:#888; text-align:right; line-height:1.6; }
+  .contenido { position:relative; z-index:1; }
+  @media print { body { padding:0 50px 60px; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
 </style>
 </head>
 <body>
+<div class="marca-agua"><span>RECLAMOIA</span></div>
+<div class="contenido">
 
-<div style="border-top:4px solid #0D1B2A; padding-top:14px; border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
-  <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA" style="height:26px; width:auto; display:block; margin-bottom:10px;">
+<div class="cabecera-formal" style="border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
+  <div class="marca">
+    <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA">
+    <span class="marca-texto">Reclamo<span>IA</span> · Guía de presentación</span>
+  </div>
+  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaEmpresa || 'General')}</div>
+</div>
+
+<div style="margin-bottom:20px;">
   <h1 style="font-family:Arial,sans-serif; font-size:18pt; font-weight:700; color:#0D1B2A; margin:0 0 4px;">GUÍA DE PRESENTACIÓN</h1>
   <p style="font-family:Arial,sans-serif; font-size:10pt; color:#C9A84C; font-weight:600; margin:0;">Escrito de reclamación contra ${escaparHTML(empresa)} — ${escaparHTML(categoriaEmpresa)}</p>
 </div>
@@ -192,6 +209,7 @@ ${guia.enlace ? `
   <p>Los plazos y procedimientos están verificados a fecha ${escaparHTML(fecha)}. Se recomienda verificar posibles actualizaciones en las webs oficiales indicadas.</p>
 </div>
 
+</div>
 </body>
 </html>`;
 }
@@ -254,8 +272,9 @@ export default async function handler(req, res) {
 
     try {
       const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa };
+      const refExpediente = generarRefExpediente();
 
-      const htmlEscrito = generarHTMLEscrito(carta, datos);
+      const htmlEscrito = generarHTMLEscrito(carta, datos, refExpediente);
       const pdfEscritoResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
         method: 'POST',
         headers: {
@@ -290,7 +309,7 @@ await new Promise((resolve) => {
 });
 
 if (guiaData.guia) {
-  const htmlGuia = generarHTMLGuia(guiaData, datos);
+  const htmlGuia = generarHTMLGuia(guiaData, datos, refExpediente);
 
             const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
               method: 'POST',
