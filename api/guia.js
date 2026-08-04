@@ -251,6 +251,223 @@ const GUIAS = {
         ]
       }
     ]
+  },
+
+  'Comercio y tiendas online': {
+    organismo: 'Junta Arbitral de Consumo / Plataforma Europea ODR',
+    enlace: 'https://www.dsca.gob.es/es/consumo/como-reclamar-conflicto-consumo/sistema-arbitral-consumo',
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía tu escrito al vendedor',
+        contenido: [
+          'Cómo encontrar el canal oficial: escribe en Google "[nombre de la tienda] atención al cliente reclamación" y accede a su web oficial o a su formulario de contacto.',
+          'Si compraste a través de una plataforma (Amazon, AliExpress, etc.) pero el vendedor es un tercero, reclama primero al vendedor y, si no resuelve, a la propia plataforma — muchas ofrecen "Garantía A-Z" o programas de protección al comprador.',
+          'Plazo legal de respuesta: aunque no siempre hay un plazo único fijado por ley, se considera razonable 1 MES; si es una devolución por desistimiento, el reembolso debe producirse en 14 días naturales desde que el vendedor conoce tu decisión.',
+          'Guarda el justificante de envío de tu reclamación y cualquier número de incidencia que te den.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Si no responden o la respuesta no te convence',
+        contenido: [
+          'Si la compra fue online (a un vendedor de la UE), puedes usar la Plataforma Europea de Resolución de Litigios en Línea (ODR): https://ec.europa.eu/consumers/odr — conecta tu reclamación con un organismo de consumo competente.',
+          'Sistema Arbitral de Consumo: solicita el arbitraje ante la Junta Arbitral de Consumo de tu localidad o provincia. Es voluntario, gratuito y su resolución es vinculante para ambas partes.',
+          'Más información y localizador de tu Junta Arbitral: https://www.dsca.gob.es/es/consumo/como-reclamar-conflicto-consumo/sistema-arbitral-consumo',
+          'Oficina Municipal de Información al Consumidor (OMIC) de tu ayuntamiento: gratuita, puede mediar con la empresa. Búscala en Google: "OMIC [tu ciudad]".',
+          'Todos estos procedimientos son GRATUITOS.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si nada funciona',
+        contenido: [
+          'Vía judicial: para importes hasta 2.000€ puedes presentar un Juicio Verbal sin abogado ni procurador.',
+          'Para importes superiores se recomienda asesoramiento jurídico.',
+          'Si el pago se hizo con tarjeta, valora también solicitar a tu banco la retrocesión del cargo ("chargeback") si el vendedor incumplió gravemente.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'Confirmación del pedido y factura o justificante de compra.',
+          'Capturas de pantalla del anuncio o descripción del producto.',
+          'Justificante de pago (extracto de tarjeta, PayPal, etc.).',
+          'El escrito de reclamación enviado y su justificante.',
+          'Cualquier comunicación recibida del vendedor o la plataforma.'
+        ]
+      }
+    ]
+  },
+
+  'Sanidad y salud': {
+    organismo: 'Servicio de Atención al Paciente / Inspección de Servicios Sanitarios',
+    enlace: null,
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Presenta tu escrito en el centro (sanidad pública) o a la aseguradora/clínica (privada)',
+        contenido: [
+          'Sanidad pública: dirígete al Servicio o Unidad de Atención al Paciente del hospital o centro de salud. Todos los centros públicos están obligados a tenerlo.',
+          'Sanidad privada o seguro médico: envía tu escrito al Servicio de Atención al Cliente de la aseguradora o clínica. Búscalo en Google: "[nombre de la aseguradora o clínica] atención al cliente reclamación".',
+          'Plazo legal de respuesta: 30 días hábiles en sanidad pública desde que tu reclamación entra en la Consejería de Sanidad correspondiente.',
+          'Exige siempre un número de registro o referencia de tu reclamación.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Si no responden en plazo o la respuesta no te convence',
+        contenido: [
+          'Sanidad pública: acude a la Inspección de Servicios Sanitarios de la Consejería de Sanidad de tu Comunidad Autónoma. Búscala en Google: "Inspección de Servicios Sanitarios [tu comunidad autónoma]".',
+          'También puedes dirigirte al Defensor del Paciente de tu comunidad autónoma, si existe esa figura.',
+          'Sanidad privada / seguros médicos: si la reclamación es sobre el seguro (cobertura, facturación), acude a la DGSFP. Búscala en Google: "DGSFP reclamaciones seguros España".',
+          'Para la calidad asistencial de una clínica privada también puedes acudir a la Consejería de Sanidad de tu comunidad autónoma, que supervisa a todos los centros, públicos y privados.',
+          'Estos procedimientos son GRATUITOS.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si la resolución no es favorable',
+        contenido: [
+          'Si consideras que ha habido negligencia médica con daño real, valora solicitar tu historia clínica completa y consulta con un abogado especializado en responsabilidad sanitaria — este tipo de casos suele requerir asesoramiento profesional e informe pericial.',
+          'Para reclamaciones puramente económicas (facturación, reembolsos) de importes hasta 2.000€, puedes presentar un Juicio Verbal sin abogado ni procurador.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'Tu historia clínica o informes médicos relacionados (puedes solicitarlos por escrito, es un derecho reconocido por ley).',
+          'Facturas o justificantes de pago si es sanidad privada.',
+          'El escrito de reclamación enviado y su justificante con número de registro.',
+          'Cualquier comunicación recibida del centro, aseguradora o administración.',
+          'Anota fechas exactas de cada asistencia y de cada gestión realizada.'
+        ]
+      }
+    ]
+  },
+
+  'Inmobiliaria y alquiler': {
+    organismo: 'Oficina de Vivienda / organismo de fianzas de tu Comunidad Autónoma',
+    enlace: null,
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía tu escrito a la otra parte (arrendador, arrendatario o inmobiliaria)',
+        contenido: [
+          'Envía el escrito preferiblemente por burofax con acuse de recibo y certificación de contenido — es la prueba más sólida de que se ha enviado y qué se ha enviado.',
+          'Si reclamas la devolución de la fianza: el plazo habitual para que el arrendador la devuelva es de 1 MES desde la entrega de llaves.',
+          'Guarda copia del contrato de arrendamiento o compraventa y del burofax enviado.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Si no hay respuesta o acuerdo',
+        contenido: [
+          'Fianzas: el arrendador está obligado a depositar la fianza en el organismo de vivienda de tu Comunidad Autónoma (por ejemplo, Agencia de Vivienda Social en Madrid, INCASÒL en Cataluña, o el organismo equivalente en tu región — búscalo en Google: "depósito fianza alquiler [tu comunidad autónoma]").',
+          'Mediación en conflictos de arrendamiento: varias comunidades autónomas ofrecen servicios gratuitos de mediación en vivienda. Búscalo en Google: "mediación alquiler [tu comunidad autónoma]".',
+          'Si la otra parte es una empresa o inmobiliaria (no un particular), también puedes acudir a la Junta Arbitral de Consumo o a la OMIC de tu ayuntamiento.',
+          'Estos procedimientos son gratuitos o de bajo coste.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si nada funciona',
+        contenido: [
+          'Demanda de Juicio Verbal para reclamación de cantidad (por ejemplo, devolución de fianza): para importes hasta 2.000€ no necesitas abogado ni procurador.',
+          'Para desahucios, incumplimientos contractuales complejos o importes superiores, se recomienda asesoramiento jurídico especializado en arrendamientos urbanos.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'El contrato de arrendamiento o compraventa completo.',
+          'Justificante del depósito de la fianza (si lo tienes) o de los pagos realizados.',
+          'Fotografías del estado del inmueble (entrada y salida, si aplica).',
+          'El burofax o escrito enviado y su justificante de entrega.',
+          'Cualquier comunicación recibida de la otra parte.'
+        ]
+      }
+    ]
+  },
+
+  'Educación': {
+    organismo: 'Consejería de Educación / Servicio de Inspección Educativa',
+    enlace: null,
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía tu escrito a la dirección del centro',
+        contenido: [
+          'Presenta tu escrito ante la Secretaría o Dirección del centro educativo, y pide que te sellen o registren una copia como acuse de recibo.',
+          'Si el centro es privado o concertado y el asunto es económico (cuotas, matrícula), trátalo también como una reclamación de consumo: guarda toda factura o recibo.',
+          'Plazo razonable de respuesta: 1 MES.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Si no responden o la respuesta no te convence',
+        contenido: [
+          'Acude a la Delegación o Dirección Provincial de Educación de tu Comunidad Autónoma, a través del Servicio de Inspección Educativa. Búscalo en Google: "Inspección Educativa [tu comunidad autónoma]".',
+          'Se puede presentar presencialmente, por correo postal, o mediante la sede electrónica de tu Comunidad Autónoma con certificado digital, DNIe o Cl@ve.',
+          'Si el centro es privado o concertado y te cobran indebidamente por enseñanzas gratuitas, indícalo expresamente: la ley (LOMLOE) lo prohíbe de forma expresa.',
+          'Para universidades: también puedes acudir al Defensor Universitario de tu universidad, si existe esa figura.',
+          'Si el conflicto es puramente económico con un centro privado, la Junta Arbitral de Consumo y la OMIC de tu ayuntamiento son también una vía válida.',
+          'Estos procedimientos son GRATUITOS.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si la resolución no es favorable',
+        contenido: [
+          'Recurso ante la propia Consejería de Educación si la resolución de la Inspección no te satisface.',
+          'Para reclamaciones puramente económicas de hasta 2.000€, puedes presentar un Juicio Verbal sin abogado ni procurador.',
+          'Para casos complejos se recomienda asesoramiento jurídico.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'El escrito de reclamación presentado y su justificante o sello de registro.',
+          'Facturas, recibos o justificantes de pago de cuotas o matrícula.',
+          'Comunicaciones recibidas del centro (email, circulares, notas).',
+          'Cualquier normativa o circular del centro relacionada con el problema.'
+        ]
+      }
+    ]
+  },
+
+  'Otro': {
+    organismo: 'Junta Arbitral de Consumo / OMIC',
+    enlace: 'https://www.dsca.gob.es/es/consumo/como-reclamar-conflicto-consumo/sistema-arbitral-consumo',
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía tu escrito a la empresa o entidad',
+        contenido: [
+          'Cómo encontrar el canal oficial: escribe en Google "[nombre de la empresa] atención al cliente reclamación escrito" y accede a su web oficial.',
+          'Envía el escrito por un medio que deje constancia (email con acuse de recibo, formulario web con confirmación, o burofax si el asunto es relevante).',
+          'Plazo razonable de respuesta: 1 MES.',
+          'Guarda el justificante de envío y cualquier número de referencia que te den.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Si no responden o la respuesta no te convence',
+        contenido: [
+          'Oficina Municipal de Información al Consumidor (OMIC) de tu ayuntamiento: gratuita, puede mediar con la empresa. Búscala en Google: "OMIC [tu ciudad]".',
+          'Sistema Arbitral de Consumo: solicita el arbitraje ante la Junta Arbitral de Consumo de tu localidad o provincia. Es voluntario, gratuito y vinculante para ambas partes si la empresa está adherida.',
+          'Más información y localizador de tu Junta Arbitral: https://www.dsca.gob.es/es/consumo/como-reclamar-conflicto-consumo/sistema-arbitral-consumo',
+          'Todos estos procedimientos son GRATUITOS.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si nada funciona',
+        contenido: [
+          'Vía judicial: para importes hasta 2.000€ puedes presentar un Juicio Verbal sin abogado ni procurador.',
+          'Para importes superiores o casos complejos se recomienda asesoramiento jurídico profesional.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'El escrito de reclamación enviado y su justificante.',
+          'Facturas, contratos o justificantes relacionados con tu caso.',
+          'Cualquier comunicación recibida de la otra parte.',
+          'Anota la fecha exacta de cada gestión que realices.'
+        ]
+      }
+    ]
   }
 };
 
@@ -265,7 +482,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
-  const guia = GUIAS[categoria] || GUIAS['Administración pública'];
+  const guia = GUIAS[categoria] || GUIAS['Otro'];
 
   const fechaFormateada = new Date().toLocaleDateString('es-ES', {
     day: 'numeric', month: 'long', year: 'numeric'
