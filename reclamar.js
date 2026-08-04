@@ -16,6 +16,20 @@ const pasos = [
   'Finalizando el documento...'
 ];
 
+function recopilarCamposCategoria() {
+  const contenedor = document.getElementById('campos-categoria');
+  if (!contenedor) return '';
+  const partes = [];
+  contenedor.querySelectorAll('input, select, textarea').forEach((campo) => {
+    const valor = campo.value ? campo.value.trim() : '';
+    if (!valor) return;
+    const label = contenedor.querySelector(`label[for="${campo.id}"]`);
+    const etiqueta = label ? label.textContent.replace(/\(opcional\)|\(si.*?\)/gi, '').trim() : campo.id;
+    partes.push(`${etiqueta}: ${valor}`);
+  });
+  return partes.join('\n');
+}
+
 async function procesarArchivo(file) {
   const ext = file.name.split('.').pop().toLowerCase();
 
@@ -145,20 +159,18 @@ form.addEventListener('submit', async (e) => {
   const empresa = document.getElementById('empresa').value;
   const referencia = document.getElementById('referencia').value;
   const fechaHecho = document.getElementById('fecha-hecho').value;
-  const problema = document.getElementById('problema').value;
   const importe = document.getElementById('importe').value;
-  const objetivoSelect = document.getElementById('objetivo').value;
-  const otroObjetivo = document.getElementById('otro-objetivo').value;
-  const objetivo = objetivoSelect === 'otro' ? otroObjetivo : objetivoSelect;
   const descripcion = document.getElementById('descripcion').value;
+  const objetivo = document.getElementById('solicita').value;
+  const camposCategoria = recopilarCamposCategoria();
   const archivosInput = document.getElementById('archivos');
   const archivos = archivosInput.files;
 
   const datosUsuario = {
     tipo, nombre, documento, direccion, ciudad, cp,
     telefono, email, categoriaEmpresa, empresa,
-    referencia, fechaHecho, problema, importe,
-    objetivo, descripcion
+    referencia, fechaHecho, importe,
+    objetivo, descripcion, camposCategoria
   };
 
   document.querySelector('.form-card').style.display = 'none';

@@ -107,7 +107,7 @@ export default async function handler(req, res) {
     tipo, nombre, documento, direccion, ciudad, cp,
     telefono, email, categoriaEmpresa, empresa,
     referencia, fechaHecho, problema, importe,
-    objetivo, descripcion, documentos
+    objetivo, descripcion, documentos, camposCategoria
   } = req.body;
 
   if (!nombre || !email || !empresa || !descripcion) {
@@ -167,6 +167,7 @@ ${problemaTexto}
 ${objetivoTexto}
 ${importeTexto} ${referenciaTexto} ${fechaTexto}
 Descripción: ${descripcion}
+${camposCategoria ? `Datos específicos aportados por el reclamante (incorpóralos en los hechos siempre que sean relevantes, con la máxima precisión):\n${camposCategoria}` : ''}
 ${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
 
 LEGISLACIÓN APLICABLE:
@@ -210,8 +211,9 @@ ${lugarFecha}
 Atentamente,
 
 INSTRUCCIONES FINALES:
-- Extensión mínima 400 palabras
+- Extensión: entre 450 y 800 palabras. NUNCA superes las 900 palabras bajo ningún concepto — es un límite estricto, no una recomendación
 - Tono técnico-jurídico, MUY formal y firme, como un escrito redactado por un despacho de abogados — cuida especialmente la precisión terminológica y la estructura
+- El escrito debe quedar SIEMPRE completo: nunca termines a media frase. Si vas a acercarte al límite de extensión, resume el punto TERCERO del SOLICITO en una frase más breve en lugar de dejarlo sin terminar
 - Devuelve ÚNICAMENTE el cuerpo del escrito, nada más`;
 
   try {
@@ -234,32 +236,50 @@ INSTRUCCIONES FINALES:
 
     mensajeContenido.push({ type: 'text', text: prompt });
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1500,
-        messages: [{ role: 'user', content: mensajeContenido }]
-      })
-    });
+    async function llamarClaude(mensajes) {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 4096,
+          messages: mensajes
+        })
+      });
+      return resp.json();
+    }
 
-    const data = await response.json();
+    let data = await llamarClaude([{ role: 'user', content: mensajeContenido }]);
+
+    // Salvaguarda: si la respuesta se cortó por límite de tokens, reintentamos una vez
+    // pidiendo explícitamente más concisión, para no entregar nunca un escrito incompleto
+    if (data.stop_reason === 'max_tokens') {
+      console.error('Escrito truncado por max_tokens, reintentando con instrucción de brevedad');
+      const mensajeReintento = [
+        ...mensajeContenido,
+        { type: 'text', text: '\n\nIMPORTANTE: tu respuesta anterior se cortó por superar el límite de longitud. Esta vez redacta el escrito completo, de principio a fin (incluyendo el punto TERCERO final del SOLICITO), en un máximo de 500 palabras. Es imprescindible que el escrito quede terminado.' }
+      ];
+      data = await llamarClaude([{ role: 'user', content: mensajeReintento }]);
+    }
 
     if (data.content && data.content[0] && data.content[0].text) {
-     const textoEscrito = data.content[0].text;
-const matchDest = textoEscrito.match(/ante ([^,]+(?:\n[^,\n]+)*), comparezco/);
-const destinatario = matchDest ? matchDest[1].trim() : null;
+      if (data.stop_reason === 'max_tokens') {
+        console.error('Escrito truncado también en el reintento');
+        throw new Error('No se pudo generar un escrito completo, inténtalo de nuevo');
+      }
+      const textoEscrito = data.content[0].text;
+      const matchDest = textoEscrito.match(/ante ([^,]+(?:\n[^,\n]+)*), comparezco/);
+      const destinatario = matchDest ? matchDest[1].trim() : null;
 
-return res.status(200).json({
-  carta: textoEscrito,
-  fuentes: fuentesVerificadas,
-  destinatario
-});
+      return res.status(200).json({
+        carta: textoEscrito,
+        fuentes: fuentesVerificadas,
+        destinatario
+      });
     } else {
       throw new Error('Respuesta inesperada de la API');
     }

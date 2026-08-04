@@ -203,7 +203,6 @@
 
           <!-- PASO 2: LA RECLAMACIÓN -->
           <div class="form-step" id="step-2" style="display:none;">
-            <div class="seccion-titulo">1. Expone — qué ha ocurrido</div>
             <div class="campo">
               <label for="categoria-empresa">Categoría <span class="campo-opcional">(opcional)</span></label>
               <select id="categoria-empresa" onchange="mostrarCamposCategoria(this.value)">
@@ -238,36 +237,15 @@
             <!-- CAMPOS DINÁMICOS POR CATEGORÍA -->
             <div id="campos-categoria"></div>
 
-           <div class="campo">
-  <label for="problema">Motivo principal <span class="campo-opcional">(opcional)</span></label>
-  <select id="problema" onchange="toggleOtroProblema(this.value)">
-    <option value="">Selecciona...</option>
-    <option value="cobro indebido o cargo no autorizado en mi cuenta">Cobro indebido o cargo no autorizado</option>
-    <option value="incumplimiento de contrato por parte de la empresa">Incumplimiento de contrato</option>
-    <option value="servicio no prestado o avería no resuelta">Servicio no prestado o avería no resuelta</option>
-    <option value="retraso o cancelación de vuelo sin compensación">Retraso o cancelación de vuelo</option>
-    <option value="devolución no realizada tras devolución de producto">Devolución no realizada</option>
-    <option value="imposibilidad de darme de baja del servicio">No me dejan darme de baja</option>
-    <option value="multa o sanción que considero improcedente">Multa o sanción improcedente</option>
-    <option value="embargo o retención de cuenta que considero indebido">Embargo o retención indebida</option>
-    <option value="prestación denegada o reducida sin justificación">Prestación denegada o reducida</option>
-    <option value="subida de tarifa no comunicada previamente">Subida de tarifa sin previo aviso</option>
-    <option value="uso indebido de mis datos personales">Uso indebido de datos personales</option>
-    <option value="producto defectuoso o que no corresponde a lo anunciado">Producto defectuoso o no conforme</option>
-    <option value="otro">Otro problema</option>
-  </select>
-</div>
-<div class="campo" id="campo-otro-problema" style="display:none;">
-  <label for="otro-problema">Describe tu problema</label>
-  <textarea id="otro-problema" rows="2" placeholder="Explica brevemente cuál es el problema..."></textarea>
-</div>
             <div class="campo">
               <label for="importe">Importe reclamado en euros <span class="campo-opcional">(opcional)</span></label>
               <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
             </div>
+
+            <div class="seccion-titulo">1. Expone</div>
             <div class="campo">
-              <label for="descripcion">Cuéntanos con detalle qué ha ocurrido</label>
-              <textarea id="descripcion" rows="4" placeholder="Explica con tus palabras qué pasó, cuándo y qué respuesta has recibido hasta ahora..." required></textarea>
+              <label for="descripcion">Cuéntanos, con todo el detalle que quieras, qué ha ocurrido</label>
+              <textarea id="descripcion" rows="8" placeholder="Explica con tus palabras qué pasó, cuándo, y qué respuesta has recibido hasta ahora. Cuanto más detalle des, más sólido será tu escrito." required></textarea>
             </div>
             <div class="campo">
               <label for="reclamacion-previa">¿Has reclamado antes a esta empresa o entidad? <span class="campo-opcional">(opcional)</span></label>
@@ -304,25 +282,10 @@
               </div>
             </div>
 
-            <div class="seccion-titulo">2. Solicita — qué pides a la empresa</div>
+            <div class="seccion-titulo">2. Solicita</div>
             <div class="campo">
-              <label for="objetivo">¿Qué solicitas? <span class="campo-opcional">(opcional)</span></label>
-              <select id="objetivo" onchange="toggleOtroObjetivo(this.value)">
-                <option value="">Selecciona...</option>
-                <option value="que me devuelvan el dinero cobrado indebidamente">Devolución del dinero</option>
-                <option value="que me indemnicen por los daños y perjuicios causados">Indemnización por daños</option>
-                <option value="que solucionen el problema técnico o de servicio de forma inmediata">Solución inmediata del problema</option>
-                <option value="darme de baja del servicio sin penalización ni coste adicional">Baja sin penalización</option>
-                <option value="anular la multa o sanción impuesta">Anulación de multa o sanción</option>
-                <option value="paralizar el embargo o retención iniciado">Paralización de embargo</option>
-                <option value="solicitar un aplazamiento o fraccionamiento del pago">Aplazamiento de pago</option>
-                <option value="que reconozcan por escrito el error cometido">Reconocimiento formal del error</option>
-                <option value="otro">Otro objetivo</option>
-              </select>
-            </div>
-            <div class="campo" id="campo-otro-objetivo" style="display:none;">
-              <label for="otro-objetivo">Describe tu objetivo</label>
-              <input type="text" id="otro-objetivo" placeholder="Explica qué quieres conseguir...">
+              <label for="solicita">Explica, con todo el detalle que quieras, qué le solicitas a la empresa</label>
+              <textarea id="solicita" rows="5" placeholder="Ej: Que me devuelvan el dinero cobrado indebidamente, que solucionen la avería, que anulen la multa, que me indemnicen por los daños causados..."></textarea>
             </div>
 
             <div class="form-nav-btns">
@@ -393,76 +356,7 @@
 
         </form>
 
-        <datalist id="lista-aeropuertos">
-          <option value="Madrid (MAD)">
-          <option value="Barcelona (BCN)">
-          <option value="Palma de Mallorca (PMI)">
-          <option value="Málaga (AGP)">
-          <option value="Gran Canaria (LPA)">
-          <option value="Tenerife Sur (TFS)">
-          <option value="Tenerife Norte (TFN)">
-          <option value="Alicante (ALC)">
-          <option value="Valencia (VLC)">
-          <option value="Sevilla (SVQ)">
-          <option value="Bilbao (BIO)">
-          <option value="Ibiza (IBZ)">
-          <option value="Menorca (MAH)">
-          <option value="Lanzarote (ACE)">
-          <option value="Fuerteventura (FUE)">
-          <option value="Santiago de Compostela (SCQ)">
-          <option value="Vigo (VGO)">
-          <option value="Asturias (OVD)">
-          <option value="Santander (SDR)">
-          <option value="Zaragoza (ZAZ)">
-          <option value="A Coruña (LCG)">
-          <option value="Girona (GRO)">
-          <option value="Almería (LEI)">
-          <option value="Murcia-Corvera (RMU)">
-          <option value="Jerez (XRY)">
-          <option value="Granada (GRX)">
-          <option value="Reus (REU)">
-          <option value="Vitoria (VIT)">
-          <option value="Pamplona (PNA)">
-          <option value="Valladolid (VLL)">
-          <option value="San Sebastián (EAS)">
-          <option value="Melilla (MLN)">
-          <option value="Badajoz (BJZ)">
-          <option value="Lisboa (LIS)">
-          <option value="Oporto (OPO)">
-          <option value="París Charles de Gaulle (CDG)">
-          <option value="París Orly (ORY)">
-          <option value="Londres Heathrow (LHR)">
-          <option value="Londres Gatwick (LGW)">
-          <option value="Ámsterdam (AMS)">
-          <option value="Fráncfort (FRA)">
-          <option value="Múnich (MUC)">
-          <option value="Roma Fiumicino (FCO)">
-          <option value="Milán Malpensa (MXP)">
-          <option value="Bruselas (BRU)">
-          <option value="Zúrich (ZRH)">
-          <option value="Viena (VIE)">
-          <option value="Dublín (DUB)">
-          <option value="Copenhague (CPH)">
-          <option value="Estocolmo (ARN)">
-          <option value="Oslo (OSL)">
-          <option value="Helsinki (HEL)">
-          <option value="Varsovia (WAW)">
-          <option value="Praga (PRG)">
-          <option value="Budapest (BUD)">
-          <option value="Atenas (ATH)">
-          <option value="Estambul (IST)">
-          <option value="Nueva York JFK (JFK)">
-          <option value="Miami (MIA)">
-          <option value="Los Ángeles (LAX)">
-          <option value="Ciudad de México (MEX)">
-          <option value="Buenos Aires Ezeiza (EZE)">
-          <option value="Bogotá (BOG)">
-          <option value="Lima (LIM)">
-          <option value="Santiago de Chile (SCL)">
-          <option value="São Paulo Guarulhos (GRU)">
-          <option value="Casablanca (CMN)">
-          <option value="Dubái (DXB)">
-        </datalist>
+        <datalist id="lista-aeropuertos"></datalist>
       </div>
 
       <div id="resultado" style="display:none;">
@@ -526,6 +420,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="reclamar.js"></script>
+  <script src="aeropuertos-datalist.js" defer></script>
   <script>
 
     const CAMPOS_CATEGORIA = {
@@ -535,7 +430,10 @@
           <div class="campo"><label for="cat-servicio">Tipo de servicio afectado</label><select id="cat-servicio"><option value="">Selecciona...</option><option>Móvil</option><option>Fibra/ADSL</option><option>Televisión</option><option>Pack combinado</option></select></div>
           <div class="campo"><label for="cat-baja">¿Sigues siendo cliente?</label><select id="cat-baja"><option value="">Selecciona...</option><option value="si">Sí, sigo siendo cliente</option><option value="no">No, ya me di de baja</option><option value="intentando">Intento darme de baja y no puedo</option></select></div>
         </div>
-        <div class="campo"><label for="cat-incidencia">Nº de incidencia abierta (si tienes)</label><input type="text" id="cat-incidencia" placeholder="Ej: INC-2026-123456"></div>`,
+        <div class="grid-2">
+          <div class="campo"><label for="cat-incidencia">Nº de incidencia abierta (si tienes)</label><input type="text" id="cat-incidencia" placeholder="Ej: INC-2026-123456"></div>
+          <div class="campo"><label for="cat-fecha-alta">Fecha de alta o contratación del servicio</label><input type="date" id="cat-fecha-alta"></div>
+        </div>`,
 
       'Aerolíneas y transporte': `
         <div class="grid-2">
@@ -549,6 +447,10 @@
         <div class="grid-2">
           <div class="campo"><label for="cat-retraso">Horas de retraso (si aplica)</label><input type="number" id="cat-retraso" placeholder="Ej: 4" min="0"></div>
           <div class="campo"><label for="cat-compensacion">¿La aerolínea ofreció compensación?</label><select id="cat-compensacion"><option value="">Selecciona...</option><option value="no">No ofreció nada</option><option value="voucher">Ofreció voucher o bono</option><option value="parcial">Ofreció compensación insuficiente</option><option value="si">Sí, la acepté</option></select></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-operador">Compañía que operó el vuelo <span class="campo-opcional">(si es distinta)</span></label><input type="text" id="cat-operador" placeholder="Ej: reservado con Opodo, operado por Iberia"></div>
+          <div class="campo"><label for="cat-distancia">Distancia aproximada del trayecto</label><select id="cat-distancia"><option value="">Selecciona...</option><option value="corta (1.500 km o menos)">Corta — hasta 1.500 km</option><option value="media (entre 1.500 y 3.500 km)">Media — entre 1.500 y 3.500 km</option><option value="larga (más de 3.500 km)">Larga — más de 3.500 km</option></select></div>
         </div>`,
 
       'Banca y seguros': `
@@ -556,14 +458,20 @@
           <div class="campo"><label for="cat-producto">Tipo de producto</label><select id="cat-producto"><option value="">Selecciona...</option><option>Hipoteca</option><option>Préstamo personal</option><option>Tarjeta de crédito/débito</option><option>Seguro de vida</option><option>Seguro de hogar</option><option>Plan de pensiones</option><option>Cuenta corriente</option><option>Otro</option></select></div>
           <div class="campo"><label for="cat-cuenta">Últimos 4 dígitos de cuenta/póliza</label><input type="text" id="cat-cuenta" placeholder="Ej: 4521" maxlength="4"></div>
         </div>
-        <div class="campo"><label for="cat-sat-banco">¿Reclamaste antes al Servicio de Atención al Cliente del banco?</label><select id="cat-sat-banco"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-respuesta">Sí, sin respuesta</option><option value="si-negativa">Sí, con respuesta negativa</option></select></div>`,
+        <div class="grid-2">
+          <div class="campo"><label for="cat-sat-banco">¿Reclamaste antes al Servicio de Atención al Cliente del banco?</label><select id="cat-sat-banco"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-respuesta">Sí, sin respuesta</option><option value="si-negativa">Sí, con respuesta negativa</option></select></div>
+          <div class="campo"><label for="cat-reclamacion-oficial">¿Has reclamado al Banco de España / DGSFP?</label><select id="cat-reclamacion-oficial"><option value="">Selecciona...</option><option value="no">No, aún no</option><option value="si">Sí, ya la he presentado</option></select></div>
+        </div>`,
 
       'Administración pública': `
         <div class="grid-2">
           <div class="campo"><label for="cat-organismo">Organismo concreto</label><select id="cat-organismo"><option value="">Selecciona...</option><option>AEAT (Agencia Tributaria)</option><option>DGT (Tráfico)</option><option>Seguridad Social / TGSS</option><option>SEPE (Desempleo)</option><option>Ayuntamiento</option><option>Comunidad Autónoma</option><option>Otro organismo</option></select></div>
           <div class="campo"><label for="cat-expediente">Nº de expediente administrativo</label><input type="text" id="cat-expediente" placeholder="Ej: 2026/EXP/123456"></div>
         </div>
-        <div class="campo"><label for="cat-tipo-recurso">¿Es una reclamación nueva o un recurso?</label><select id="cat-tipo-recurso"><option value="">Selecciona...</option><option value="nueva">Reclamación nueva</option><option value="reposicion">Recurso de reposición</option><option value="alzada">Recurso de alzada</option><option value="revision">Solicitud de revisión de oficio</option></select></div>`,
+        <div class="grid-2">
+          <div class="campo"><label for="cat-tipo-recurso">¿Es una reclamación nueva o un recurso?</label><select id="cat-tipo-recurso"><option value="">Selecciona...</option><option value="nueva">Reclamación nueva</option><option value="reposicion">Recurso de reposición</option><option value="alzada">Recurso de alzada</option><option value="revision">Solicitud de revisión de oficio</option></select></div>
+          <div class="campo"><label for="cat-registro">Nº de registro de entrada <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-registro" placeholder="Ej: REG-2026-000123"></div>
+        </div>`,
 
       'Energía y suministros': `
         <div class="grid-2">
@@ -573,7 +481,8 @@
         <div class="grid-2">
           <div class="campo"><label for="cat-corte">¿El suministro fue interrumpido?</label><select id="cat-corte"><option value="">Selecciona...</option><option value="no">No, sigue activo</option><option value="si">Sí, fue cortado</option><option value="amenaza">Me amenazan con cortarlo</option></select></div>
           <div class="campo"><label for="cat-meses">¿Cuántos meses lleva el problema?</label><input type="number" id="cat-meses" placeholder="Ej: 3" min="0"></div>
-        </div>`,
+        </div>
+        <div class="campo"><label for="cat-titular-suministro">Titular del contrato <span class="campo-opcional">(si es distinto de ti)</span></label><input type="text" id="cat-titular-suministro" placeholder="Nombre del titular del contrato"></div>`,
 
       'Comercio y tiendas online': `
         <div class="grid-2">
@@ -583,26 +492,32 @@
         <div class="grid-2">
           <div class="campo"><label for="cat-recibido">¿Recibiste el producto?</label><select id="cat-recibido"><option value="">Selecciona...</option><option value="no">No llegó</option><option value="defectuoso">Llegó defectuoso</option><option value="incorrecto">Llegó pero no era lo pedido</option><option value="si">Sí llegó pero hay otro problema</option></select></div>
           <div class="campo"><label for="cat-devuelto">¿Ya devolviste el producto?</label><select id="cat-devuelto"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-reembolso">Sí, pero no me han reembolsado</option><option value="si-reembolso-parcial">Sí, con reembolso parcial</option></select></div>
-        </div>`,
+        </div>
+        <div class="campo"><label for="cat-metodo-pago">Método de pago utilizado <span class="campo-opcional">(opcional)</span></label><select id="cat-metodo-pago"><option value="">Selecciona...</option><option>Tarjeta de crédito/débito</option><option>PayPal</option><option>Transferencia bancaria</option><option>Contrareembolso</option><option>Financiación / a plazos</option></select></div>`,
 
       'Inmobiliaria y alquiler': `
         <div class="grid-2">
           <div class="campo"><label for="cat-rol">¿Eres arrendador o arrendatario?</label><select id="cat-rol"><option value="">Selecciona...</option><option value="arrendatario">Arrendatario (inquilino)</option><option value="arrendador">Arrendador (propietario)</option><option value="comprador">Comprador</option><option value="vendedor">Vendedor</option></select></div>
           <div class="campo"><label for="cat-contrato">¿Tienes contrato vigente?</label><select id="cat-contrato"><option value="">Selecciona...</option><option value="si">Sí</option><option value="no">No</option><option value="vencido">Venció y no se renovó</option></select></div>
         </div>
-        <div class="campo"><label for="cat-inmueble">Dirección del inmueble afectado</label><input type="text" id="cat-inmueble" placeholder="Calle y número del inmueble"></div>`,
+        <div class="grid-2">
+          <div class="campo"><label for="cat-inmueble">Dirección del inmueble afectado</label><input type="text" id="cat-inmueble" placeholder="Calle y número del inmueble"></div>
+          <div class="campo"><label for="cat-fianza">Importe de la fianza depositada <span class="campo-opcional">(opcional)</span></label><input type="number" id="cat-fianza" placeholder="Ej: 900" min="0" step="0.01"></div>
+        </div>`,
 
       'Sanidad y salud': `
         <div class="grid-2">
           <div class="campo"><label for="cat-tipo-sanidad">Tipo de asistencia</label><select id="cat-tipo-sanidad"><option value="">Selecciona...</option><option>Sanidad pública</option><option>Seguro médico privado</option><option>Clínica privada</option></select></div>
           <div class="campo"><label for="cat-nhc">Nº de historia clínica o expediente</label><input type="text" id="cat-nhc" placeholder="Ej: HC-2026-123456"></div>
-        </div>`,
+        </div>
+        <div class="campo"><label for="cat-fecha-asistencia">Fecha de la asistencia o intervención <span class="campo-opcional">(opcional)</span></label><input type="date" id="cat-fecha-asistencia"></div>`,
 
       'Educación': `
         <div class="grid-2">
           <div class="campo"><label for="cat-tipo-centro">Tipo de centro</label><select id="cat-tipo-centro"><option value="">Selecciona...</option><option>Universidad pública</option><option>Universidad privada</option><option>Centro de formación</option><option>Academia</option><option>Colegio público</option><option>Colegio concertado/privado</option></select></div>
           <div class="campo"><label for="cat-expediente-edu">Nº de expediente o matrícula</label><input type="text" id="cat-expediente-edu" placeholder="Ej: MAT-2026-123"></div>
-        </div>`
+        </div>
+        <div class="campo"><label for="cat-curso">Curso académico afectado <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-curso" placeholder="Ej: 2025/2026"></div>`
     };
 
     function mostrarCamposCategoria(categoria) {
@@ -633,15 +548,6 @@
       const campos = document.getElementById('campos-representacion');
       campos.style.display = valor === 'representacion' ? 'block' : 'none';
     }
-function toggleOtroProblema(valor) {
-  const campo = document.getElementById('campo-otro-problema');
-  campo.style.display = valor === 'otro' ? 'block' : 'none';
-}
-    function toggleOtroObjetivo(valor) {
-      const campo = document.getElementById('campo-otro-objetivo');
-      campo.style.display = valor === 'otro' ? 'block' : 'none';
-    }
-
     function toggleReclamacionPrevia(valor) {
       const campos = document.getElementById('campos-reclamacion-previa');
       campos.style.display = (valor && valor !== 'no') ? 'block' : 'none';
@@ -661,7 +567,7 @@ function toggleOtroProblema(valor) {
 
     function irPaso(num) {
       const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
-      const campos2 = ['categoria-empresa','empresa','fecha-hecho','problema','objetivo','descripcion'];
+      const campos2 = ['categoria-empresa','empresa','fecha-hecho','descripcion'];
 
       if (num === 2) {
         for (const id of campos1) {

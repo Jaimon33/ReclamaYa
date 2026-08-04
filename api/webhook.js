@@ -80,9 +80,11 @@ function generarHTMLEscrito(carta, datos) {
   body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:0 50px 60px; max-width:800px; margin:0 auto; position:relative; }
   .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
   .marca-agua span { font-family:Arial,sans-serif; font-size:92px; font-weight:700; color:rgba(13,27,42,0.045); transform:rotate(-38deg); white-space:nowrap; letter-spacing:4px; }
-  .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:flex-start; }
-  .cabecera-formal .marca { font-family:Arial,sans-serif; font-size:9pt; font-weight:700; color:#0D1B2A; letter-spacing:1px; }
-  .cabecera-formal .marca span { color:#C9A84C; }
+  .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
+  .cabecera-formal .marca { display:flex; align-items:center; gap:8px; }
+  .cabecera-formal .marca img { height:22px; width:auto; display:block; }
+  .cabecera-formal .marca-texto { font-family:Arial,sans-serif; font-size:9pt; font-weight:700; color:#0D1B2A; letter-spacing:1px; }
+  .cabecera-formal .marca-texto span { color:#C9A84C; }
   .cabecera-formal .ref { font-family:Arial,sans-serif; font-size:8pt; color:#888; text-align:right; line-height:1.6; }
   .contenido { position:relative; z-index:1; }
   .remitente { margin-bottom:20px; font-size:10.5pt; line-height:1.75; }
@@ -103,7 +105,10 @@ function generarHTMLEscrito(carta, datos) {
 <div class="marca-agua"><span>RECLAMOIA</span></div>
 <div class="contenido">
 <div class="cabecera-formal">
-  <div class="marca">Reclamo<span>IA</span> · Escrito de reclamación</div>
+  <div class="marca">
+    <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA">
+    <span class="marca-texto">Reclamo<span>IA</span> · Escrito de reclamación</span>
+  </div>
   <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaEmpresa || 'General')}</div>
 </div>
 <div class="remitente">
@@ -154,7 +159,8 @@ function generarHTMLGuia(guiaData, datos) {
 </head>
 <body>
 
-<div style="border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
+<div style="border-top:4px solid #0D1B2A; padding-top:14px; border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
+  <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA" style="height:26px; width:auto; display:block; margin-bottom:10px;">
   <h1 style="font-family:Arial,sans-serif; font-size:18pt; font-weight:700; color:#0D1B2A; margin:0 0 4px;">GUÍA DE PRESENTACIÓN</h1>
   <p style="font-family:Arial,sans-serif; font-size:10pt; color:#C9A84C; font-weight:600; margin:0;">Escrito de reclamación contra ${escaparHTML(empresa)} — ${escaparHTML(categoriaEmpresa)}</p>
 </div>
