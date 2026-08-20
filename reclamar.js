@@ -230,8 +230,8 @@ form.addEventListener('submit', async (e) => {
       const btnPagar = document.getElementById('btn-pagar');
       if (btnPagar) {
         btnPagar.textContent = opcion === 'completa'
-          ? '⬇️ Pagar 7,99€ y recibir escrito + guía'
-          : '⬇️ Pagar 3,99€ y recibir escrito';
+          ? '⬇️ Pagar 13,99€ y recibir escrito + guía'
+          : '⬇️ Pagar 9,99€ y recibir escrito';
         btnPagar.onclick = () => iniciarPago();
       }
 
