@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar documento — ReclamoIA</title>
+  <meta name="description" content="Verifica la autenticidad de un escrito o guía generados por ReclamoIA a partir de su número de expediente.">
+  <link rel="canonical" href="https://reclamoia.es/verificar.html">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .verificar-main {
+      padding-top: 76px;
+      min-height: 100vh;
+      background: #FAFAF8;
+    }
+    .verificar-inner {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+    }
+    .verificar-header { text-align: center; margin-bottom: 2rem; }
+    .verificar-header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0D1B2A;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.3px;
+    }
+    .verificar-header p { font-size: 13px; color: #777; line-height: 1.6; }
+    .verificar-form { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .verificar-form input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #E8E4DC;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+      text-transform: uppercase;
+      font-family: inherit;
+    }
+    .verificar-form input:focus { outline: none; border-color: #0D1B2A; }
+    .verificar-form button {
+      background: #0D1B2A;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .verificar-form button:hover { opacity: 0.85; }
+    .verificar-resultado {
+      display: none;
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .verificar-resultado.valido { display: block; background: #f0f9f0; border: 1px solid #8fcf8f; }
+    .verificar-resultado.invalido { display: block; background: #fdf0f0; border: 1px solid #e0a0a0; }
+    .verificar-resultado h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.5rem; }
+    .verificar-resultado.valido h3 { color: #2d6a2d; }
+    .verificar-resultado.invalido h3 { color: #a33; }
+    .verificar-resultado p { font-size: 13px; color: #555; line-height: 1.7; margin: 2px 0; }
+    .verificar-resultado strong { color: #0D1B2A; }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img src="logo-reclamoia.png" alt="ReclamoIA" class="nav-logo-img">
+      </a>
+      <div class="nav-links">
+        <a href="/">← Volver al inicio</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="verificar-main">
+    <div class="verificar-inner">
+      <div class="verificar-header">
+        <h1>Verificar documento</h1>
+        <p>Introduce la referencia de expediente que aparece en el escrito o la guía (junto al código QR) para comprobar que fue generado por ReclamoIA.</p>
+      </div>
+
+      <form class="verificar-form" id="form-verificar">
+        <input type="text" id="input-ref" placeholder="RC-20260923-XXXX" required>
+        <button type="submit">Verificar</button>
+      </form>
+
+      <div id="resultado-verificacion" class="verificar-resultado"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo-reclamoia.png" alt="ReclamoIA" style="height:34px; width:auto; filter:brightness(0) invert(1);">
+      </div>
+      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
+      <div class="footer-links">
+        <a href="/legal.html">Aviso Legal</a>
+        <a href="/privacidad.html">Política de Privacidad</a>
+        <a href="/condiciones-venta.html">Condiciones de Venta</a>
+        <a href="/verificar.html">Verificar documento</a>
+        <a href="mailto:hola@reclamoia.es">Contacto</a>
+      </div>
+      <p class="footer-copy">© 2026 ReclamoIA — Jaime Porras Rodríguez. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+
+    const form = document.getElementById('form-verificar');
+    const input = document.getElementById('input-ref');
+    const resultado = document.getElementById('resultado-verificacion');
+
+    function formatearFecha(iso) {
+      try {
+        return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      } catch {
+        return iso;
+      }
+    }
+
+    async function verificar(ref) {
+      resultado.className = 'verificar-resultado';
+      resultado.innerHTML = '';
+      try {
+        const resp = await fetch(`/api/verificar?ref=${encodeURIComponent(ref)}`);
+        const datos = await resp.json();
+
+        if (datos.valido) {
+          resultado.className = 'verificar-resultado valido';
+          resultado.innerHTML = `
+            <h3>✅ Documento válido</h3>
+            <p><strong>Referencia:</strong> ${datos.ref}</p>
+            <p><strong>Generado el:</strong> ${formatearFecha(datos.fecha)}</p>
+            <p><strong>Categoría:</strong> ${datos.categoria}</p>
+          `;
+        } else {
+          resultado.className = 'verificar-resultado invalido';
+          resultado.innerHTML = `
+            <h3>✕ No encontrado</h3>
+            <p>No hemos encontrado ningún documento con esa referencia. Comprueba que la has escrito correctamente.</p>
+          `;
+        }
+      } catch (error) {
+        resultado.className = 'verificar-resultado invalido';
+        resultado.innerHTML = `<h3>✕ Error</h3><p>No hemos podido verificar el documento ahora mismo. Inténtalo de nuevo en unos minutos.</p>`;
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ref = input.value.trim().toUpperCase();
+      if (ref) verificar(ref);
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const refParam = params.get('ref');
+    if (refParam) {
+      input.value = refParam.toUpperCase();
+      verificar(refParam.toUpperCase());
+    }
+  </script>
+  <script src="cookies.js"></script>
+
+</body>
+</html>

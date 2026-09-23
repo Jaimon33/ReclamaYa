@@ -185,6 +185,7 @@
           <tr><td>Teléfono y email</td><td>Entrega del documento generado y comunicaciones del servicio</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
           <tr><td>Descripción del caso y datos de la reclamación</td><td>Generación del escrito mediante IA</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
           <tr><td>Documentos adjuntos (facturas, contratos, etc.)</td><td>Enriquecer el contenido del escrito generado</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
+          <tr><td>Referencia de expediente, fecha de generación, categoría y email</td><td>Envío del recordatorio de seguimiento pasado el plazo legal de respuesta y verificación de autenticidad del documento</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
         </table>
 
         <h3>2.2 Datos de pago</h3>
@@ -198,13 +199,13 @@
         <h2>3. Conservación de los datos</h2>
         <table class="legal-tabla">
           <tr><th>Tipo de datos</th><th>Plazo de conservación</th></tr>
-          <tr><td>Datos del formulario y escritos generados (almacenamiento temporal)</td><td>Máximo 1 hora desde la generación, para permitir la entrega por email</td></tr>
-          <tr><td>Email del usuario (para entrega del documento)</td><td>Hasta la entrega del documento. No se conserva para comunicaciones posteriores salvo consentimiento expreso</td></tr>
+          <tr><td>Datos del formulario y contenido de los escritos generados (almacenamiento temporal)</td><td>Máximo 1 hora desde la generación, para permitir la entrega por email</td></tr>
+          <tr><td>Referencia de expediente, fecha, categoría y email (para seguimiento y verificación)</td><td>Máximo 24 meses desde la generación del escrito</td></tr>
           <tr><td>Datos de transacción (a efectos contables y fiscales)</td><td>5 años, conforme a la normativa tributaria y mercantil española</td></tr>
           <tr><td>Datos de navegación</td><td>Máximo 13 meses</td></tr>
         </table>
         <div class="aviso-destacado">
-          <p>ℹ️ ReclamoIA <strong>no crea perfiles de usuario</strong>, no almacena los escritos generados de forma permanente ni utiliza los datos de los formularios para fines distintos a los indicados en esta política.</p>
+          <p>ℹ️ ReclamoIA <strong>no crea perfiles de usuario</strong> ni almacena el contenido de los escritos generados de forma permanente. Únicamente conserva una referencia mínima del expediente (número de referencia, fecha, categoría y email) durante un máximo de 24 meses, con el único fin de enviar el recordatorio de seguimiento tras el plazo legal de respuesta y permitir la verificación de autenticidad del documento.</p>
         </div>
       </div>
 
@@ -271,9 +272,9 @@
         <p>Entre las medidas implementadas se incluyen:</p>
         <ul>
           <li>Cifrado de las comunicaciones mediante protocolo HTTPS/TLS.</li>
-          <li>Almacenamiento temporal de datos sensibles con expiración automática máxima de 1 hora.</li>
+          <li>Almacenamiento temporal del contenido de los escritos con expiración automática máxima de 1 hora.</li>
           <li>Acceso restringido a los datos mediante tokens de autenticación.</li>
-          <li>No almacenamiento permanente de escritos generados ni de datos de pago.</li>
+          <li>No almacenamiento permanente del contenido de los escritos generados ni de datos de pago. Solo se conserva una referencia mínima del expediente (ref., fecha, categoría, email) hasta 24 meses, para el seguimiento del plazo de respuesta y la verificación de autenticidad del documento.</li>
         </ul>
         <p>No obstante, el usuario debe ser consciente de que las medidas de seguridad en Internet no son inexpugnables. En caso de que ReclamoIA detecte una violación de seguridad que afecte a datos personales, lo notificará a las autoridades competentes y, si fuera necesario, a los usuarios afectados, en los plazos establecidos por el RGPD.</p>
       </div>
@@ -320,6 +321,7 @@
         <a href="/legal.html">Aviso Legal</a>
         <a href="/privacidad.html">Política de Privacidad</a>
         <a href="/condiciones-venta.html">Condiciones de Venta</a>
+        <a href="/verificar.html">Verificar documento</a>
         <a href="mailto:hola@reclamoia.es">Contacto</a>
       </div>
       <p class="footer-copy">© 2026 ReclamoIA — Jaime Porras Rodríguez. Todos los derechos reservados.</p>

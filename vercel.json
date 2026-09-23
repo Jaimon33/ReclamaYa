@@ -5,6 +5,15 @@
     },
     "api/pdf.js": {
       "maxDuration": 30
+    },
+    "api/seguimiento-cron.js": {
+      "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/seguimiento-cron",
+      "schedule": "0 8 * * *"
+    }
+  ]
 }

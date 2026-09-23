@@ -27,6 +27,28 @@ async function obtenerDeRedis(key) {
   return data.result;
 }
 
+const DOS_ANOS_EN_SEGUNDOS = 63072000;
+
+async function guardarExpediente(refExpediente, datosExpediente) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  const valor = JSON.stringify(datosExpediente);
+  await fetch(`${url}/set/expediente:${refExpediente}/${encodeURIComponent(valor)}?EX=${DOS_ANOS_EN_SEGUNDOS}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+async function programarSeguimiento(refExpediente) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  const fechaLimite = Math.floor(Date.now() / 1000) + 21 * 86400;
+  await fetch(`${url}/zadd/seguimientos:pendientes/${fechaLimite}/${refExpediente}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 function escaparHTML(str) {
   if (!str) return '';
   return String(str)
@@ -97,6 +119,10 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
   .firma { margin-top:32px; font-size:10.5pt; line-height:1.7; }
   .firma-linea { width:180px; border-top:1px solid #333; margin:30px 0 8px; }
   .pie { position:relative; z-index:1; margin-top:50px; padding-top:8px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6; }
+  .pie-verificacion { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; }
+  .qr-verificacion { width:52px; height:52px; display:block; }
+  .pie-verificacion-texto { font-family:Arial,sans-serif; font-size:7.5pt; color:#999; text-align:left; line-height:1.5; }
+  .pie-verificacion-texto strong { color:#0D1B2A; }
   @media print { body { padding:0 50px 60px; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
 </style>
 </head>
@@ -130,6 +156,10 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
 </div>
 </div>
 <div class="pie">
+  <div class="pie-verificacion">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(`https://reclamoia.es/verificar.html?ref=${refExpediente}`)}" alt="Código QR de verificación" class="qr-verificacion">
+    <div class="pie-verificacion-texto">Verifica la autenticidad de este documento en <strong>reclamoia.es/verificar</strong><br>Ref. expediente: ${refExpediente}</div>
+  </div>
   <p>ReclamoIA · reclamoia.es | Este escrito tiene carácter de reclamación extrajudicial. ReclamoIA no presta servicios de asesoría jurídica.</p>
 </div>
 </body>
@@ -162,6 +192,10 @@ function generarHTMLGuia(guiaData, datos, refExpediente) {
   .cabecera-formal .marca-texto span { color:#C9A84C; }
   .cabecera-formal .ref { font-family:Arial,sans-serif; font-size:8pt; color:#888; text-align:right; line-height:1.6; }
   .contenido { position:relative; z-index:1; }
+  .pie-verificacion { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; }
+  .qr-verificacion { width:52px; height:52px; display:block; }
+  .pie-verificacion-texto { font-family:Arial,sans-serif; font-size:7.5pt; color:#999; text-align:left; line-height:1.5; }
+  .pie-verificacion-texto strong { color:#0D1B2A; }
   @media print { body { padding:0 50px 60px; } @page { margin:22mm 20mm 22mm 25mm; size:A4; } }
 </style>
 </head>
@@ -204,9 +238,13 @@ ${guia.enlace ? `
 </div>
 ` : ''}
 
-<div style="margin-top:40px; padding-top:12px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6;">
-  <p>ReclamoIA · reclamoia.es | Esta guía es orientativa. ReclamoIA no presta servicios de asesoría jurídica.</p>
-  <p>Los plazos y procedimientos están verificados a fecha ${escaparHTML(fecha)}. Se recomienda verificar posibles actualizaciones en las webs oficiales indicadas.</p>
+<div style="margin-top:40px; padding-top:12px; border-top:0.5px solid #ddd;">
+  <div class="pie-verificacion">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(`https://reclamoia.es/verificar.html?ref=${refExpediente}`)}" alt="Código QR de verificación" class="qr-verificacion">
+    <div class="pie-verificacion-texto">Verifica la autenticidad de este documento en <strong>reclamoia.es/verificar</strong><br>Ref. expediente: ${refExpediente}</div>
+  </div>
+  <p style="font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6;">ReclamoIA · reclamoia.es | Esta guía es orientativa. ReclamoIA no presta servicios de asesoría jurídica.</p>
+  <p style="font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6;">Los plazos y procedimientos están verificados a fecha ${escaparHTML(fecha)}. Se recomienda verificar posibles actualizaciones en las webs oficiales indicadas.</p>
 </div>
 
 </div>
@@ -273,6 +311,22 @@ export default async function handler(req, res) {
     try {
       const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa };
       const refExpediente = generarRefExpediente();
+
+      try {
+        await guardarExpediente(refExpediente, {
+          ref: refExpediente,
+          fecha: new Date().toISOString(),
+          categoria: categoriaEmpresa || 'General',
+          email,
+          nombre: (nombre || '').split(' ')[0] || '',
+          empresa,
+          opcion,
+          seguimientoEnviado: false
+        });
+        await programarSeguimiento(refExpediente);
+      } catch (expedienteError) {
+        console.error('Error guardando expediente persistente:', expedienteError);
+      }
 
       const htmlEscrito = generarHTMLEscrito(carta, datos, refExpediente);
       const pdfEscritoResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {

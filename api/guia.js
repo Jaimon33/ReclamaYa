@@ -1,4 +1,4 @@
-const GUIAS = {
+export const GUIAS = {
   'Telecomunicaciones': {
     organismo: 'Oficina de Atención al Usuario de Telecomunicaciones',
     enlace: 'https://usuariosteleco.digital.gob.es/reclamaciones',

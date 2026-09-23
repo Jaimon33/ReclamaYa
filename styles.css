@@ -346,6 +346,123 @@ section { padding: 5rem 2rem; }
 .cat-titulo { font-size: 12px; font-weight: 700; color: #0D1B2A; margin: 0 0 3px; transition: color 0.2s; }
 .cat-sub { font-size: 11px; color: #999; margin: 0; transition: color 0.2s; }
 
+#ejemplo { background: #FAFAF8; }
+
+.documento-ejemplo {
+  position: relative;
+  max-width: 680px;
+  margin: 2.5rem auto 0;
+  background: #fff;
+  border: 1px solid #E8E4DC;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(13,27,42,0.08);
+  overflow: hidden;
+  padding: 2rem 2.25rem 0;
+  max-height: 420px;
+}
+
+.documento-ejemplo-marca-agua {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 72px;
+  font-weight: 700;
+  color: rgba(13,27,42,0.04);
+  letter-spacing: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.documento-ejemplo-cabecera {
+  position: relative;
+  z-index: 1;
+  border-top: 4px solid #0D1B2A;
+  padding-top: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.documento-ejemplo-marca { display: flex; align-items: center; gap: 8px; }
+.documento-ejemplo-logo { height: 20px; width: auto; display: block; }
+
+.documento-ejemplo-marca span {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0D1B2A;
+  letter-spacing: 0.5px;
+}
+
+.documento-ejemplo-marca span em { color: #C9A84C; font-style: normal; }
+
+.documento-ejemplo-ref {
+  font-size: 10px;
+  color: #999;
+  text-align: right;
+  line-height: 1.6;
+}
+
+.documento-ejemplo-cuerpo {
+  position: relative;
+  z-index: 1;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.75;
+}
+
+.documento-ejemplo-cuerpo p { margin: 0 0 10px; text-align: justify; }
+.documento-ejemplo-cuerpo strong { color: #0D1B2A; }
+
+.documento-ejemplo-asunto {
+  background: #fafaf8;
+  border-left: 2px solid #C9A84C;
+  padding: 8px 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 12px !important;
+}
+
+.documento-ejemplo-fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 210px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 60%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.documento-ejemplo-cta {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 3;
+  text-align: center;
+  padding: 1.25rem 1.5rem 1.75rem;
+  background: #fff;
+}
+
+.documento-ejemplo-cta span {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #C9A84C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.documento-ejemplo-cta p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 1rem;
+}
+
 #diferenciadores { background: #fff; }
 
 #faq {
@@ -823,4 +940,7 @@ footer {
   .dif-grid { grid-template-columns: 1fr; }
   .opciones-precio { grid-template-columns: 1fr; }
   .cta-box h2 { font-size: 1.4rem; }
+  .documento-ejemplo { padding: 1.5rem 1.25rem 0; max-height: 380px; }
+  .documento-ejemplo-cuerpo { font-size: 12px; }
+  .documento-ejemplo-marca-agua { font-size: 54px; }
 }
