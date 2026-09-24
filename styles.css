@@ -463,6 +463,98 @@ section { padding: 5rem 2rem; }
   margin: 0 auto 1rem;
 }
 
+.caso-hero {
+  background: linear-gradient(135deg, #0D1B2A 0%, #16293f 55%, #0D1B2A 100%);
+  padding: 8rem 2rem 4rem;
+  text-align: center;
+}
+
+.caso-hero-inner { max-width: 720px; margin: 0 auto; }
+
+.caso-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  letter-spacing: -0.4px;
+}
+
+.caso-hero p { font-size: 1rem; color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 2rem; }
+
+.caso-contenido { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 2rem; }
+
+.caso-bloque { margin-bottom: 3rem; }
+
+.caso-bloque h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0D1B2A;
+  margin-bottom: 1rem;
+  letter-spacing: -0.2px;
+}
+
+.caso-bloque p, .caso-bloque li { font-size: 15px; color: #444; line-height: 1.8; }
+.caso-bloque p { margin-bottom: 0.9rem; }
+.caso-bloque ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.caso-bloque li { margin-bottom: 0.35rem; }
+.caso-bloque strong { color: #0D1B2A; }
+
+.caso-tabla { width: 100%; border-collapse: collapse; margin: 1rem 0 1.25rem; font-size: 14px; }
+.caso-tabla th { background: #0D1B2A; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+.caso-tabla td { padding: 10px 14px; border-bottom: 1px solid #E8E4DC; color: #444; background: #fff; }
+.caso-tabla td:last-child { font-weight: 700; color: #0D1B2A; }
+
+.caso-pasos { counter-reset: paso; list-style: none; padding: 0 !important; }
+
+.caso-pasos li {
+  counter-increment: paso;
+  position: relative;
+  padding: 1rem 1rem 1rem 3.5rem;
+  background: #fff;
+  border: 1px solid #E8E4DC;
+  border-radius: 10px;
+  margin-bottom: 0.75rem !important;
+}
+
+.caso-pasos li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #0D1B2A;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.caso-aviso {
+  background: #fdf9f0;
+  border-left: 3px solid #C9A84C;
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px !important;
+  color: #8a6a1a !important;
+}
+
+.caso-cta {
+  background: #0D1B2A;
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  margin: 1rem 0 3rem;
+}
+
+.caso-cta h2 { color: #fff !important; margin-bottom: 0.6rem; }
+.caso-cta p { color: rgba(255,255,255,0.6) !important; margin-bottom: 1.5rem !important; }
+.caso-descargo { font-size: 12px !important; color: #999 !important; text-align: center; }
+
 #diferenciadores { background: #fff; }
 
 #faq {
@@ -940,6 +1032,10 @@ footer {
   .dif-grid { grid-template-columns: 1fr; }
   .opciones-precio { grid-template-columns: 1fr; }
   .cta-box h2 { font-size: 1.4rem; }
+  .caso-hero { padding: 6rem 1.25rem 3rem; }
+  .caso-hero h1 { font-size: 1.6rem; }
+  .caso-contenido { padding: 3rem 1.25rem 1rem; }
+  .caso-tabla { font-size: 13px; }
   .documento-ejemplo { padding: 1.5rem 1.25rem 0; max-height: 380px; }
   .documento-ejemplo-cuerpo { font-size: 12px; }
   .documento-ejemplo-marca-agua { font-size: 54px; }

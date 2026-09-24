@@ -33,20 +33,24 @@ async function guardarExpediente(refExpediente, datosExpediente) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
   const valor = JSON.stringify(datosExpediente);
-  await fetch(`${url}/set/expediente:${refExpediente}/${encodeURIComponent(valor)}?EX=${DOS_ANOS_EN_SEGUNDOS}`, {
+  const resp = await fetch(`${url}/set/expediente:${refExpediente}/${encodeURIComponent(valor)}?EX=${DOS_ANOS_EN_SEGUNDOS}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` }
   });
+  const data = await resp.json();
+  if (!resp.ok || data.error) throw new Error(`Redis SET falló: ${data.error || resp.status}`);
 }
 
 async function programarSeguimiento(refExpediente) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
   const fechaLimite = Math.floor(Date.now() / 1000) + 21 * 86400;
-  await fetch(`${url}/zadd/seguimientos:pendientes/${fechaLimite}/${refExpediente}`, {
+  const resp = await fetch(`${url}/zadd/seguimientos:pendientes/${fechaLimite}/${refExpediente}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` }
   });
+  const data = await resp.json();
+  if (!resp.ok || data.error) throw new Error(`Redis ZADD falló: ${data.error || resp.status}`);
 }
 
 function escaparHTML(str) {

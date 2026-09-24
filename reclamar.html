@@ -656,7 +656,25 @@
     });
 
     seleccionarOpcion('completa');
+
+    const CATEGORIA_POR_PARAMETRO = {
+      aerolineas: 'Aerolíneas y transporte',
+      telecomunicaciones: 'Telecomunicaciones',
+      banca: 'Banca y seguros',
+      energia: 'Energía y suministros',
+      administracion: 'Administración pública',
+      comercio: 'Comercio y tiendas online',
+      sanidad: 'Sanidad y salud',
+      alquiler: 'Inmobiliaria y alquiler',
+      educacion: 'Educación'
+    };
+    const categoriaInicial = CATEGORIA_POR_PARAMETRO[new URLSearchParams(window.location.search).get('categoria')];
+    if (categoriaInicial) {
+      document.getElementById('categoria-empresa').value = categoriaInicial;
+      mostrarCamposCategoria(categoriaInicial);
+    }
   </script>
   <script src="cookies.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
