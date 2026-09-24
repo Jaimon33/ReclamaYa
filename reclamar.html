@@ -86,7 +86,19 @@
                 </label>
               </div>
             </div>
-            <div class="campo">
+            <div id="campos-firmante" style="display:none;">
+              <div class="grid-2">
+                <div class="campo">
+                  <label for="firmante-nombre">Persona que firma en nombre de la empresa <span class="campo-opcional">(recomendado)</span></label>
+                  <input type="text" id="firmante-nombre" placeholder="Ej: María Pérez Gómez">
+                </div>
+                <div class="campo">
+                  <label for="firmante-cargo">Cargo <span class="campo-opcional">(opcional)</span></label>
+                  <input type="text" id="firmante-cargo" placeholder="Ej: Administradora única">
+                </div>
+              </div>
+            </div>
+            <div class="campo" id="campo-representacion">
               <label>¿Actúas en nombre propio o en representación de otra persona?</label>
               <div class="radio-group">
                 <label class="radio-opcion">
@@ -204,6 +216,19 @@
           <!-- PASO 2: LA RECLAMACIÓN -->
           <div class="form-step" id="step-2" style="display:none;">
             <div class="campo">
+              <label>¿A quién reclamas?</label>
+              <div class="radio-group">
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo-destinatario" value="empresa" checked onchange="toggleDestinatario(this.value)">
+                  <span>A una empresa o entidad</span>
+                </label>
+                <label class="radio-opcion">
+                  <input type="radio" name="tipo-destinatario" value="persona" onchange="toggleDestinatario(this.value)">
+                  <span>A una persona física</span>
+                </label>
+              </div>
+            </div>
+            <div class="campo">
               <label for="categoria-empresa">Categoría <span class="campo-opcional">(opcional)</span></label>
               <select id="categoria-empresa" onchange="mostrarCamposCategoria(this.value)">
                 <option value="">Selecciona una categoría...</option>
@@ -216,12 +241,17 @@
                 <option value="Sanidad y salud">Sanidad y salud</option>
                 <option value="Inmobiliaria y alquiler">Inmobiliaria y alquiler</option>
                 <option value="Educación">Educación</option>
+                <option value="Deudas, préstamos e impagos">Deudas, préstamos e impagos</option>
                 <option value="Otro">Otro</option>
               </select>
             </div>
             <div class="campo">
-              <label for="empresa">Nombre de la empresa o entidad</label>
+              <label for="empresa" id="label-empresa">Nombre de la empresa o entidad</label>
               <input type="text" id="empresa" placeholder="Escribe el nombre exacto" required>
+            </div>
+            <div class="campo">
+              <label for="domicilio-destinatario" id="label-domicilio-destinatario">Dirección postal de la empresa <span class="campo-opcional">(opcional)</span></label>
+              <input type="text" id="domicilio-destinatario" placeholder="Calle, número, código postal y ciudad">
             </div>
             <div class="grid-2">
               <div class="campo">
@@ -248,7 +278,7 @@
               <textarea id="descripcion" rows="8" placeholder="Explica con tus palabras qué pasó, cuándo, y qué respuesta has recibido hasta ahora. Cuanto más detalle des, más sólido será tu escrito." required></textarea>
             </div>
             <div class="campo">
-              <label for="reclamacion-previa">¿Has reclamado antes a esta empresa o entidad? <span class="campo-opcional">(opcional)</span></label>
+              <label for="reclamacion-previa">¿Has reclamado antes por este asunto? <span class="campo-opcional">(opcional)</span></label>
               <select id="reclamacion-previa" onchange="toggleReclamacionPrevia(this.value)">
                 <option value="">Selecciona...</option>
                 <option value="no">No, es mi primera reclamación</option>
@@ -284,7 +314,7 @@
 
             <div class="seccion-titulo">2. Solicita</div>
             <div class="campo">
-              <label for="solicita">Explica, con todo el detalle que quieras, qué le solicitas a la empresa</label>
+              <label for="solicita">Explica, con todo el detalle que quieras, qué le solicitas a la otra parte</label>
               <textarea id="solicita" rows="5" placeholder="Ej: Que me devuelvan el dinero cobrado indebidamente, que solucionen la avería, que anulen la multa, que me indemnicen por los daños causados..."></textarea>
             </div>
 
@@ -518,7 +548,22 @@
           <div class="campo"><label for="cat-tipo-centro">Tipo de centro</label><select id="cat-tipo-centro"><option value="">Selecciona...</option><option>Universidad pública</option><option>Universidad privada</option><option>Centro de formación</option><option>Academia</option><option>Colegio público</option><option>Colegio concertado/privado</option></select></div>
           <div class="campo"><label for="cat-expediente-edu">Nº de expediente o matrícula</label><input type="text" id="cat-expediente-edu" placeholder="Ej: MAT-2026-123"></div>
         </div>
-        <div class="campo"><label for="cat-curso">Curso académico afectado <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-curso" placeholder="Ej: 2025/2026"></div>`
+        <div class="campo"><label for="cat-curso">Curso académico afectado <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-curso" placeholder="Ej: 2025/2026"></div>`,
+
+      'Deudas, préstamos e impagos': `
+        <div class="grid-2">
+          <div class="campo"><label for="cat-tipo-deuda">Origen de la deuda</label><select id="cat-tipo-deuda"><option value="">Selecciona...</option><option>Préstamo de dinero</option><option>Factura o servicio impagado</option><option>Venta no pagada</option><option>Otra deuda</option></select></div>
+          <div class="campo"><label for="cat-fecha-deuda">Fecha del préstamo o de la deuda</label><input type="date" id="cat-fecha-deuda"></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-importe-original">Importe total prestado o facturado (€)</label><input type="number" id="cat-importe-original" placeholder="Ej: 30000" min="0" step="0.01"></div>
+          <div class="campo"><label for="cat-importe-devuelto">Importe ya devuelto o pagado (€)</label><input type="number" id="cat-importe-devuelto" placeholder="Ej: 5400" min="0" step="0.01"></div>
+        </div>
+        <div class="grid-2">
+          <div class="campo"><label for="cat-ultimo-pago">Fecha del último pago recibido <span class="campo-opcional">(opcional)</span></label><input type="date" id="cat-ultimo-pago"></div>
+          <div class="campo"><label for="cat-prueba-deuda">¿Qué prueba tienes de la deuda?</label><select id="cat-prueba-deuda"><option value="">Selecciona...</option><option>Contrato o documento firmado</option><option>Reconocimiento de deuda firmado</option><option>Transferencias o recibos</option><option>Mensajes o emails en los que se reconoce</option><option>Ninguna por escrito</option></select></div>
+        </div>
+        <div class="campo"><label for="cat-relacion-laboral">¿Existe o existió una relación laboral entre las partes?</label><select id="cat-relacion-laboral"><option value="">Selecciona...</option><option value="no">No</option><option value="sí, el deudor es o fue trabajador del acreedor">Sí, el deudor es o fue trabajador del acreedor</option><option value="sí, el deudor es o fue empleador del acreedor">Sí, el deudor es o fue empleador del acreedor</option></select></div>`
     };
 
     function mostrarCamposCategoria(categoria) {
@@ -534,15 +579,27 @@
       const labelNombre = document.getElementById('label-nombre');
       const labelDoc = document.getElementById('label-documento');
       const inputDoc = document.getElementById('documento');
-      if (valor === 'empresa') {
-        labelNombre.textContent = 'Razón social';
-        labelDoc.textContent = 'CIF';
-        inputDoc.placeholder = 'B12345678';
-      } else {
-        labelNombre.textContent = 'Nombre completo';
-        labelDoc.textContent = 'DNI';
-        inputDoc.placeholder = '12345678A';
+      const esEmpresa = valor === 'empresa';
+      labelNombre.textContent = esEmpresa ? 'Razón social' : 'Nombre completo';
+      labelDoc.innerHTML = `${esEmpresa ? 'CIF' : 'DNI'} <span class="campo-opcional">(opcional)</span>`;
+      inputDoc.placeholder = esEmpresa ? 'B12345678' : '12345678A';
+      document.getElementById('campos-firmante').style.display = esEmpresa ? 'block' : 'none';
+      document.getElementById('campo-representacion').style.display = esEmpresa ? 'none' : 'block';
+      if (esEmpresa) {
+        document.querySelector('input[name="representacion"][value="propio"]').checked = true;
+        toggleRepresentacion('propio');
       }
+    }
+
+    function toggleDestinatario(valor) {
+      const esPersona = valor === 'persona';
+      const inputDomicilio = document.getElementById('domicilio-destinatario');
+      document.getElementById('label-empresa').textContent = esPersona ? 'Nombre y apellidos de la persona' : 'Nombre de la empresa o entidad';
+      document.getElementById('empresa').placeholder = esPersona ? 'Ej: Manuel García López' : 'Escribe el nombre exacto';
+      document.getElementById('label-domicilio-destinatario').innerHTML = esPersona
+        ? 'Domicilio de la persona <span class="campo-opcional">(necesario para enviarle el escrito por burofax)</span>'
+        : 'Dirección postal de la empresa <span class="campo-opcional">(opcional)</span>';
+      inputDomicilio.required = esPersona;
     }
 
     function toggleRepresentacion(valor) {
@@ -568,7 +625,7 @@
 
     function irPaso(num) {
       const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
-      const campos2 = ['categoria-empresa','empresa','fecha-hecho','descripcion'];
+      const campos2 = ['categoria-empresa','empresa','domicilio-destinatario','fecha-hecho','descripcion'];
 
       if (num === 2) {
         for (const id of campos1) {
@@ -666,7 +723,8 @@
       comercio: 'Comercio y tiendas online',
       sanidad: 'Sanidad y salud',
       alquiler: 'Inmobiliaria y alquiler',
-      educacion: 'Educación'
+      educacion: 'Educación',
+      deudas: 'Deudas, préstamos e impagos'
     };
     const categoriaInicial = CATEGORIA_POR_PARAMETRO[new URLSearchParams(window.location.search).get('categoria')];
     if (categoriaInicial) {

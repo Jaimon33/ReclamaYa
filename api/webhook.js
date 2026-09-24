@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { Resend } from 'resend';
+import { seleccionarGuia } from './guia.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -71,8 +72,79 @@ function generarRefExpediente() {
   return `RC-${codigo}`;
 }
 
+const ASUNTOS = {
+  'Telecomunicaciones': 'Reclamación formal por la prestación de servicios de telecomunicaciones',
+  'Energía y suministros': 'Reclamación formal en materia de suministros energéticos',
+  'Aerolíneas y transporte': 'Reclamación formal en materia de transporte de pasajeros',
+  'Banca y seguros': 'Reclamación formal en materia de servicios bancarios y de seguros',
+  'Administración pública': 'Escrito de reclamación ante la Administración',
+  'Comercio y tiendas online': 'Reclamación formal en materia de consumo',
+  'Sanidad y salud': 'Reclamación formal en materia de asistencia sanitaria',
+  'Inmobiliaria y alquiler': 'Reclamación formal en materia de arrendamiento y vivienda',
+  'Educación': 'Reclamación formal en materia de servicios educativos',
+  'Deudas, préstamos e impagos': 'Requerimiento extrajudicial de pago'
+};
+
+const CATEGORIAS_CON_ATENCION_AL_CLIENTE = [
+  'Telecomunicaciones', 'Energía y suministros', 'Aerolíneas y transporte',
+  'Banca y seguros', 'Comercio y tiendas online'
+];
+
+const MARCA_AGUA_CSS = `
+  .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
+  .marca-agua img { width:88%; max-width:720px; opacity:0.045; }`;
+
+function categoriaVisible(categoria) {
+  return !categoria || categoria === 'Otro' ? 'General' : categoria;
+}
+
+function textoAsunto(categoria, tipoDestinatario) {
+  if (ASUNTOS[categoria]) return ASUNTOS[categoria];
+  return tipoDestinatario === 'persona' ? 'Requerimiento extrajudicial' : 'Reclamación formal';
+}
+
+function bloqueDestinatario(datos) {
+  const { empresa, categoriaEmpresa, tipoDestinatario, domicilioDestinatario } = datos;
+  const encabezado = tipoDestinatario !== 'persona' && CATEGORIAS_CON_ATENCION_AL_CLIENTE.includes(categoriaEmpresa)
+    ? 'A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE'
+    : 'A LA ATENCIÓN DE';
+  const lineas = [
+    `<p><strong>${encabezado}</strong></p>`,
+    `<p><strong>${escaparHTML(empresa.toUpperCase())}</strong></p>`
+  ];
+  if (domicilioDestinatario) lineas.push(`<p>${escaparHTML(domicilioDestinatario)}</p>`);
+  return lineas.join('\n  ');
+}
+
+function bloqueFirma(datos) {
+  const { nombre, documento, tipo, firmanteNombre, firmanteCargo, representacion, repNombre } = datos;
+  if (tipo === 'empresa' && firmanteNombre) {
+    return [
+      `<p><strong>${escaparHTML(firmanteNombre)}</strong></p>`,
+      firmanteCargo ? `<p>${escaparHTML(firmanteCargo)}</p>` : '',
+      `<p>En nombre y representación de ${escaparHTML(nombre)}</p>`,
+      documento ? `<p>CIF: ${escaparHTML(documento)}</p>` : ''
+    ].filter(Boolean).join('\n  ');
+  }
+  return [
+    `<p><strong>${escaparHTML(nombre)}</strong></p>`,
+    documento ? `<p>${escaparHTML(documento)}</p>` : '',
+    representacion === 'representacion' && repNombre ? `<p>En representación de ${escaparHTML(repNombre)}</p>` : ''
+  ].filter(Boolean).join('\n  ');
+}
+
+function recortarTrasDespedida(carta) {
+  const lineas = carta.split('\n');
+  for (let i = lineas.length - 1; i >= 0; i--) {
+    if (/^\s*Atentamente/i.test(lineas[i].replace(/\*\*/g, ''))) {
+      return lineas.slice(0, i + 1).join('\n');
+    }
+  }
+  return carta;
+}
+
 function generarHTMLEscrito(carta, datos, refExpediente) {
-  const { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa } = datos;
+  const { nombre, documento, direccion, cp, ciudad, telefono, email, categoriaEmpresa, tipoDestinatario } = datos;
 
   const lineasRemitente = [`<p><strong>${escaparHTML(nombre)}</strong></p>`];
   if (documento) lineasRemitente.push(`<p>${escaparHTML(documento)}</p>`);
@@ -83,7 +155,7 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
   if (telefono) lineasRemitente.push(`<p>Tel.: ${escaparHTML(telefono)}</p>`);
   if (email) lineasRemitente.push(`<p>${escaparHTML(email)}</p>`);
 
-  const cuerpoHTML = carta.split('\n').map(linea => {
+  const cuerpoHTML = recortarTrasDespedida(carta).split('\n').map(linea => {
     const l = escaparHTML(linea.trimEnd()).replace(/\*\*/g, '');
     if (!l.trim()) return '<p style="margin:6px 0">&nbsp;</p>';
     const match = linea.trimEnd().replace(/\*\*/g, '').match(/^(PRIMERO|SEGUNDO|TERCERO|CUARTO|QUINTO)(\.-)\s+(.+)$/);
@@ -103,8 +175,7 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:0 50px 60px; max-width:800px; margin:0 auto; position:relative; }
-  .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
-  .marca-agua span { font-family:Arial,sans-serif; font-size:92px; font-weight:700; color:rgba(13,27,42,0.045); transform:rotate(-38deg); white-space:nowrap; letter-spacing:4px; }
+  ${MARCA_AGUA_CSS}
   .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
   .cabecera-formal .marca { display:flex; align-items:center; gap:8px; }
   .cabecera-formal .marca img { height:22px; width:auto; display:block; }
@@ -131,32 +202,30 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
 </style>
 </head>
 <body>
-<div class="marca-agua"><span>RECLAMOIA</span></div>
+<div class="marca-agua"><img src="https://reclamoia.es/marca-agua.png" alt=""></div>
 <div class="contenido">
 <div class="cabecera-formal">
   <div class="marca">
     <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA">
-    <span class="marca-texto">Reclamo<span>IA</span> · Escrito de reclamación</span>
+    <span class="marca-texto">Reclamo<span>IA</span> · ${categoriaEmpresa === 'Deudas, préstamos e impagos' ? 'Requerimiento de pago' : 'Escrito de reclamación'}</span>
   </div>
-  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaEmpresa || 'General')}</div>
+  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaVisible(categoriaEmpresa))}</div>
 </div>
 <div class="remitente">
   ${lineasRemitente.join('\n  ')}
 </div>
 <hr>
 <div class="destinatario">
-  <p><strong>A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE</strong></p>
-  <p><strong>${escaparHTML(empresa.toUpperCase())}</strong></p>
+  ${bloqueDestinatario(datos)}
 </div>
 <div class="asunto">
-  <strong>Asunto:</strong> Reclamación formal en materia de ${escaparHTML((categoriaEmpresa || 'consumo').toLowerCase())}
+  <strong>Asunto:</strong> ${escaparHTML(textoAsunto(categoriaEmpresa, tipoDestinatario))}
 </div>
 <hr>
 <div class="cuerpo">${cuerpoHTML}</div>
 <div class="firma">
   <div class="firma-linea"></div>
-  <p><strong>${escaparHTML(nombre)}</strong></p>
-  ${documento ? `<p>${escaparHTML(documento)}</p>` : ''}
+  ${bloqueFirma(datos)}
 </div>
 </div>
 <div class="pie">
@@ -171,8 +240,11 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
 }
 
 function generarHTMLGuia(guiaData, datos, refExpediente) {
-  const { nombre, empresa, categoriaEmpresa, ciudad } = datos;
+  const { nombre, empresa, categoriaEmpresa, tipoDestinatario } = datos;
   const { guia, fecha } = guiaData;
+  const etiquetaReclamado = tipoDestinatario === 'persona' ? 'Persona reclamada' : 'Parte reclamada';
+  const etiquetaOrganismo = guia.etiquetaOrganismo || 'Organismo regulador';
+  const categoria = categoriaVisible(categoriaEmpresa);
 
   const pasosHTML = guia.pasos.map(paso => `
     <div style="margin-bottom:24px; padding:20px; background:#fafaf8; border-left:3px solid #C9A84C; border-radius:0 8px 8px 0;">
@@ -187,8 +259,7 @@ function generarHTMLGuia(guiaData, datos, refExpediente) {
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Times New Roman',Times,serif; font-size:11pt; color:#1a1a1a; background:#fff; padding:0 50px 60px; max-width:800px; margin:0 auto; position:relative; }
-  .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
-  .marca-agua span { font-family:Arial,sans-serif; font-size:92px; font-weight:700; color:rgba(13,27,42,0.045); transform:rotate(-38deg); white-space:nowrap; letter-spacing:4px; }
+  ${MARCA_AGUA_CSS}
   .cabecera-formal { position:relative; z-index:1; border-top:4px solid #0D1B2A; padding-top:14px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; }
   .cabecera-formal .marca { display:flex; align-items:center; gap:8px; }
   .cabecera-formal .marca img { height:22px; width:auto; display:block; }
@@ -204,7 +275,7 @@ function generarHTMLGuia(guiaData, datos, refExpediente) {
 </style>
 </head>
 <body>
-<div class="marca-agua"><span>RECLAMOIA</span></div>
+<div class="marca-agua"><img src="https://reclamoia.es/marca-agua.png" alt=""></div>
 <div class="contenido">
 
 <div class="cabecera-formal" style="border-bottom:2px solid #0D1B2A; padding-bottom:16px; margin-bottom:24px;">
@@ -212,19 +283,19 @@ function generarHTMLGuia(guiaData, datos, refExpediente) {
     <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA">
     <span class="marca-texto">Reclamo<span>IA</span> · Guía de presentación</span>
   </div>
-  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaEmpresa || 'General')}</div>
+  <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoria)}</div>
 </div>
 
 <div style="margin-bottom:20px;">
   <h1 style="font-family:Arial,sans-serif; font-size:18pt; font-weight:700; color:#0D1B2A; margin:0 0 4px;">GUÍA DE PRESENTACIÓN</h1>
-  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#C9A84C; font-weight:600; margin:0;">Escrito de reclamación contra ${escaparHTML(empresa)} — ${escaparHTML(categoriaEmpresa)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#C9A84C; font-weight:600; margin:0;">Escrito dirigido a ${escaparHTML(empresa)} — ${escaparHTML(categoria)}</p>
 </div>
 
 <div style="background:#f0f4ff; border:1px solid #b0c4f0; border-radius:8px; padding:14px 16px; margin-bottom:24px;">
   <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Preparado para:</strong> ${escaparHTML(nombre)}</p>
-  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Empresa reclamada:</strong> ${escaparHTML(empresa)}</p>
-  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Categoría:</strong> ${escaparHTML(categoriaEmpresa)}</p>
-  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0;"><strong>Organismo regulador:</strong> ${escaparHTML(guia.organismo)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>${etiquetaReclamado}:</strong> ${escaparHTML(empresa)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0 0 4px;"><strong>Categoría:</strong> ${escaparHTML(categoria)}</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; color:#1a3a6a; margin:0;"><strong>${etiquetaOrganismo}:</strong> ${escaparHTML(guia.organismo)}</p>
 </div>
 
 <div style="background:#fdf9f0; border:1px solid #C9A84C; border-radius:8px; padding:14px 16px; margin-bottom:24px;">
@@ -236,7 +307,7 @@ ${pasosHTML}
 
 ${guia.enlace ? `
 <div style="margin-top:24px; padding:16px; background:#f0f4ff; border-radius:8px; border:1px solid #b0c4f0;">
-  <p style="font-family:Arial,sans-serif; font-size:10pt; font-weight:700; color:#0D1B2A; margin:0 0 6px;">🔗 Enlace oficial del organismo regulador</p>
+  <p style="font-family:Arial,sans-serif; font-size:10pt; font-weight:700; color:#0D1B2A; margin:0 0 6px;">🔗 Enlace oficial</p>
   <p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#1a3a6a; margin:0;">${escaparHTML(guia.organismo)}: <strong>${escaparHTML(guia.enlace)}</strong></p>
   ${guia.telefono ? `<p style="font-family:'Times New Roman',Times,serif; font-size:10.5pt; color:#1a3a6a; margin:4px 0 0;">Teléfono: <strong>${escaparHTML(guia.telefono)}</strong></p>` : ''}
 </div>
@@ -280,13 +351,7 @@ export default async function handler(req, res) {
     const tempId = session.metadata?.tempId || '';
 
     let carta = '';
-    let nombre = '';
-    let documento = '';
-    let direccion = '';
-    let cp = '';
-    let ciudad = '';
-    let telefono = '';
-    let categoriaEmpresa = '';
+    let d = {};
 
     if (tempId) {
       try {
@@ -294,14 +359,7 @@ export default async function handler(req, res) {
         if (raw) {
           const parsed = JSON.parse(raw);
           carta = parsed.carta || '';
-          const d = parsed.datosUsuario || {};
-          nombre = d.nombre || '';
-          documento = d.documento || '';
-          direccion = d.direccion || '';
-          cp = d.cp || '';
-          ciudad = d.ciudad || '';
-          telefono = d.telefono || '';
-          categoriaEmpresa = d.categoriaEmpresa || '';
+          d = parsed.datosUsuario || {};
         }
       } catch (kvError) {
         console.error('Error recuperando de Redis:', kvError);
@@ -312,17 +370,39 @@ export default async function handler(req, res) {
       day: 'numeric', month: 'long', year: 'numeric'
     });
 
+    const nombre = d.nombre || '';
+    const categoriaEmpresa = d.categoriaEmpresa || '';
+    const tipoDestinatario = d.tipoDestinatario === 'persona' ? 'persona' : 'empresa';
+
     try {
-      const datos = { nombre, documento, direccion, cp, ciudad, telefono, email, empresa, categoriaEmpresa };
+      const datos = {
+        nombre,
+        documento: d.documento || '',
+        direccion: d.direccion || '',
+        cp: d.cp || '',
+        ciudad: d.ciudad || '',
+        telefono: d.telefono || '',
+        email,
+        empresa,
+        categoriaEmpresa,
+        tipo: d.tipo || 'particular',
+        tipoDestinatario,
+        domicilioDestinatario: d.domicilioDestinatario || '',
+        representacion: d.representacion || 'propio',
+        repNombre: d.repNombre || '',
+        firmanteNombre: d.firmanteNombre || '',
+        firmanteCargo: d.firmanteCargo || ''
+      };
       const refExpediente = generarRefExpediente();
 
       try {
         await guardarExpediente(refExpediente, {
           ref: refExpediente,
           fecha: new Date().toISOString(),
-          categoria: categoriaEmpresa || 'General',
+          categoria: categoriaEmpresa || 'Otro',
+          tipoDestinatario,
           email,
-          nombre: (nombre || '').split(' ')[0] || '',
+          nombre: (datos.tipo === 'empresa' ? datos.firmanteNombre : nombre).split(' ')[0] || '',
           empresa,
           opcion,
           seguimientoEnviado: false
@@ -353,39 +433,27 @@ export default async function handler(req, res) {
       }
 
       let pdfGuiaBase64 = null;
-      if (opcion === 'completa' && categoriaEmpresa) {
+      if (opcion === 'completa') {
         try {
-          const { default: guiaHandler } = await import('./guia.js');
-const guiaReq = { method: 'POST', body: { categoria: categoriaEmpresa, empresa, ciudad, nombre, fecha } };
-const guiaData = { guia: null, fecha };
+          const guiaData = { guia: seleccionarGuia(categoriaEmpresa || 'Otro', tipoDestinatario), fecha };
+          const htmlGuia = generarHTMLGuia(guiaData, datos, refExpediente);
 
-await new Promise((resolve) => {
-  const guiaRes = {
-    status: () => ({ json: (data) => { Object.assign(guiaData, data); resolve(); } })
-  };
-  guiaHandler(guiaReq, guiaRes);
-});
+          const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              source: htmlGuia,
+              format: 'A4',
+              margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
+            })
+          });
 
-if (guiaData.guia) {
-  const htmlGuia = generarHTMLGuia(guiaData, datos, refExpediente);
-
-            const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                source: htmlGuia,
-                format: 'A4',
-                margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
-              })
-            });
-
-            if (pdfGuiaResponse.ok) {
-              const guiaBuffer = await pdfGuiaResponse.arrayBuffer();
-              pdfGuiaBase64 = Buffer.from(guiaBuffer).toString('base64');
-            }
+          if (pdfGuiaResponse.ok) {
+            const guiaBuffer = await pdfGuiaResponse.arrayBuffer();
+            pdfGuiaBase64 = Buffer.from(guiaBuffer).toString('base64');
           }
         } catch (guiaError) {
           console.error('Error generando guía:', guiaError);
@@ -408,6 +476,12 @@ if (guiaData.guia) {
         });
       }
 
+      const nombreSaludo = (datos.tipo === 'empresa' && datos.firmanteNombre ? datos.firmanteNombre : nombre).split(' ')[0] || '';
+      const porBurofax = tipoDestinatario === 'persona' || categoriaEmpresa === 'Deudas, préstamos e impagos';
+      const pasoEnvio = porBurofax
+        ? `2. Envíalo a ${escaparHTML(empresa)} por burofax con acuse de recibo y certificación de contenido${opcion === 'completa' ? ' (la guía adjunta te explica cómo)' : ''}`
+        : `2. Envíalo a ${escaparHTML(empresa)} siguiendo las instrucciones${opcion === 'completa' ? ' de la guía adjunta' : ''}`;
+
       const htmlEmail = `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="UTF-8"></head>
@@ -417,9 +491,9 @@ if (guiaData.guia) {
     <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA" style="height:36px;width:auto;">
   </div>
   <div style="padding:32px;">
-    <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">Tu ${opcion === 'completa' ? 'escrito y guía están listos' : 'escrito está listo'}, ${escaparHTML(nombre.split(' ')[0] || '')}</h2>
+    <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">Tu ${opcion === 'completa' ? 'escrito y guía están listos' : 'escrito está listo'}, ${escaparHTML(nombreSaludo)}</h2>
     <p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:16px;">
-      Hemos generado tu escrito de reclamación formal contra <strong>${escaparHTML(empresa)}</strong> con legislación verificada en el BOE y EUR-Lex.
+      Hemos generado tu escrito formal dirigido a <strong>${escaparHTML(empresa)}</strong>, con la legislación aplicable verificada.
       ${opcion === 'completa' ? 'También encontrarás adjunta la guía paso a paso para presentar tu reclamación correctamente.' : ''}
     </p>
     <div style="background:#fdf9f0;border:1px solid #C9A84C;border-radius:8px;padding:12px 16px;margin:20px 0;">
@@ -431,7 +505,7 @@ if (guiaData.guia) {
     <div style="background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;">
       <p style="font-size:13px;color:#0D1B2A;font-weight:bold;margin-bottom:8px;">¿Qué hago ahora?</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF del escrito adjunto</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">2. Envíalo a ${escaparHTML(empresa)} siguiendo las instrucciones${opcion === 'completa' ? ' de la guía adjunta' : ''}</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">${pasoEnvio}</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">3. Guarda siempre el justificante de envío</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">4. Si no responden en 15 días hábiles, sigue los pasos indicados${opcion === 'completa' ? ' en la guía' : ''}</p>
     </div>

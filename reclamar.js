@@ -166,11 +166,31 @@ form.addEventListener('submit', async (e) => {
   const archivosInput = document.getElementById('archivos');
   const archivos = archivosInput.files;
 
+  const tipoDestinatario = document.querySelector('input[name="tipo-destinatario"]:checked').value;
+  const domicilioDestinatario = document.getElementById('domicilio-destinatario').value.trim();
+  const representacion = document.querySelector('input[name="representacion"]:checked').value;
+  const repNombre = representacion === 'representacion' ? document.getElementById('rep-nombre').value.trim() : '';
+  const repDocumento = representacion === 'representacion' ? document.getElementById('rep-documento').value.trim() : '';
+  const firmanteNombre = tipo === 'empresa' ? document.getElementById('firmante-nombre').value.trim() : '';
+  const firmanteCargo = tipo === 'empresa' ? document.getElementById('firmante-cargo').value.trim() : '';
+
+  const previa = document.getElementById('reclamacion-previa');
+  const partesPrevia = [];
+  if (previa.value) partesPrevia.push(previa.options[previa.selectedIndex].text);
+  const numPrevia = document.getElementById('num-reclamacion-previa').value.trim();
+  if (numPrevia) partesPrevia.push(`Nº de reclamación previa: ${numPrevia}`);
+  const respuestaPrevia = document.getElementById('respuesta-previa').value.trim();
+  if (respuestaPrevia) partesPrevia.push(`Respuesta recibida: ${respuestaPrevia}`);
+  const reclamacionPrevia = partesPrevia.join('. ');
+
   const datosUsuario = {
     tipo, nombre, documento, direccion, ciudad, cp,
     telefono, email, categoriaEmpresa, empresa,
     referencia, fechaHecho, importe,
-    objetivo, descripcion, camposCategoria
+    objetivo, descripcion, camposCategoria,
+    tipoDestinatario, domicilioDestinatario,
+    representacion, repNombre, repDocumento,
+    firmanteNombre, firmanteCargo, reclamacionPrevia
   };
 
   document.querySelector('.form-card').style.display = 'none';
@@ -254,6 +274,9 @@ form.addEventListener('submit', async (e) => {
 
 btnNueva.addEventListener('click', () => {
   form.reset();
+  toggleTipo('particular');
+  toggleRepresentacion('propio');
+  toggleDestinatario('empresa');
   document.getElementById('check-condiciones-venta').checked = false;
   document.getElementById('lista-archivos').innerHTML = '';
   document.getElementById('step-1').style.display = 'block';

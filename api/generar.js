@@ -1,6 +1,8 @@
 const FUENTES_POR_CATEGORIA = {
   'Telecomunicaciones': {
     fuentes: ['BOE', 'EUR-Lex', 'CNMC'],
+    especialidad: 'derecho del consumidor y telecomunicaciones',
+    reserva: 'interponer la correspondiente reclamación ante la Oficina de Atención al Usuario de Telecomunicaciones, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Ley 11/2022, de 28 de junio, General de Telecomunicaciones',
       'Real Decreto 899/2009, de 22 de mayo, Carta de derechos del usuario de servicios de comunicaciones electrónicas',
@@ -9,6 +11,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Energía y suministros': {
     fuentes: ['BOE', 'EUR-Lex', 'CNMC'],
+    especialidad: 'derecho del consumidor y del sector energético',
+    reserva: 'interponer las correspondientes reclamaciones ante los servicios de consumo de la Comunidad Autónoma, la Junta Arbitral de Consumo o la Comisión Nacional de los Mercados y la Competencia, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Ley 24/2013, de 26 de diciembre, del Sector Eléctrico',
       'Real Decreto 1955/2000 sobre distribución, suministro y autorización de instalaciones eléctricas',
@@ -17,6 +21,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Aerolíneas y transporte': {
     fuentes: ['BOE', 'EUR-Lex', 'AESA'],
+    especialidad: 'derecho del consumidor y derechos de los pasajeros',
+    reserva: 'interponer la correspondiente reclamación ante la Agencia Estatal de Seguridad Aérea (AESA), así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Reglamento (CE) nº 261/2004 sobre compensación y asistencia a pasajeros aéreos',
       'Convenio de Montreal de 1999 sobre transporte aéreo internacional',
@@ -25,6 +31,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Banca y seguros': {
     fuentes: ['BOE', 'EUR-Lex', 'Banco de España'],
+    especialidad: 'derecho bancario y del consumidor',
+    reserva: 'interponer la correspondiente reclamación ante el Banco de España o, en su caso, ante la Dirección General de Seguros y Fondos de Pensiones, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Ley 7/1998, de 13 de abril, sobre Condiciones Generales de la Contratación',
       'Real Decreto Legislativo 1/2007, de 16 de noviembre, Ley General para la Defensa de los Consumidores',
@@ -34,6 +42,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Administración pública': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho administrativo',
+    reserva: 'interponer los recursos administrativos y, en su caso, contencioso-administrativos que procedan',
     leyes: [
       'Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común',
       'Ley 58/2003, de 17 de diciembre, General Tributaria',
@@ -43,6 +53,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Comercio y tiendas online': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho del consumidor',
+    reserva: 'interponer las correspondientes reclamaciones ante los servicios de consumo competentes y la Junta Arbitral de Consumo, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Real Decreto Legislativo 1/2007, de 16 de noviembre, Ley General para la Defensa de los Consumidores',
       'Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información',
@@ -52,6 +64,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Sanidad y salud': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho sanitario y del consumidor',
+    reserva: 'interponer las correspondientes reclamaciones ante la Inspección de Servicios Sanitarios y los servicios de consumo competentes, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Ley 41/2002, de 14 de noviembre, básica reguladora de la autonomía del paciente',
       'Ley 16/2003, de 28 de mayo, de cohesión y calidad del Sistema Nacional de Salud',
@@ -60,6 +74,8 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Inmobiliaria y alquiler': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho civil y de arrendamientos urbanos',
+    reserva: 'acudir a los servicios de mediación y a los organismos de vivienda y consumo competentes, así como a ejercitar cuantas acciones judiciales procedan',
     leyes: [
       'Ley 29/1994, de 24 de noviembre, de Arrendamientos Urbanos',
       'Ley 12/2023, de 24 de mayo, por el derecho a la vivienda',
@@ -68,20 +84,58 @@ const FUENTES_POR_CATEGORIA = {
   },
   'Educación': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho educativo y del consumidor',
+    reserva: 'interponer las correspondientes reclamaciones ante la Inspección Educativa competente, así como a ejercer cuantas acciones legales procedan',
     leyes: [
       'Ley Orgánica 3/2020, de 29 de diciembre, de Educación (LOMLOE)',
       'Real Decreto Legislativo 1/2007, de 16 de noviembre, Ley General para la Defensa de los Consumidores',
       'Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información',
     ]
   },
+  'Deudas, préstamos e impagos': {
+    fuentes: ['BOE'],
+    especialidad: 'derecho civil de obligaciones y contratos',
+    busqueda: 'préstamo reclamación de cantidad',
+    reserva: 'ejercitar las acciones judiciales de reclamación de cantidad que correspondan, incluido el proceso monitorio regulado en los artículos 812 y siguientes de la Ley de Enjuiciamiento Civil, con reclamación de los intereses de demora y de las costas que procedan',
+    leyes: [
+      'Código Civil, artículos 1088, 1091 y 1101 (fuerza de las obligaciones y responsabilidad por incumplimiento)',
+      'Código Civil, artículos 1740 y 1753 (contrato de préstamo y obligación de devolver lo prestado)',
+      'Código Civil, artículos 1100 y 1108 (mora del deudor e intereses de demora)',
+      'Código Civil, artículo 1973 (interrupción de la prescripción por reclamación extrajudicial)',
+      'Ley 1/2000, de Enjuiciamiento Civil, artículos 812 a 818 (proceso monitorio)',
+    ]
+  },
+  'Reclamación a particulares': {
+    fuentes: ['BOE'],
+    especialidad: 'derecho civil',
+    busqueda: 'Código Civil obligaciones',
+    reserva: 'ejercitar cuantas acciones judiciales correspondan en defensa de mis derechos e intereses',
+    leyes: [
+      'Código Civil, artículos 1088, 1089 y 1091 (fuentes y fuerza de las obligaciones)',
+      'Código Civil, artículos 1101 y 1124 (responsabilidad por incumplimiento y resolución de las obligaciones recíprocas)',
+      'Código Civil, artículos 1100 y 1108 (mora del deudor e intereses de demora)',
+      'Código Civil, artículo 1973 (interrupción de la prescripción por reclamación extrajudicial)',
+    ]
+  },
   'Otro': {
     fuentes: ['BOE', 'EUR-Lex'],
+    especialidad: 'derecho civil y del consumidor',
+    reserva: 'acudir a los organismos competentes y a ejercitar cuantas acciones legales procedan',
     leyes: [
-      'Real Decreto Legislativo 1/2007, de 16 de noviembre, Ley General para la Defensa de los Consumidores',
-      'Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común',
+      'Real Decreto Legislativo 1/2007, de 16 de noviembre, Ley General para la Defensa de los Consumidores (solo si la relación es de consumo)',
+      'Código Civil, artículos 1088, 1091 y 1101 (fuerza de las obligaciones y responsabilidad por incumplimiento)',
     ]
   }
 };
+
+const CATEGORIAS_ENTRE_PARTICULARES = ['Inmobiliaria y alquiler', 'Deudas, préstamos e impagos'];
+
+function seleccionarConfig(categoria, tipoDestinatario) {
+  if (tipoDestinatario === 'persona' && !CATEGORIAS_ENTRE_PARTICULARES.includes(categoria)) {
+    return FUENTES_POR_CATEGORIA['Reclamación a particulares'];
+  }
+  return FUENTES_POR_CATEGORIA[categoria] || FUENTES_POR_CATEGORIA['Otro'];
+}
 
 async function consultarBOE(termino) {
   try {
@@ -107,7 +161,10 @@ export default async function handler(req, res) {
     tipo, nombre, documento, direccion, ciudad, cp,
     telefono, email, categoriaEmpresa, empresa,
     referencia, fechaHecho, problema, importe,
-    objetivo, descripcion, documentos, camposCategoria
+    objetivo, descripcion, documentos, camposCategoria,
+    tipoDestinatario, domicilioDestinatario,
+    representacion, repNombre, repDocumento,
+    firmanteNombre, firmanteCargo, reclamacionPrevia
   } = req.body;
 
   if (!nombre || !email || !empresa || !descripcion) {
@@ -115,11 +172,13 @@ export default async function handler(req, res) {
   }
 
   const categoria = categoriaEmpresa || 'Otro';
-  const fuentesConfig = FUENTES_POR_CATEGORIA[categoria] || FUENTES_POR_CATEGORIA['Otro'];
+  const esPersona = tipoDestinatario === 'persona';
+  const fuentesConfig = seleccionarConfig(categoria, tipoDestinatario);
   const leyes = fuentesConfig.leyes;
   const fuentesNombres = fuentesConfig.fuentes;
+  const esRequerimientoPago = categoria === 'Deudas, préstamos e impagos';
 
-  const boeResultados = await consultarBOE(`${categoria} consumidores España`);
+  const boeResultados = await consultarBOE(fuentesConfig.busqueda || `${categoria} consumidores España`);
   const fuentesVerificadas = [
     ...fuentesNombres.map(f => `${f} — verificado`),
     ...(boeResultados || [])
@@ -141,36 +200,61 @@ export default async function handler(req, res) {
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
 
-  // Construye la identificación del reclamante solo con los datos que realmente ha aportado
-  const identificacionPartes = [nombre];
-  if (documento) identificacionPartes.push(`con ${docTexto} número ${documento}`);
+  const detallesContacto = [];
   if (direccion || ciudad || cp) {
     const domicilio = [direccion, [cp, ciudad].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-    identificacionPartes.push(`y domicilio a efectos de notificaciones en ${domicilio}`);
+    detallesContacto.push(`y domicilio a efectos de notificaciones en ${domicilio}`);
   }
-  if (telefono) identificacionPartes.push(`teléfono ${telefono}`);
-  identificacionPartes.push(`correo electrónico ${email}`);
-  const identificacionReclamante = identificacionPartes.join(', ');
+  if (telefono) detallesContacto.push(`teléfono ${telefono}`);
+  detallesContacto.push(`correo electrónico ${email}`);
+
+  const documentoPropio = documento ? `con ${docTexto} número ${documento}` : '';
+  let identificacionPartes;
+  if (tipo === 'empresa' && firmanteNombre) {
+    const cargo = firmanteCargo ? `, en su condición de ${firmanteCargo}` : '';
+    identificacionPartes = [`${firmanteNombre}${cargo}, en nombre y representación de ${nombre}`, documentoPropio];
+  } else if (representacion === 'representacion' && repNombre) {
+    const docRepresentado = repDocumento ? `, con DNI/CIF ${repDocumento}` : '';
+    identificacionPartes = [nombre, documentoPropio, `en nombre y representación de ${repNombre}${docRepresentado}`];
+  } else {
+    identificacionPartes = [nombre, documentoPropio];
+  }
+  const identificacionReclamante = [...identificacionPartes, ...detallesContacto].filter(Boolean).join(', ');
+
+  const aperturaEscrito = esPersona
+    ? `${identificacionReclamante}, por medio del presente escrito me dirijo a [D. o Dña., según corresponda] ${empresa} y, como mejor proceda en Derecho, EXPONGO:`
+    : `${identificacionReclamante}, ante [destinatario real], comparezco y como mejor proceda en Derecho, EXPONGO:`;
 
   const lugarFecha = ciudad
     ? `En ${ciudad}, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.`
     : `A ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.`;
 
-  const prompt = `Eres un abogado especialista en derecho del consumidor español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta un escrito de reclamación extrajudicial formal.
+  const firmanteTexto = tipo === 'empresa' && firmanteNombre
+    ? ` | Firma en su nombre: ${firmanteNombre}${firmanteCargo ? ` (${firmanteCargo})` : ''}`
+    : '';
+  const representadoTexto = representacion === 'representacion' && repNombre
+    ? ` | Actúa en representación de: ${repNombre}${repDocumento ? ` (${repDocumento})` : ''}`
+    : '';
+  const tipoEscrito = esRequerimientoPago
+    ? 'un requerimiento extrajudicial de pago formal'
+    : 'un escrito de reclamación extrajudicial formal';
+
+  const prompt = `Eres un abogado especialista en ${fuentesConfig.especialidad} español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta ${tipoEscrito}.
 
 DATOS DEL RECLAMANTE (usa únicamente los que se indican; si algún dato no aparece aquí, el reclamante no lo ha facilitado y NO debes inventarlo ni dejar huecos o corchetes en su lugar):
-Nombre: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${direccion ? ` | Dirección: ${direccion}, ${cp} ${ciudad}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}
+${tipo === 'empresa' ? 'Razón social' : 'Nombre'}: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${direccion ? ` | Dirección: ${direccion}, ${cp} ${ciudad}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}${firmanteTexto}${representadoTexto}
 
 RECLAMACIÓN:
-Empresa indicada: ${empresa} | Categoría: ${categoria}
+Parte reclamada: ${empresa} (${esPersona ? 'persona física' : 'empresa o entidad'})${domicilioDestinatario ? ` | Domicilio: ${domicilioDestinatario}` : ''} | Categoría: ${categoria}
 ${problemaTexto}
 ${objetivoTexto}
 ${importeTexto} ${referenciaTexto} ${fechaTexto}
 Descripción: ${descripcion}
+${reclamacionPrevia ? `Gestiones previas del reclamante: ${reclamacionPrevia}` : ''}
 ${camposCategoria ? `Datos específicos aportados por el reclamante (incorpóralos en los hechos siempre que sean relevantes, con la máxima precisión):\n${camposCategoria}` : ''}
 ${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
 
-LEGISLACIÓN APLICABLE:
+LEGISLACIÓN DE REFERENCIA (cita únicamente la que sea realmente aplicable a la relación entre las partes; si la relación no es de consumo, no cites normativa de protección de consumidores):
 ${leyesTexto}
 
 REGLAS ABSOLUTAS DE FORMATO — incumplirlas invalida el escrito:
@@ -180,13 +264,17 @@ REGLAS ABSOLUTAS DE FORMATO — incumplirlas invalida el escrito:
 4. Los ordinales PRIMERO.- SEGUNDO.- TERCERO.- van en mayúsculas seguidos de punto y guión, sin ningún símbolo adicional
 5. Todo el texto en formato plano, sin negritas markdown
 6. PROHIBIDO dejar corchetes [ ] o huecos en blanco en el texto final: si falta un dato (DNI, dirección, teléfono, fecha, importe...), redacta la frase de forma natural omitiendo ese dato, nunca dejes el hueco visible
+7. El escrito termina exactamente en la línea "Atentamente,". Después de ella NO escribas nada: ni nombre, ni firma, ni DNI/CIF. La firma la añade el sistema
 
 DESTINATARIO:
-Si en los documentos adjuntos aparece el nombre exacto del organismo, departamento y dirección postal a quien va dirigido el escrito, úsalos. Si no hay documentos, usa: ${empresa}. En cualquier caso NO escribas el destinatario en el cuerpo del escrito, ese bloque lo añade el sistema automáticamente.
+${esPersona
+  ? `La parte reclamada es una PERSONA FÍSICA. Dirígete a ella como "D." o "Dña." según corresponda y NUNCA menciones servicios de atención al cliente, departamentos ni organismos.`
+  : `Si en los documentos adjuntos aparece el nombre exacto del organismo, departamento y dirección postal a quien va dirigido el escrito, úsalos. Si no hay documentos, usa: ${empresa}.`}
+En cualquier caso NO escribas el bloque del destinatario al inicio del escrito: ese bloque lo añade el sistema automáticamente.
 
 ESTRUCTURA DEL CUERPO DEL ESCRITO:
 
-${identificacionReclamante}, ante [destinatario real], comparezco y como mejor proceda en Derecho, EXPONGO:
+${aperturaEscrito}
 
 PRIMERO.- [primer hecho con fecha concreta y datos del documento si los hay]
 
@@ -204,7 +292,7 @@ PRIMERO.- [solicitud principal concreta con importe si aplica]
 
 SEGUNDO.- Que se dé respuesta formal y por escrito en el plazo máximo de QUINCE (15) DIAS HABILES contados desde la recepción del presente escrito.
 
-TERCERO.- Que de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a interponer las correspondientes reclamaciones ante ${fuentesNombres.join(' y/o ')}, así como a ejercer cuantas acciones legales procedan.
+TERCERO.- Que de no obtener respuesta satisfactoria en dicho plazo, queda expresamente reservado el derecho a ${fuentesConfig.reserva}.
 
 ${lugarFecha}
 

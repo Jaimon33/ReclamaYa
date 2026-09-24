@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { GUIAS } from './guia.js';
+import { seleccionarGuia } from './guia.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const DOS_ANOS_EN_SEGUNDOS = 63072000;
@@ -35,7 +35,7 @@ async function marcarSeguimientoEnviado(ref, expediente) {
 }
 
 function construirEmailSeguimiento(expediente) {
-  const guia = GUIAS[expediente.categoria] || GUIAS['Otro'];
+  const guia = seleccionarGuia(expediente.categoria, expediente.tipoDestinatario);
   const nombre = expediente.nombre || '';
   const empresa = expediente.empresa || 'la empresa reclamada';
 
@@ -56,7 +56,7 @@ function construirEmailSeguimiento(expediente) {
       Si no has recibido respuesta, o la respuesta no te convence, este es el siguiente paso:
     </p>
     <div style="background:#fdf9f0;border:1px solid #C9A84C;border-radius:8px;padding:14px 16px;margin:20px 0;">
-      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Organismo competente:</strong> ${escaparHTML(guia.organismo)}</p>
+      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>${escaparHTML(guia.etiquetaOrganismo || 'Organismo competente')}:</strong> ${escaparHTML(guia.organismo)}</p>
       ${guia.enlace ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Cómo reclamar:</strong> ${escaparHTML(guia.enlace)}</p>` : ''}
       ${guia.telefono ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Teléfono:</strong> ${escaparHTML(guia.telefono)}</p>` : ''}
     </div>

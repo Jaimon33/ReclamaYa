@@ -428,6 +428,93 @@ export const GUIAS = {
     ]
   },
 
+  'Deudas, préstamos e impagos': {
+    organismo: 'Requerimiento por burofax y, si no paga, proceso monitorio',
+    etiquetaOrganismo: 'Vía de reclamación',
+    enlace: 'https://sedejudicial.justicia.es',
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía el escrito por burofax (hazlo cuanto antes)',
+        contenido: [
+          'Envíalo por burofax con acuse de recibo y certificación de contenido. Se contrata en cualquier oficina de Correos o en su web. Es la prueba más sólida de que la otra parte lo recibió y de qué decía exactamente.',
+          'Envíalo al domicilio del deudor. Si el deudor es una empresa, a su domicilio social (figura en sus facturas o en el Registro Mercantil).',
+          'IMPORTANTE — prescripción: con carácter general, la acción para reclamar una deuda de este tipo prescribe a los 5 años desde que pudo exigirse (artículo 1964 del Código Civil). Un requerimiento fehaciente como este burofax interrumpe ese plazo y lo vuelve a iniciar (artículo 1973). Si la deuda es antigua, no lo retrases.',
+          'Guarda el justificante del burofax y, cuando llegue, el acuse de recibo.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Espera la respuesta',
+        contenido: [
+          'El escrito concede un plazo de 15 días hábiles para pagar o responder.',
+          'Si el deudor propone un acuerdo o un calendario de pagos, déjalo siempre por escrito y firmado por ambas partes. Un reconocimiento de deuda firmado es una prueba muy valiosa si después hay que ir al juzgado.',
+          'Conserva cualquier respuesta, también las que lleguen por WhatsApp o email: pueden servir como reconocimiento de la deuda.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si no paga: el proceso monitorio',
+        contenido: [
+          'El proceso monitorio es el procedimiento judicial pensado para reclamar deudas de dinero vencidas y exigibles que puedas acreditar con documentos: contrato, recibos, transferencias o mensajes en los que se reconozca la deuda. No tiene límite de importe.',
+          'Para presentar la petición inicial no necesitas abogado ni procurador, sea cual sea el importe. Se presenta ante el Juzgado de Primera Instancia del domicilio del deudor, con los formularios oficiales disponibles en los juzgados o por vía electrónica en la Sede Judicial Electrónica.',
+          'El juzgado requiere al deudor para que pague en 20 días. Si no paga ni se opone, se pasa directamente a la ejecución. Si se opone, el asunto continúa como juicio verbal u ordinario según el importe; a partir de 2.000 € necesitarás abogado y procurador.',
+          'ATENCIÓN: si la deuda nació de una relación laboral (por ejemplo, un préstamo o anticipo de una empresa a un trabajador), el juzgado competente puede ser el de lo Social y no el civil. En ese caso, consulta con un abogado laboralista antes de acudir a los tribunales.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'El contrato o documento del préstamo o de la deuda, si existe.',
+          'Justificantes de la entrega del dinero (transferencias) y de los pagos que ya se hayan recibido.',
+          'Mensajes, emails o documentos en los que el deudor reconozca la deuda.',
+          'El burofax enviado, su certificación de contenido y el acuse de recibo.',
+          'Un cálculo claro de la cantidad pendiente: importe inicial menos lo ya devuelto.'
+        ]
+      }
+    ]
+  },
+
+  'Reclamación a particulares': {
+    organismo: 'Requerimiento por burofax y, en su caso, vía judicial',
+    etiquetaOrganismo: 'Vía de reclamación',
+    enlace: 'https://sedejudicial.justicia.es',
+    telefono: null,
+    pasos: [
+      {
+        titulo: 'PASO 1 — Envía el escrito por burofax al domicilio de la persona',
+        contenido: [
+          'Envíalo por burofax con acuse de recibo y certificación de contenido. Se contrata en cualquier oficina de Correos o en su web. Es la prueba más sólida de que la otra persona lo recibió y de qué decía exactamente.',
+          'Un requerimiento fehaciente como este interrumpe los plazos de prescripción de tu reclamación (artículo 1973 del Código Civil), así que no lo retrases.',
+          'Guarda el justificante del burofax y, cuando llegue, el acuse de recibo.'
+        ]
+      },
+      {
+        titulo: 'PASO 2 — Espera la respuesta e intenta un acuerdo',
+        contenido: [
+          'El escrito concede un plazo de 15 días hábiles para responder.',
+          'Si hay propuesta de acuerdo, déjala siempre por escrito y firmada por ambas partes.',
+          'Antes de demandar, puedes solicitar un acto de conciliación en el juzgado para intentar un acuerdo con la intervención de un tercero.'
+        ]
+      },
+      {
+        titulo: 'PASO 3 — Si no hay solución: la vía judicial',
+        contenido: [
+          'Si reclamas una cantidad de dinero que puedes acreditar con documentos, puedes usar el proceso monitorio: no tiene límite de importe y no necesitas abogado ni procurador para presentar la petición inicial.',
+          'En otros casos, la vía habitual es el juicio verbal. Para importes de hasta 2.000 € puedes presentarlo sin abogado ni procurador.',
+          'Para importes superiores o asuntos complejos se recomienda asesoramiento jurídico profesional.'
+        ]
+      },
+      {
+        titulo: 'DOCUMENTACIÓN QUE DEBES CONSERVAR SIEMPRE',
+        contenido: [
+          'El burofax enviado, su certificación de contenido y el acuse de recibo.',
+          'Contratos, recibos, transferencias o cualquier documento relacionado con el asunto.',
+          'Mensajes o emails intercambiados con la otra persona.',
+          'Anota la fecha exacta de cada gestión que realices.'
+        ]
+      }
+    ]
+  },
+
   'Otro': {
     organismo: 'Junta Arbitral de Consumo / OMIC',
     enlace: 'https://www.dsca.gob.es/es/consumo/como-reclamar-conflicto-consumo/sistema-arbitral-consumo',
@@ -471,18 +558,27 @@ export const GUIAS = {
   }
 };
 
+const CATEGORIAS_ENTRE_PARTICULARES = ['Inmobiliaria y alquiler', 'Deudas, préstamos e impagos'];
+
+export function seleccionarGuia(categoria, tipoDestinatario) {
+  if (tipoDestinatario === 'persona' && !CATEGORIAS_ENTRE_PARTICULARES.includes(categoria)) {
+    return GUIAS['Reclamación a particulares'];
+  }
+  return GUIAS[categoria] || GUIAS['Otro'];
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { categoria, empresa, ciudad, nombre, fecha } = req.body;
+  const { categoria, empresa, ciudad, nombre, fecha, tipoDestinatario } = req.body;
 
   if (!categoria) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
-  const guia = GUIAS[categoria] || GUIAS['Otro'];
+  const guia = seleccionarGuia(categoria, tipoDestinatario);
 
   const fechaFormateada = new Date().toLocaleDateString('es-ES', {
     day: 'numeric', month: 'long', year: 'numeric'
