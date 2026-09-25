@@ -332,7 +332,7 @@
               <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
                 <span class="upload-icon">📎</span>
                 <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
-                <p class="upload-sub">JPG, PNG, PDF, Word, Excel — Máx. 10MB por archivo</p>
+                <p class="upload-sub">Los PDF y las imágenes se adjuntan a tu escrito como documentos anexos, tal cual. Word y Excel: súbelos en PDF si quieres que se adjunten. Máx. 3 MB entre todos los PDF.</p>
               </div>
               <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
               <div id="lista-archivos"></div>
@@ -689,16 +689,32 @@
       lista.innerHTML = '';
       if (files.length === 0) return;
       area.style.borderColor = '#0D1B2A';
+      let pesoPdf = 0;
       Array.from(files).forEach((file) => {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'pdf') pesoPdf += file.size;
+        const anexable = ['pdf', 'jpg', 'jpeg', 'png', 'webp'].includes(ext);
+
         const item = document.createElement('div');
         item.className = 'archivo-item';
-        item.innerHTML = `
-          <span class="archivo-icono">${getIcono(file.name)}</span>
-          <span class="archivo-nombre">${file.name}</span>
-          <span class="archivo-peso">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
-        `;
+        const icono = document.createElement('span');
+        icono.className = 'archivo-icono';
+        icono.textContent = getIcono(file.name);
+        const nombre = document.createElement('span');
+        nombre.className = 'archivo-nombre';
+        nombre.textContent = file.name;
+        const nota = document.createElement('span');
+        nota.className = 'archivo-peso';
+        nota.textContent = anexable ? 'Irá como anexo' : 'Solo lectura · súbelo en PDF para adjuntarlo';
+        item.append(icono, nombre, nota);
         lista.appendChild(item);
       });
+      if (pesoPdf > 3 * 1024 * 1024) {
+        const aviso = document.createElement('p');
+        aviso.className = 'archivo-aviso';
+        aviso.textContent = `Los PDF ocupan ${(pesoPdf / 1024 / 1024).toFixed(1)} MB y el máximo es 3 MB en total. Quita alguno o redúcelo antes de continuar.`;
+        lista.appendChild(aviso);
+      }
     }
 
     function getIcono(nombre) {

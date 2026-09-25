@@ -300,6 +300,9 @@ export default async function handler(req, res) {
     .filter(d => d.tipo === 'texto')
     .map(d => d.contenido)
     .join('\n\n');
+  const nombresAnexos = documentos
+    .filter(d => d.tipo === 'pdf' || d.tipo === 'imagen')
+    .map(d => d.nombre || 'documento');
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
 
@@ -353,7 +356,8 @@ ${importeTexto} ${referenciaTexto} ${fechaTexto}
 Descripción: ${descripcion}
 ${reclamacionPrevia ? `Gestiones previas del reclamante: ${reclamacionPrevia}` : ''}
 ${camposCategoria ? `Datos específicos aportados por el reclamante (incorpóralos en los hechos siempre que sean relevantes, con la máxima precisión):\n${camposCategoria}` : ''}
-${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}`;
+${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
+${nombresAnexos.length ? `DOCUMENTOS QUE SE ACOMPAÑARÁN COMO ANEXOS AL ESCRITO:\n${nombresAnexos.map((n, i) => `Documento nº ${i + 1}: ${n}`).join('\n')}` : ''}`;
 
   const prompt = `Eres un abogado especialista en ${fuentesConfig.especialidad} español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta ${tipoEscrito}.
 
@@ -370,6 +374,7 @@ REGLAS ABSOLUTAS DE FORMATO — incumplirlas invalida el escrito:
 5. Todo el texto en formato plano, sin negritas markdown
 6. PROHIBIDO dejar corchetes [ ] o huecos en blanco en el texto final: si falta un dato (DNI, dirección, teléfono, fecha, importe...), redacta la frase de forma natural omitiendo ese dato, nunca dejes el hueco visible
 7. El escrito termina exactamente en la línea "Atentamente,". Después de ella NO escribas nada: ni nombre, ni firma, ni DNI/CIF. La firma la añade el sistema
+8. Si hay documentos que se acompañarán como anexos, cítalos en los hechos como "Documento nº X" cuando te apoyes en ellos (por ejemplo: "según consta en la factura que se acompaña como Documento nº 1"). No añadas al final una lista de documentos: la añade el sistema
 
 DESTINATARIO:
 ${esPersona

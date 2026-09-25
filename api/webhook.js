@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { seleccionarGuia } from './guia.js';
 import { categoriaVisible, textoAsunto, lineasDestinatario, lineasRemitente } from './_escrito.js';
+import { obtenerAnexos, unirAnexos, borrarAnexos, prolongarAnexos } from './_anexos.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -201,7 +202,7 @@ function recortarTrasDespedida(carta) {
   return carta;
 }
 
-function generarHTMLEscrito(carta, datos, refExpediente) {
+function generarHTMLEscrito(carta, datos, refExpediente, nombresAnexos = []) {
   const { categoriaEmpresa, tipoDestinatario } = datos;
 
   const bloqueRemitente = lineasRemitente(datos)
@@ -246,6 +247,8 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
   .cuerpo { font-size:11pt; line-height:1.8; margin-bottom:20px; text-align:justify; }
   .firma { margin-top:32px; font-size:10.5pt; line-height:1.7; }
   .firma-linea { width:180px; border-top:1px solid #333; margin:30px 0 8px; }
+  .documentos-anexos { margin-top:28px; padding-top:12px; border-top:0.5px solid #ccc; font-size:10.5pt; line-height:1.7; }
+  .documentos-anexos p { margin:1px 0; }
   .pie { position:relative; z-index:1; margin-top:50px; padding-top:8px; border-top:0.5px solid #ddd; font-family:Arial,sans-serif; font-size:7pt; color:#bbb; text-align:center; line-height:1.6; }
   .pie-verificacion { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; }
   .qr-verificacion { width:52px; height:52px; display:block; }
@@ -280,6 +283,10 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
   <div class="firma-linea"></div>
   ${bloqueFirma(datos)}
 </div>
+${nombresAnexos.length ? `<div class="documentos-anexos">
+  <p><strong>DOCUMENTOS QUE SE ACOMPAÑAN</strong></p>
+  ${nombresAnexos.map((nombre, i) => `<p>Documento nº ${i + 1}: ${escaparHTML(nombre)}</p>`).join('\n  ')}
+</div>` : ''}
 </div>
 <div class="pie">
   <div class="pie-verificacion">
@@ -490,8 +497,35 @@ export default async function handler(req, res) {
       await redis('set', `ref:${idSesion}`, refExpediente, 'EX', String(TRES_DIAS_EN_SEGUNDOS)).catch(() => {});
     }
 
+    let anexos = [];
+    let anexosPerdidos = false;
     try {
-      const pdfEscritoBase64 = await convertirAPdf(generarHTMLEscrito(carta, datos, refExpediente));
+      anexos = await obtenerAnexos(tempId);
+    } catch (anexosError) {
+      anexosPerdidos = true;
+      console.error('No se pudieron recuperar los documentos anexos:', anexosError);
+      await enviarAlerta(`Anexos no recuperados — ${refExpediente}`, [
+        'El escrito se entregará sin los documentos que adjuntó el cliente, porque no se han podido recuperar.',
+        `Motivo: ${anexosError.message}`,
+        `Cliente: ${email}`,
+        'Al cliente se le indica en el email que responda para recibirlos.'
+      ]);
+    }
+
+    try {
+      let pdfEscritoBase64 = await convertirAPdf(generarHTMLEscrito(carta, datos, refExpediente, anexos.map(a => a.nombre)));
+
+      let anexosSueltos = [];
+      if (anexos.length) {
+        try {
+          const union = await unirAnexos(pdfEscritoBase64, anexos, refExpediente);
+          pdfEscritoBase64 = union.pdfBase64;
+          anexosSueltos = union.noUnidos;
+        } catch (unionError) {
+          console.error('No se pudieron unir los anexos al escrito:', unionError);
+          anexosSueltos = anexos.map((anexo, i) => ({ ...anexo, numero: i + 1 }));
+        }
+      }
 
       let pdfGuiaBase64 = null;
       if (opcion === 'completa') {
@@ -512,6 +546,20 @@ export default async function handler(req, res) {
           type: 'application/pdf'
         });
       }
+      for (const suelto of anexosSueltos) {
+        adjuntos.push({
+          filename: `Documento-${suelto.numero}-${suelto.nombre}`,
+          content: suelto.data,
+          type: suelto.mediaType
+        });
+      }
+
+      const anexosIncluidos = anexos.length - anexosSueltos.length;
+      const avisoAnexos = anexosPerdidos
+        ? 'No hemos podido incorporar al escrito los documentos que adjuntaste. Responde a este email y te lo enviamos con ellos.'
+        : anexosSueltos.length
+          ? 'Algunos de los documentos que aportaste no se han podido incorporar dentro del PDF (por ejemplo, porque están protegidos con contraseña), así que también te los enviamos adjuntos a este email. Preséntalos junto con el escrito.'
+          : '';
 
       const nombreSaludo = (datos.tipo === 'empresa' && datos.firmanteNombre ? datos.firmanteNombre : nombre).split(' ')[0] || '';
       const porBurofax = tipoDestinatario === 'persona' || categoriaEmpresa === 'Deudas, préstamos e impagos';
@@ -537,8 +585,10 @@ export default async function handler(req, res) {
       <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Fecha:</strong> ${escaparHTML(fecha)}</p>
       <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Destinatario:</strong> ${escaparHTML(empresa)}</p>
       <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Referencia del expediente:</strong> ${escaparHTML(refExpediente)}</p>
+      ${anexosIncluidos > 0 ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Documentos anexos:</strong> ${anexosIncluidos}, incluidos al final del escrito</p>` : ''}
       ${opcion === 'completa' ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Guía de presentación:</strong> incluida en PDF adjunto</p>` : ''}
     </div>
+    ${avisoAnexos ? `<p style="font-size:13px;color:#8a4a12;line-height:1.6;background:#fff6e8;border-radius:8px;padding:12px 14px;">${escaparHTML(avisoAnexos)}</p>` : ''}
     <div style="background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;">
       <p style="font-size:13px;color:#0D1B2A;font-weight:bold;margin-bottom:8px;">¿Qué hago ahora?</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF del escrito adjunto y revisa que todos los datos son correctos</p>
@@ -575,6 +625,7 @@ export default async function handler(req, res) {
     } catch (entregaError) {
       console.error('Fallo en la entrega:', entregaError);
       await redis('expire', tempId, String(TRES_DIAS_EN_SEGUNDOS)).catch(() => {});
+      await prolongarAnexos(tempId, TRES_DIAS_EN_SEGUNDOS).catch(() => {});
       await redis('del', `procesando:${idSesion}`).catch(() => {});
       await enviarAlerta(`Entrega fallida — ${empresa}`, [
         'Un cliente ha pagado y su escrito no se ha podido entregar todavía.',
@@ -598,6 +649,7 @@ export default async function handler(req, res) {
 
     await redis('set', `entregado:${idSesion}`, refExpediente, 'EX', String(TREINTA_DIAS_EN_SEGUNDOS))
       .catch(e => console.error('No se pudo marcar como entregado:', e));
+    await borrarAnexos(tempId).catch(e => console.error('No se pudieron borrar los anexos:', e));
     await redis('del', tempId).catch(() => {});
     await redis('del', `procesando:${idSesion}`).catch(() => {});
 

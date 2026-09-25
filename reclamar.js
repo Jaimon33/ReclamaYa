@@ -30,24 +30,50 @@ function recopilarCamposCategoria() {
   return partes.join('\n');
 }
 
+const MAX_LADO_IMAGEN = 1800;
+// Debe coincidir con MAX_CARACTERES_ANEXOS de api/_anexos.js (~3 MB de archivos).
+const MAX_CARACTERES_ANEXOS = 4200000;
+
+function comprimirImagen(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const escala = Math.min(1, MAX_LADO_IMAGEN / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * escala);
+      canvas.height = Math.round(img.height * escala);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error(`No se pudo leer la imagen ${file.name}`));
+    };
+    img.src = url;
+  });
+}
+
+function esAnexable(documento) {
+  return documento.tipo === 'pdf' || documento.tipo === 'imagen';
+}
+
 async function procesarArchivo(file) {
   const ext = file.name.split('.').pop().toLowerCase();
 
   if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        resolve({ tipo: 'imagen', mediaType: file.type, data: e.target.result.split(',')[1] });
-      };
-      reader.readAsDataURL(file);
-    });
+    return { tipo: 'imagen', mediaType: 'image/jpeg', data: await comprimirImagen(file), nombre: file.name };
   }
 
   if (ext === 'pdf') {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        resolve({ tipo: 'pdf', mediaType: 'application/pdf', data: e.target.result.split(',')[1] });
+        resolve({ tipo: 'pdf', mediaType: 'application/pdf', data: e.target.result.split(',')[1], nombre: file.name });
       };
       reader.readAsDataURL(file);
     });
@@ -149,7 +175,7 @@ async function iniciarPago() {
     const respuesta = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ opcion, email, empresa, carta, datosUsuario })
+      body: JSON.stringify({ opcion, email, empresa, carta, datosUsuario, anexos: window._anexos || [] })
     });
 
     if (!respuesta.ok) throw new Error('Error al crear sesión de pago');
@@ -249,6 +275,15 @@ form.addEventListener('submit', async (e) => {
       }
     }
 
+    const anexos = documentosProcesados.filter(esAnexable);
+    const pesoAnexos = anexos.reduce((suma, d) => suma + d.data.length, 0);
+    if (pesoAnexos > MAX_CARACTERES_ANEXOS) {
+      const errorTamano = new Error('Los documentos adjuntos ocupan demasiado');
+      errorTamano.mensajeUsuario = 'Los documentos adjuntos ocupan demasiado (máximo 3 MB en total). Quita alguno o reduce su tamaño y vuelve a intentarlo.';
+      errorTamano.pasoFormulario = 3;
+      throw errorTamano;
+    }
+
     const respuesta = await fetch('/api/generar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -283,6 +318,7 @@ form.addEventListener('submit', async (e) => {
 
       window._cartaCompleta = datos.carta;
       window._datosUsuario = datosUsuario;
+      window._anexos = anexos.map(({ nombre, mediaType, data }) => ({ nombre, mediaType, data }));
 
       const opcion = window._opcionSeleccionada || 'completa';
       const btnPagar = document.getElementById('btn-pagar');
@@ -301,12 +337,13 @@ form.addEventListener('submit', async (e) => {
 
   } catch (error) {
     clearInterval(interval);
-    loadingText.textContent = 'Ha ocurrido un error. Por favor inténtalo de nuevo.';
+    loadingText.textContent = error.mensajeUsuario || 'Ha ocurrido un error. Por favor inténtalo de nuevo.';
     setTimeout(() => {
       resultado.style.display = 'none';
       document.querySelector('.form-card').style.display = 'block';
+      if (error.pasoFormulario) irPaso(error.pasoFormulario);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 2000);
+    }, error.mensajeUsuario ? 4500 : 2000);
   }
 });
 
@@ -341,6 +378,7 @@ btnNueva.addEventListener('click', () => {
   document.querySelector('.form-card').style.display = 'block';
   window._cartaCompleta = null;
   window._datosUsuario = null;
+  window._anexos = null;
   window._opcionSeleccionada = 'completa';
   document.getElementById('carta-visible').textContent = '';
   const fuentesDiv = document.querySelector('.fuentes-legales');

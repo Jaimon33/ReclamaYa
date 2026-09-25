@@ -1,19 +1,21 @@
 import Stripe from 'stripe';
+import { validarAnexos, guardarAnexos } from './_anexos.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const UNA_HORA = 3600;
 
 async function guardarEnRedis(key, valor) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
 
-  const response = await fetch(`${url}/set/${key}/${encodeURIComponent(valor)}?EX=3600`, {
+  const response = await fetch(`${url}/set/${key}/${encodeURIComponent(valor)}?EX=${UNA_HORA}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
   const data = await response.json();
-  console.log('Redis set response:', JSON.stringify(data));
+  if (!response.ok || data.error) throw new Error(`Redis SET falló: ${data.error || response.status}`);
 }
 
 export default async function handler(req, res) {
@@ -27,6 +29,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
+  let anexos;
+  try {
+    anexos = validarAnexos(req.body.anexos);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
   const priceId = opcion === 'completa'
     ? process.env.STRIPE_PRICE_COMPLETO
     : process.env.STRIPE_PRICE_ESCRITO;
@@ -38,6 +47,7 @@ export default async function handler(req, res) {
   try {
     const tempId = `carta_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     await guardarEnRedis(tempId, JSON.stringify({ carta, datosUsuario }));
+    if (anexos.length) await guardarAnexos(tempId, anexos, UNA_HORA);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
