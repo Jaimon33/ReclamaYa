@@ -84,6 +84,41 @@ async function procesarArchivo(file) {
   return null;
 }
 
+function pintarLineas(contenedorId, lineas) {
+  const contenedor = document.getElementById(contenedorId);
+  contenedor.replaceChildren(...(lineas || []).map((texto) => {
+    const p = document.createElement('p');
+    p.textContent = texto;
+    return p;
+  }));
+}
+
+function mostrarCabecera(cabecera) {
+  const bloque = document.getElementById('cabecera-escrito');
+  if (!cabecera) {
+    bloque.style.display = 'none';
+    return;
+  }
+  pintarLineas('cab-remitente', cabecera.remitente);
+  pintarLineas('cab-destinatario', cabecera.destinatario);
+  pintarLineas('cab-asunto', [cabecera.asunto]);
+  bloque.style.display = 'block';
+}
+
+function mostrarAviso(aviso) {
+  const bloque = document.getElementById('aviso-caso');
+  const wrapCheck = document.getElementById('wrap-check-aviso');
+  document.getElementById('check-aviso').checked = false;
+  window._avisoRequiereConfirmacion = Boolean(aviso && aviso.requiereConfirmacion);
+  if (!aviso) {
+    bloque.style.display = 'none';
+    return;
+  }
+  document.getElementById('aviso-caso-texto').textContent = aviso.mensaje;
+  wrapCheck.style.display = aviso.requiereConfirmacion ? 'flex' : 'none';
+  bloque.style.display = 'block';
+}
+
 function validarCheck(inputId, wrapId) {
   const input = document.getElementById(inputId);
   if (input.checked) return true;
@@ -95,6 +130,7 @@ function validarCheck(inputId, wrapId) {
 }
 
 async function iniciarPago() {
+  if (window._avisoRequiereConfirmacion && !validarCheck('check-aviso', 'wrap-check-aviso')) return;
   if (!validarCheck('check-condiciones-venta', 'wrap-check-venta')) return;
 
   const btnPagar = document.getElementById('btn-pagar');
@@ -226,6 +262,9 @@ form.addEventListener('submit', async (e) => {
       loading.style.display = 'none';
       cartaGenerada.style.display = 'block';
 
+      mostrarAviso(datos.aviso);
+      mostrarCabecera(datos.cabecera);
+
       const lineasPreview = datos.carta.split('\n');
       cartaVisible.textContent = lineasPreview.slice(0, 6).join('\n').replace(/\*\*/g, '');
 
@@ -244,7 +283,6 @@ form.addEventListener('submit', async (e) => {
 
       window._cartaCompleta = datos.carta;
       window._datosUsuario = datosUsuario;
-      window._destinatarioReal = datos.destinatario || null;
 
       const opcion = window._opcionSeleccionada || 'completa';
       const btnPagar = document.getElementById('btn-pagar');
@@ -272,7 +310,17 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+document.getElementById('btn-corregir').addEventListener('click', () => {
+  resultado.style.display = 'none';
+  cartaGenerada.style.display = 'none';
+  document.querySelector('.form-card').style.display = 'block';
+  irPaso(2);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
 btnNueva.addEventListener('click', () => {
+  mostrarAviso(null);
+  mostrarCabecera(null);
   form.reset();
   toggleTipo('particular');
   toggleRepresentacion('propio');
@@ -293,7 +341,6 @@ btnNueva.addEventListener('click', () => {
   document.querySelector('.form-card').style.display = 'block';
   window._cartaCompleta = null;
   window._datosUsuario = null;
-  window._destinatarioReal = null;
   window._opcionSeleccionada = 'completa';
   document.getElementById('carta-visible').textContent = '';
   const fuentesDiv = document.querySelector('.fuentes-legales');

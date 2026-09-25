@@ -1,6 +1,9 @@
 {
   "functions": {
     "api/generar.js": {
+      "maxDuration": 120
+    },
+    "api/webhook.js": {
       "maxDuration": 60
     },
     "api/pdf.js": {

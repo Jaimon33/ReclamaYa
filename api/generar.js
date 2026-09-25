@@ -1,3 +1,5 @@
+import { lineasRemitente, lineasDestinatario, textoAsunto } from './_escrito.js';
+
 const FUENTES_POR_CATEGORIA = {
   'Telecomunicaciones': {
     fuentes: ['BOE', 'EUR-Lex', 'CNMC'],
@@ -152,10 +154,110 @@ async function consultarBOE(termino) {
   }
 }
 
+const MODELO_REDACTOR = 'claude-sonnet-4-5';
+const MODELO_REVISOR = 'claude-haiku-4-5-20251001';
+
+const AVISOS = {
+  despido: {
+    requiereConfirmacion: true,
+    mensaje: 'Si te han despedido, el plazo para impugnar el despido es de solo 20 días hábiles desde la fecha del despido, y antes de ir al juzgado es obligatorio presentar una papeleta de conciliación. Un escrito de reclamación a la empresa no detiene ese plazo. Te recomendamos acudir cuanto antes a un abogado laboralista o a un sindicato.'
+  },
+  judicial_en_curso: {
+    requiereConfirmacion: true,
+    mensaje: 'Si ya hay una demanda, un procedimiento o una notificación del juzgado sobre este asunto, un escrito extrajudicial no sirve para responder a ella y no detiene los plazos judiciales, que suelen ser muy cortos. Te recomendamos consultar con un abogado cuanto antes.'
+  },
+  laboral_trabajador: {
+    requiereConfirmacion: false,
+    mensaje: 'Las reclamaciones de un trabajador a su empresa (salarios, horas extra, vacaciones…) suelen exigir una papeleta de conciliación antes de ir al juzgado, y el plazo general para reclamar cantidades es de un año. Este escrito te sirve como reclamación previa por escrito, pero te recomendamos que lo revise un abogado laboralista o un sindicato.'
+  },
+  penal: {
+    requiereConfirmacion: false,
+    mensaje: 'Si los hechos pueden constituir un delito (por ejemplo, una estafa o una suplantación de identidad), además de este escrito conviene que presentes una denuncia ante la Policía, la Guardia Civil o el juzgado. El escrito no sustituye a una denuncia.'
+  }
+};
+
+async function llamarAnthropic(modelo, contenido, maxTokens) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: modelo,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: contenido }]
+    })
+  });
+  return resp.json();
+}
+
+function extraerJSON(data) {
+  const texto = data?.content?.[0]?.text || '';
+  const match = texto.match(/\{[\s\S]*\}/);
+  return match ? JSON.parse(match[0]) : null;
+}
+
+async function detectarAviso({ categoria, tipo, esPersona, descripcion, objetivo }) {
+  try {
+    const data = await llamarAnthropic(MODELO_REVISOR, `Clasifica esta reclamación. Responde SOLO con un JSON de la forma {"tipo": "..."}.
+Valores posibles:
+- "despido": quien reclama ha sido despedido o quiere impugnar un despido o una sanción disciplinaria de su empresa.
+- "laboral_trabajador": un trabajador reclama algo a su empresa o empleador (salarios, horas extra, vacaciones, finiquito…) sin que sea un despido.
+- "penal": los hechos describen un posible delito que convendría denunciar (estafa, robo, amenazas, agresión, suplantación de identidad…).
+- "judicial_en_curso": ya existe una demanda, un procedimiento judicial, una notificación del juzgado o un plazo judicial abierto sobre este mismo asunto.
+- "ninguno": cualquier otro caso. Si dudas, responde "ninguno".
+Ojo: si es una empresa la que reclama a un trabajador o extrabajador (por ejemplo, la devolución de un préstamo), NO es "laboral_trabajador".
+
+Categoría: ${categoria}
+Quién reclama: ${tipo === 'empresa' ? 'una empresa' : 'un particular'}
+A quién reclama: ${esPersona ? 'a una persona física' : 'a una empresa o entidad'}
+Descripción: ${descripcion}
+Lo que solicita: ${objetivo || 'no lo indica'}`, 50);
+    const tipoAviso = extraerJSON(data)?.tipo;
+    return AVISOS[tipoAviso] ? { tipo: tipoAviso, ...AVISOS[tipoAviso] } : null;
+  } catch (e) {
+    console.error('Detector de avisos no disponible:', e.message);
+    return null;
+  }
+}
+
+async function revisarEscrito({ escrito, datosCaso, esPersona, hayDocumentosAdjuntos }) {
+  try {
+    const data = await llamarAnthropic(MODELO_REVISOR, `Eres el revisor de calidad de un despacho. Compara el escrito con los datos del formulario y señala SOLO errores reales y concretos de esta lista:
+1. Datos que no coinciden con el formulario (nombres, importes, fechas, números de vuelo, referencias).
+2. Hechos, fechas, importes o referencias inventados que no aparecen en los datos.${hayDocumentosAdjuntos ? ' ATENCIÓN: el reclamante adjuntó documentos que tú no ves; si un dato pudo salir de ellos, NO lo marques.' : ''}
+3. Corchetes, huecos o marcadores sin rellenar ([...], XXX, ___).
+4. ${esPersona ? 'La parte reclamada es una persona física: es un error tratarla como empresa o mencionar su "servicio de atención al cliente".' : 'La parte reclamada es una empresa o entidad: es un error tratarla como persona física.'}
+5. Normativa de protección de consumidores citada cuando la relación entre las partes claramente no es de consumo (por ejemplo, entre particulares o de una empresa a un trabajador).
+6. El escrito no termina en "Atentamente," o añade nombre, firma o DNI después.
+7. Falta la estructura EXPONGO / SOLICITO o el texto está cortado.
+No marques cuestiones de estilo ni mejoras opcionales.
+
+Responde SOLO con un JSON: {"correcto": true} o {"correcto": false, "problemas": ["error concreto 1", "error concreto 2"]}.
+
+=== DATOS DEL FORMULARIO ===
+${datosCaso}
+
+=== ESCRITO ===
+${escrito}`, 600);
+    const resultado = extraerJSON(data);
+    if (!resultado || resultado.correcto !== false || !Array.isArray(resultado.problemas) || !resultado.problemas.length) {
+      return [];
+    }
+    return resultado.problemas.slice(0, 6).map(p => String(p));
+  } catch (e) {
+    console.error('Revisor no disponible:', e.message);
+    return [];
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
+  const inicio = Date.now();
 
   const {
     tipo, nombre, documento, direccion, ciudad, cp,
@@ -239,9 +341,7 @@ export default async function handler(req, res) {
     ? 'un requerimiento extrajudicial de pago formal'
     : 'un escrito de reclamación extrajudicial formal';
 
-  const prompt = `Eres un abogado especialista en ${fuentesConfig.especialidad} español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta ${tipoEscrito}.
-
-DATOS DEL RECLAMANTE (usa únicamente los que se indican; si algún dato no aparece aquí, el reclamante no lo ha facilitado y NO debes inventarlo ni dejar huecos o corchetes en su lugar):
+  const datosCaso = `DATOS DEL RECLAMANTE (usa únicamente los que se indican; si algún dato no aparece aquí, el reclamante no lo ha facilitado y NO debes inventarlo ni dejar huecos o corchetes en su lugar):
 ${tipo === 'empresa' ? 'Razón social' : 'Nombre'}: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${direccion ? ` | Dirección: ${direccion}, ${cp} ${ciudad}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}${firmanteTexto}${representadoTexto}
 
 RECLAMACIÓN:
@@ -252,7 +352,11 @@ ${importeTexto} ${referenciaTexto} ${fechaTexto}
 Descripción: ${descripcion}
 ${reclamacionPrevia ? `Gestiones previas del reclamante: ${reclamacionPrevia}` : ''}
 ${camposCategoria ? `Datos específicos aportados por el reclamante (incorpóralos en los hechos siempre que sean relevantes, con la máxima precisión):\n${camposCategoria}` : ''}
-${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}
+${textoDocumentos ? `Documentos aportados: ${textoDocumentos}` : ''}`;
+
+  const prompt = `Eres un abogado especialista en ${fuentesConfig.especialidad} español, con un estilo de redacción muy formal, preciso y propio de un despacho profesional. Redacta ${tipoEscrito}.
+
+${datosCaso}
 
 LEGISLACIÓN DE REFERENCIA (cita únicamente la que sea realmente aplicable a la relación entre las partes; si la relación no es de consumo, no cites normativa de protección de consumidores):
 ${leyesTexto}
@@ -324,53 +428,58 @@ INSTRUCCIONES FINALES:
 
     mensajeContenido.push({ type: 'text', text: prompt });
 
-    async function llamarClaude(mensajes) {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-5',
-          max_tokens: 4096,
-          messages: mensajes
-        })
-      });
-      return resp.json();
-    }
+    const avisoPromesa = detectarAviso({ categoria, tipo, esPersona, descripcion, objetivo });
 
-    let data = await llamarClaude([{ role: 'user', content: mensajeContenido }]);
-
-    // Salvaguarda: si la respuesta se cortó por límite de tokens, reintentamos una vez
-    // pidiendo explícitamente más concisión, para no entregar nunca un escrito incompleto
-    if (data.stop_reason === 'max_tokens') {
-      console.error('Escrito truncado por max_tokens, reintentando con instrucción de brevedad');
-      const mensajeReintento = [
-        ...mensajeContenido,
-        { type: 'text', text: '\n\nIMPORTANTE: tu respuesta anterior se cortó por superar el límite de longitud. Esta vez redacta el escrito completo, de principio a fin (incluyendo el punto TERCERO final del SOLICITO), en un máximo de 500 palabras. Es imprescindible que el escrito quede terminado.' }
-      ];
-      data = await llamarClaude([{ role: 'user', content: mensajeReintento }]);
-    }
-
-    if (data.content && data.content[0] && data.content[0].text) {
+    const redactar = async (contenido) => {
+      let data = await llamarAnthropic(MODELO_REDACTOR, contenido, 4096);
       if (data.stop_reason === 'max_tokens') {
-        console.error('Escrito truncado también en el reintento');
-        throw new Error('No se pudo generar un escrito completo, inténtalo de nuevo');
+        console.error('Escrito truncado por max_tokens, reintentando con instrucción de brevedad');
+        data = await llamarAnthropic(MODELO_REDACTOR, [
+          ...contenido,
+          { type: 'text', text: '\n\nIMPORTANTE: tu respuesta anterior se cortó por superar el límite de longitud. Esta vez redacta el escrito completo, de principio a fin (incluyendo el punto TERCERO final del SOLICITO), en un máximo de 500 palabras. Es imprescindible que el escrito quede terminado.' }
+        ], 4096);
       }
-      const textoEscrito = data.content[0].text;
-      const matchDest = textoEscrito.match(/ante ([^,]+(?:\n[^,\n]+)*), comparezco/);
-      const destinatario = matchDest ? matchDest[1].trim() : null;
+      const texto = data?.content?.[0]?.text;
+      if (!texto) throw new Error(`Respuesta inesperada de la API: ${JSON.stringify(data?.error || data).slice(0, 200)}`);
+      if (data.stop_reason === 'max_tokens') throw new Error('No se pudo generar un escrito completo');
+      return texto;
+    };
 
-      return res.status(200).json({
-        carta: textoEscrito,
-        fuentes: fuentesVerificadas,
-        destinatario
-      });
-    } else {
-      throw new Error('Respuesta inesperada de la API');
+    let textoEscrito = await redactar(mensajeContenido);
+
+    const problemas = await revisarEscrito({
+      escrito: textoEscrito,
+      datosCaso,
+      esPersona,
+      hayDocumentosAdjuntos: imagenesYPdfs.length > 0 || Boolean(textoDocumentos)
+    });
+    if (problemas.length) {
+      console.error('Revisión de calidad: problemas detectados', problemas);
+      if (Date.now() - inicio < 60000) {
+        try {
+          textoEscrito = await redactar([
+            ...mensajeContenido,
+            { type: 'text', text: `\n\nREVISIÓN DE CALIDAD: una primera versión de este escrito tenía estos errores. Redacta de nuevo el escrito completo corrigiéndolos:\n${problemas.map(p => `- ${p}`).join('\n')}` }
+          ]);
+        } catch (e) {
+          console.error('No se pudo regenerar tras la revisión:', e.message);
+        }
+      }
     }
+
+    const aviso = await avisoPromesa;
+    const cabecera = {
+      remitente: lineasRemitente({ nombre, documento, direccion, cp, ciudad, telefono, email }),
+      destinatario: lineasDestinatario({ empresa, categoriaEmpresa, tipoDestinatario, domicilioDestinatario }),
+      asunto: textoAsunto(categoriaEmpresa, tipoDestinatario)
+    };
+
+    return res.status(200).json({
+      carta: textoEscrito,
+      fuentes: fuentesVerificadas,
+      cabecera,
+      aviso
+    });
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ error: 'Error al generar el escrito' });

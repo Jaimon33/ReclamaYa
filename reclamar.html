@@ -403,6 +403,21 @@
                 <p class="form-subtitle">Vista previa — el documento completo llegará a tu email</p>
               </div>
             </div>
+            <div id="aviso-caso" class="aviso-caso" style="display:none;">
+              <p class="aviso-caso-titulo">⚠️ Antes de continuar, lee esto</p>
+              <p id="aviso-caso-texto"></p>
+              <label class="check-opcion" id="wrap-check-aviso" style="display:none;">
+                <input type="checkbox" id="check-aviso">
+                <span>He leído el aviso y quiero el escrito igualmente.</span>
+              </label>
+            </div>
+            <div id="cabecera-escrito" class="cabecera-escrito" style="display:none;">
+              <p class="cabecera-titulo">Revisa el encabezado de tu escrito</p>
+              <div class="cabecera-fila"><span class="cabecera-etiqueta">De</span><div id="cab-remitente"></div></div>
+              <div class="cabecera-fila"><span class="cabecera-etiqueta">Para</span><div id="cab-destinatario"></div></div>
+              <div class="cabecera-fila"><span class="cabecera-etiqueta">Asunto</span><div id="cab-asunto"></div></div>
+              <button type="button" id="btn-corregir" class="btn-corregir">✏️ ¿Algún dato está mal? Corregir antes de pagar</button>
+            </div>
             <div class="carta-preview-wrapper">
               <div id="carta-visible"></div>
               <div class="carta-blur-overlay">

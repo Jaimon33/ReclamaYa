@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { seleccionarGuia } from './guia.js';
+import { categoriaVisible, textoAsunto, lineasDestinatario, lineasRemitente } from './_escrito.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -54,6 +55,97 @@ async function programarSeguimiento(refExpediente) {
   if (!resp.ok || data.error) throw new Error(`Redis ZADD falló: ${data.error || resp.status}`);
 }
 
+const TRES_DIAS_EN_SEGUNDOS = 259200;
+const TREINTA_DIAS_EN_SEGUNDOS = 2592000;
+const EMAIL_ALERTAS = process.env.ALERTAS_EMAIL || 'hola@reclamoia.es';
+
+async function redis(...partes) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  const resp = await fetch(`${url}/${partes.map(p => encodeURIComponent(p)).join('/')}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  if (!resp.ok || data.error) throw new Error(`Redis ${partes[0]} falló: ${data.error || resp.status}`);
+  return data.result;
+}
+
+const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function convertirAPdf(html) {
+  let ultimoError;
+  for (const pausa of [0, 1500, 4000]) {
+    if (pausa) await esperar(pausa);
+    try {
+      const resp = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          source: html,
+          format: 'A4',
+          margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
+        })
+      });
+      if (resp.ok) return Buffer.from(await resp.arrayBuffer()).toString('base64');
+      ultimoError = new Error(`PDFShift respondió ${resp.status}: ${(await resp.text()).slice(0, 200)}`);
+    } catch (e) {
+      ultimoError = e;
+    }
+    console.error('Intento de PDF fallido:', ultimoError.message);
+  }
+  throw ultimoError;
+}
+
+async function enviarAlerta(asunto, lineas) {
+  try {
+    const { error } = await resend.emails.send({
+      from: 'ReclamoIA Alertas <hola@reclamoia.es>',
+      to: EMAIL_ALERTAS,
+      subject: `⚠️ ${asunto}`,
+      text: lineas.join('\n')
+    });
+    if (error) console.error('No se pudo enviar la alerta:', error);
+  } catch (e) {
+    console.error('No se pudo enviar la alerta:', e);
+  }
+}
+
+function htmlAvisoCliente(titulo, parrafos) {
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f0f2f7;margin:0;padding:0;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;">
+  <div style="background:#0D1B2A;padding:28px 32px;">
+    <img src="https://reclamoia.es/logo-reclamoia.png" alt="ReclamoIA" style="height:36px;width:auto;">
+  </div>
+  <div style="padding:32px;">
+    <h2 style="font-size:18px;color:#0D1B2A;margin-bottom:12px;">${escaparHTML(titulo)}</h2>
+    ${parrafos.map(p => `<p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:14px;">${escaparHTML(p)}</p>`).join('\n    ')}
+    <p style="font-size:13px;color:#0D1B2A;margin-top:24px;">— El equipo de ReclamoIA</p>
+  </div>
+</div>
+</body>
+</html>`;
+}
+
+async function enviarAvisoCliente(email, asunto, titulo, parrafos) {
+  try {
+    const { error } = await resend.emails.send({
+      from: 'ReclamoIA <hola@reclamoia.es>',
+      to: email,
+      subject: asunto,
+      html: htmlAvisoCliente(titulo, parrafos)
+    });
+    if (error) console.error('No se pudo avisar al cliente:', error);
+  } catch (e) {
+    console.error('No se pudo avisar al cliente:', e);
+  }
+}
+
 function escaparHTML(str) {
   if (!str) return '';
   return String(str)
@@ -72,48 +164,14 @@ function generarRefExpediente() {
   return `RC-${codigo}`;
 }
 
-const ASUNTOS = {
-  'Telecomunicaciones': 'Reclamación formal por la prestación de servicios de telecomunicaciones',
-  'Energía y suministros': 'Reclamación formal en materia de suministros energéticos',
-  'Aerolíneas y transporte': 'Reclamación formal en materia de transporte de pasajeros',
-  'Banca y seguros': 'Reclamación formal en materia de servicios bancarios y de seguros',
-  'Administración pública': 'Escrito de reclamación ante la Administración',
-  'Comercio y tiendas online': 'Reclamación formal en materia de consumo',
-  'Sanidad y salud': 'Reclamación formal en materia de asistencia sanitaria',
-  'Inmobiliaria y alquiler': 'Reclamación formal en materia de arrendamiento y vivienda',
-  'Educación': 'Reclamación formal en materia de servicios educativos',
-  'Deudas, préstamos e impagos': 'Requerimiento extrajudicial de pago'
-};
-
-const CATEGORIAS_CON_ATENCION_AL_CLIENTE = [
-  'Telecomunicaciones', 'Energía y suministros', 'Aerolíneas y transporte',
-  'Banca y seguros', 'Comercio y tiendas online'
-];
-
 const MARCA_AGUA_CSS = `
   .marca-agua { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0; }
   .marca-agua img { width:88%; max-width:720px; opacity:0.045; }`;
 
-function categoriaVisible(categoria) {
-  return !categoria || categoria === 'Otro' ? 'General' : categoria;
-}
-
-function textoAsunto(categoria, tipoDestinatario) {
-  if (ASUNTOS[categoria]) return ASUNTOS[categoria];
-  return tipoDestinatario === 'persona' ? 'Requerimiento extrajudicial' : 'Reclamación formal';
-}
-
 function bloqueDestinatario(datos) {
-  const { empresa, categoriaEmpresa, tipoDestinatario, domicilioDestinatario } = datos;
-  const encabezado = tipoDestinatario !== 'persona' && CATEGORIAS_CON_ATENCION_AL_CLIENTE.includes(categoriaEmpresa)
-    ? 'A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE'
-    : 'A LA ATENCIÓN DE';
-  const lineas = [
-    `<p><strong>${encabezado}</strong></p>`,
-    `<p><strong>${escaparHTML(empresa.toUpperCase())}</strong></p>`
-  ];
-  if (domicilioDestinatario) lineas.push(`<p>${escaparHTML(domicilioDestinatario)}</p>`);
-  return lineas.join('\n  ');
+  return lineasDestinatario(datos)
+    .map((linea, i) => i < 2 ? `<p><strong>${escaparHTML(linea)}</strong></p>` : `<p>${escaparHTML(linea)}</p>`)
+    .join('\n  ');
 }
 
 function bloqueFirma(datos) {
@@ -144,16 +202,11 @@ function recortarTrasDespedida(carta) {
 }
 
 function generarHTMLEscrito(carta, datos, refExpediente) {
-  const { nombre, documento, direccion, cp, ciudad, telefono, email, categoriaEmpresa, tipoDestinatario } = datos;
+  const { categoriaEmpresa, tipoDestinatario } = datos;
 
-  const lineasRemitente = [`<p><strong>${escaparHTML(nombre)}</strong></p>`];
-  if (documento) lineasRemitente.push(`<p>${escaparHTML(documento)}</p>`);
-  if (direccion || ciudad || cp) {
-    const domicilio = [escaparHTML(direccion), [escaparHTML(cp), escaparHTML(ciudad)].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-    lineasRemitente.push(`<p>${domicilio}</p>`);
-  }
-  if (telefono) lineasRemitente.push(`<p>Tel.: ${escaparHTML(telefono)}</p>`);
-  if (email) lineasRemitente.push(`<p>${escaparHTML(email)}</p>`);
+  const bloqueRemitente = lineasRemitente(datos)
+    .map((linea, i) => i === 0 ? `<p><strong>${escaparHTML(linea)}</strong></p>` : `<p>${escaparHTML(linea)}</p>`)
+    .join('\n  ');
 
   const cuerpoHTML = recortarTrasDespedida(carta).split('\n').map(linea => {
     const l = escaparHTML(linea.trimEnd()).replace(/\*\*/g, '');
@@ -212,7 +265,7 @@ function generarHTMLEscrito(carta, datos, refExpediente) {
   <div class="ref">Ref. expediente: ${refExpediente}<br>Categoría: ${escaparHTML(categoriaVisible(categoriaEmpresa))}</div>
 </div>
 <div class="remitente">
-  ${lineasRemitente.join('\n  ')}
+  ${bloqueRemitente}
 </div>
 <hr>
 <div class="destinatario">
@@ -349,10 +402,29 @@ export default async function handler(req, res) {
     const empresa = session.metadata?.empresa || 'la empresa';
     const opcion = session.metadata?.opcion || 'basica';
     const tempId = session.metadata?.tempId || '';
+    const idSesion = session.id;
+
+    try {
+      if (await redis('get', `entregado:${idSesion}`)) {
+        return res.status(200).json({ received: true });
+      }
+      if (await redis('set', `procesando:${idSesion}`, '1', 'NX', 'EX', '120') !== 'OK') {
+        return res.status(409).json({ error: 'Pedido en proceso' });
+      }
+    } catch (redisError) {
+      console.error('Base de datos no disponible:', redisError);
+      await enviarAlerta('La base de datos no responde', [
+        'Ha llegado un pago y no se ha podido acceder a la base de datos (Upstash Redis).',
+        `Motivo: ${redisError.message}`,
+        `Cliente: ${email}`,
+        `Sesión de Stripe: ${idSesion}`,
+        'Stripe reintentará la entrega automáticamente. Revisa en Vercel > Storage que la base de datos esté activa.'
+      ]);
+      return res.status(500).json({ error: 'Almacenamiento no disponible' });
+    }
 
     let carta = '';
     let d = {};
-
     if (tempId) {
       try {
         const raw = await obtenerDeRedis(tempId);
@@ -366,6 +438,26 @@ export default async function handler(req, res) {
       }
     }
 
+    if (!carta) {
+      console.error('Pago recibido sin datos del escrito:', idSesion);
+      await enviarAlerta(`Pago cobrado sin escrito — ${empresa}`, [
+        'Se ha cobrado un pedido pero sus datos ya no estaban guardados, así que no se ha podido generar el escrito.',
+        `Cliente: ${email}`,
+        `Dirigido a: ${empresa}`,
+        `Opción: ${opcion}`,
+        `Sesión de Stripe: ${idSesion}`,
+        'Al cliente se le ha avisado de que le contactaremos. Escríbele para que vuelva a generarlo sin coste o devuélvele el pago desde Stripe.'
+      ]);
+      await enviarAvisoCliente(email, 'Hemos recibido tu pago — ReclamoIA', 'Hemos recibido tu pago', [
+        'Tu pago se ha recibido correctamente, pero ha surgido una incidencia técnica al preparar tu escrito.',
+        'Nos pondremos en contacto contigo lo antes posible para resolverlo sin ningún coste adicional o, si lo prefieres, devolverte el importe.',
+        'Si tienes cualquier duda, responde directamente a este email.'
+      ]);
+      await redis('set', `entregado:${idSesion}`, 'incidencia', 'EX', String(TREINTA_DIAS_EN_SEGUNDOS)).catch(() => {});
+      await redis('del', `procesando:${idSesion}`).catch(() => {});
+      return res.status(200).json({ received: true });
+    }
+
     const fecha = new Date().toLocaleDateString('es-ES', {
       day: 'numeric', month: 'long', year: 'numeric'
     });
@@ -373,104 +465,49 @@ export default async function handler(req, res) {
     const nombre = d.nombre || '';
     const categoriaEmpresa = d.categoriaEmpresa || '';
     const tipoDestinatario = d.tipoDestinatario === 'persona' ? 'persona' : 'empresa';
+    const datos = {
+      nombre,
+      documento: d.documento || '',
+      direccion: d.direccion || '',
+      cp: d.cp || '',
+      ciudad: d.ciudad || '',
+      telefono: d.telefono || '',
+      email,
+      empresa,
+      categoriaEmpresa,
+      tipo: d.tipo || 'particular',
+      tipoDestinatario,
+      domicilioDestinatario: d.domicilioDestinatario || '',
+      representacion: d.representacion || 'propio',
+      repNombre: d.repNombre || '',
+      firmanteNombre: d.firmanteNombre || '',
+      firmanteCargo: d.firmanteCargo || ''
+    };
+
+    let refExpediente = await redis('get', `ref:${idSesion}`).catch(() => null);
+    if (!refExpediente) {
+      refExpediente = generarRefExpediente();
+      await redis('set', `ref:${idSesion}`, refExpediente, 'EX', String(TRES_DIAS_EN_SEGUNDOS)).catch(() => {});
+    }
 
     try {
-      const datos = {
-        nombre,
-        documento: d.documento || '',
-        direccion: d.direccion || '',
-        cp: d.cp || '',
-        ciudad: d.ciudad || '',
-        telefono: d.telefono || '',
-        email,
-        empresa,
-        categoriaEmpresa,
-        tipo: d.tipo || 'particular',
-        tipoDestinatario,
-        domicilioDestinatario: d.domicilioDestinatario || '',
-        representacion: d.representacion || 'propio',
-        repNombre: d.repNombre || '',
-        firmanteNombre: d.firmanteNombre || '',
-        firmanteCargo: d.firmanteCargo || ''
-      };
-      const refExpediente = generarRefExpediente();
-
-      try {
-        await guardarExpediente(refExpediente, {
-          ref: refExpediente,
-          fecha: new Date().toISOString(),
-          categoria: categoriaEmpresa || 'Otro',
-          tipoDestinatario,
-          email,
-          nombre: (datos.tipo === 'empresa' ? datos.firmanteNombre : nombre).split(' ')[0] || '',
-          empresa,
-          opcion,
-          seguimientoEnviado: false
-        });
-        await programarSeguimiento(refExpediente);
-      } catch (expedienteError) {
-        console.error('Error guardando expediente persistente:', expedienteError);
-      }
-
-      const htmlEscrito = generarHTMLEscrito(carta, datos, refExpediente);
-      const pdfEscritoResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          source: htmlEscrito,
-          format: 'A4',
-          margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
-        })
-      });
-
-      let pdfEscritoBase64 = null;
-      if (pdfEscritoResponse.ok) {
-        const pdfBuffer = await pdfEscritoResponse.arrayBuffer();
-        pdfEscritoBase64 = Buffer.from(pdfBuffer).toString('base64');
-      }
+      const pdfEscritoBase64 = await convertirAPdf(generarHTMLEscrito(carta, datos, refExpediente));
 
       let pdfGuiaBase64 = null;
       if (opcion === 'completa') {
-        try {
-          const guiaData = { guia: seleccionarGuia(categoriaEmpresa || 'Otro', tipoDestinatario), fecha };
-          const htmlGuia = generarHTMLGuia(guiaData, datos, refExpediente);
-
-          const pdfGuiaResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Basic ${Buffer.from(`api:${process.env.PDFSHIFT_API_KEY}`).toString('base64')}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              source: htmlGuia,
-              format: 'A4',
-              margin: { top: '22mm', bottom: '22mm', left: '25mm', right: '20mm' }
-            })
-          });
-
-          if (pdfGuiaResponse.ok) {
-            const guiaBuffer = await pdfGuiaResponse.arrayBuffer();
-            pdfGuiaBase64 = Buffer.from(guiaBuffer).toString('base64');
-          }
-        } catch (guiaError) {
-          console.error('Error generando guía:', guiaError);
-        }
+        const guiaData = { guia: seleccionarGuia(categoriaEmpresa || 'Otro', tipoDestinatario), fecha };
+        pdfGuiaBase64 = await convertirAPdf(generarHTMLGuia(guiaData, datos, refExpediente));
       }
 
-      const adjuntos = [];
-      if (pdfEscritoBase64) {
-        adjuntos.push({
-          filename: `Escrito-Reclamacion-${empresa.replace(/\s+/g, '-')}.pdf`,
-          content: pdfEscritoBase64,
-          type: 'application/pdf'
-        });
-      }
+      const nombreArchivo = empresa.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
+      const adjuntos = [{
+        filename: `Escrito-Reclamacion-${nombreArchivo}.pdf`,
+        content: pdfEscritoBase64,
+        type: 'application/pdf'
+      }];
       if (pdfGuiaBase64) {
         adjuntos.push({
-          filename: `Guia-Presentacion-${empresa.replace(/\s+/g, '-')}.pdf`,
+          filename: `Guia-Presentacion-${nombreArchivo}.pdf`,
           content: pdfGuiaBase64,
           type: 'application/pdf'
         });
@@ -499,16 +536,17 @@ export default async function handler(req, res) {
     <div style="background:#fdf9f0;border:1px solid #C9A84C;border-radius:8px;padding:12px 16px;margin:20px 0;">
       <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Fecha:</strong> ${escaparHTML(fecha)}</p>
       <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Destinatario:</strong> ${escaparHTML(empresa)}</p>
-      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Legislación verificada:</strong> BOE · EUR-Lex</p>
+      <p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Referencia del expediente:</strong> ${escaparHTML(refExpediente)}</p>
       ${opcion === 'completa' ? `<p style="font-size:13px;color:#8a6a1a;margin:3px 0;">✓ <strong>Guía de presentación:</strong> incluida en PDF adjunto</p>` : ''}
     </div>
     <div style="background:#f8f8f8;border-radius:8px;padding:16px;margin:20px 0;">
       <p style="font-size:13px;color:#0D1B2A;font-weight:bold;margin-bottom:8px;">¿Qué hago ahora?</p>
-      <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF del escrito adjunto</p>
+      <p style="font-size:13px;color:#555;margin:6px 0;">1. Abre el PDF del escrito adjunto y revisa que todos los datos son correctos</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">${pasoEnvio}</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">3. Guarda siempre el justificante de envío</p>
       <p style="font-size:13px;color:#555;margin:6px 0;">4. Si no responden en 15 días hábiles, sigue los pasos indicados${opcion === 'completa' ? ' en la guía' : ''}</p>
     </div>
+    <p style="font-size:13px;color:#555;line-height:1.6;">¿Ves algún dato incorrecto en el escrito? Responde a este email y lo revisamos.</p>
     <p style="font-size:11px;color:#999;line-height:1.6;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">
       ReclamoIA es una herramienta de asistencia en la redacción de escritos. No presta servicios de asesoría jurídica.
     </p>
@@ -521,20 +559,68 @@ export default async function handler(req, res) {
 </body>
 </html>`;
 
-      await resend.emails.send({
+      const { error: errorEnvio } = await resend.emails.send({
         from: 'ReclamoIA <hola@reclamoia.es>',
         to: email,
         subject: opcion === 'completa'
-          ? `Tu escrito + guía de presentación contra ${empresa}`
-          : `Tu escrito de reclamación contra ${empresa}`,
+          ? `Tu escrito + guía de presentación — ${empresa}`
+          : `Tu escrito de reclamación — ${empresa}`,
         html: htmlEmail,
         attachments: adjuntos
       });
+      if (errorEnvio) throw new Error(`Resend: ${errorEnvio.message || JSON.stringify(errorEnvio)}`);
 
-      console.log('Email enviado correctamente a:', email, '| Opción:', opcion);
+      console.log('Escrito entregado:', refExpediente, '| Opción:', opcion);
 
-    } catch (emailError) {
-      console.error('Error enviando email:', emailError);
+    } catch (entregaError) {
+      console.error('Fallo en la entrega:', entregaError);
+      await redis('expire', tempId, String(TRES_DIAS_EN_SEGUNDOS)).catch(() => {});
+      await redis('del', `procesando:${idSesion}`).catch(() => {});
+      await enviarAlerta(`Entrega fallida — ${empresa}`, [
+        'Un cliente ha pagado y su escrito no se ha podido entregar todavía.',
+        `Motivo: ${entregaError.message}`,
+        `Cliente: ${email}`,
+        `Opción: ${opcion}`,
+        `Referencia: ${refExpediente}`,
+        `Sesión de Stripe: ${idSesion}`,
+        'Stripe reintentará la entrega automáticamente durante los próximos 3 días. Si recibes esta alerta varias veces para el mismo pedido, avisa a Claude para revisarlo.'
+      ]);
+      const primerAviso = await redis('set', `avisoretraso:${idSesion}`, '1', 'NX', 'EX', String(TRES_DIAS_EN_SEGUNDOS)).catch(() => null);
+      if (primerAviso === 'OK') {
+        await enviarAvisoCliente(email, 'Tu escrito está en preparación — ReclamoIA', 'Tu escrito está en preparación', [
+          'Hemos recibido tu pago correctamente. Tu escrito está tardando un poco más de lo habitual por una incidencia técnica.',
+          'No tienes que hacer nada: lo recibirás en este mismo correo en cuanto esté listo.',
+          'Si tienes cualquier duda, responde directamente a este email.'
+        ]);
+      }
+      return res.status(500).json({ error: 'Entrega fallida, se reintentará' });
+    }
+
+    await redis('set', `entregado:${idSesion}`, refExpediente, 'EX', String(TREINTA_DIAS_EN_SEGUNDOS))
+      .catch(e => console.error('No se pudo marcar como entregado:', e));
+    await redis('del', tempId).catch(() => {});
+    await redis('del', `procesando:${idSesion}`).catch(() => {});
+
+    try {
+      await guardarExpediente(refExpediente, {
+        ref: refExpediente,
+        fecha: new Date().toISOString(),
+        categoria: categoriaEmpresa || 'Otro',
+        tipoDestinatario,
+        email,
+        nombre: (datos.tipo === 'empresa' ? datos.firmanteNombre : nombre).split(' ')[0] || '',
+        empresa,
+        opcion,
+        seguimientoEnviado: false
+      });
+      await programarSeguimiento(refExpediente);
+    } catch (expedienteError) {
+      console.error('Error guardando expediente persistente:', expedienteError);
+      await enviarAlerta(`Expediente sin guardar — ${refExpediente}`, [
+        'El escrito se entregó bien, pero no se guardó su expediente: no tendrá verificación ni email de seguimiento.',
+        `Motivo: ${expedienteError.message}`,
+        `Referencia: ${refExpediente}`
+      ]);
     }
   }
 

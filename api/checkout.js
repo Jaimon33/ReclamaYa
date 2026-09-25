@@ -43,6 +43,7 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'payment',
+      expires_at: Math.floor(Date.now() / 1000) + 50 * 60,
       customer_email: email,
       metadata: {
         empresa: empresa || '',

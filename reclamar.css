@@ -31,6 +31,67 @@
   color: #666;
 }
 
+.aviso-caso {
+  background: #fff6e8;
+  border: 1px solid #e3a94b;
+  border-radius: 8px;
+  padding: 1rem 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.aviso-caso p { font-size: 13px; color: #6b4a12; line-height: 1.65; margin: 0 0 0.5rem; }
+.aviso-caso .aviso-caso-titulo { font-weight: 700; color: #5a3d0c; }
+.aviso-caso .check-opcion { margin-top: 0.5rem; }
+
+.cabecera-escrito {
+  background: #fff;
+  border: 1px solid #E8E4DC;
+  border-top: 3px solid #0D1B2A;
+  border-radius: 8px;
+  padding: 1rem 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.cabecera-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 0 0 0.75rem;
+}
+
+.cabecera-fila {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #f0ede8;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #222;
+}
+
+.cabecera-etiqueta { font-weight: 700; color: #999; font-size: 12px; }
+.cabecera-fila div p { margin: 0; }
+.cabecera-fila div p:first-child,
+#cab-destinatario p:nth-child(2) { font-weight: 700; color: #0D1B2A; }
+
+.btn-corregir {
+  margin-top: 0.75rem;
+  background: transparent;
+  border: 1px solid #E8E4DC;
+  color: #0D1B2A;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn-corregir:hover { border-color: #0D1B2A; }
+
 .nav-mobile-btn-link {
   display: none;
   color: rgba(255,255,255,0.7);
