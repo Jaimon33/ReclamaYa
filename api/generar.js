@@ -234,6 +234,7 @@ async function revisarEscrito({ escrito, datosCaso, esPersona, hayDocumentosAdju
 6. El escrito no termina en "Atentamente," o añade nombre, firma o DNI después.
 7. Falta la estructura EXPONGO / SOLICITO o el texto está cortado.
 No marques cuestiones de estilo ni mejoras opcionales.
+La fecha de hoy es ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}: la fecha que figura al final del escrito es la de hoy y es correcta.
 
 Responde SOLO con un JSON: {"correcto": true} o {"correcto": false, "problemas": ["error concreto 1", "error concreto 2"]}.
 
@@ -302,10 +303,10 @@ export default async function handler(req, res) {
 
   const leyesTexto = leyes.map((l, i) => `${i + 1}. ${l}`).join('\n');
 
+  const domicilioReclamante = [direccion, [cp, ciudad].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   const detallesContacto = [];
-  if (direccion || ciudad || cp) {
-    const domicilio = [direccion, [cp, ciudad].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-    detallesContacto.push(`y domicilio a efectos de notificaciones en ${domicilio}`);
+  if (domicilioReclamante) {
+    detallesContacto.push(`con domicilio a efectos de notificaciones en ${domicilioReclamante}`);
   }
   if (telefono) detallesContacto.push(`teléfono ${telefono}`);
   detallesContacto.push(`correo electrónico ${email}`);
@@ -342,7 +343,7 @@ export default async function handler(req, res) {
     : 'un escrito de reclamación extrajudicial formal';
 
   const datosCaso = `DATOS DEL RECLAMANTE (usa únicamente los que se indican; si algún dato no aparece aquí, el reclamante no lo ha facilitado y NO debes inventarlo ni dejar huecos o corchetes en su lugar):
-${tipo === 'empresa' ? 'Razón social' : 'Nombre'}: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${direccion ? ` | Dirección: ${direccion}, ${cp} ${ciudad}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}${firmanteTexto}${representadoTexto}
+${tipo === 'empresa' ? 'Razón social' : 'Nombre'}: ${nombre}${documento ? ` | ${docTexto}: ${documento}` : ''}${domicilioReclamante ? ` | Domicilio: ${domicilioReclamante}` : ''}${telefono ? ` | Tel: ${telefono}` : ''} | Email: ${email}${firmanteTexto}${representadoTexto}
 
 RECLAMACIÓN:
 Parte reclamada: ${empresa} (${esPersona ? 'persona física' : 'empresa o entidad'})${domicilioDestinatario ? ` | Domicilio: ${domicilioDestinatario}` : ''} | Categoría: ${categoria}
