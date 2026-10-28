@@ -36,22 +36,14 @@
       <!-- PASO 1 -->
       <section id="paso-1" aria-labelledby="t-paso-1">
         <h1 id="t-paso-1" tabindex="-1">Comprueba tu caso</h1>
-        <p class="ayuda">Unas preguntas rápidas. No te pedimos nombre, DNI ni email hasta saber si tu caso encaja.</p>
+        <p class="ayuda">Unas pocas preguntas. Lo demás lo sacaremos de tus documentos. No te pedimos nombre, DNI ni email todavía.</p>
         <form id="form-caso" novalidate>
-          <fieldset data-q="titular">
-            <legend>¿El contrato está a tu nombre?</legend>
+          <fieldset data-q="tipoTitular">
+            <legend>¿Quién es el titular del contrato?</legend>
+            <p class="ayuda">Tiene que reclamar el titular, o alguien en nombre de su empresa.</p>
             <div class="opciones dos-col">
-              <label class="opcion"><input type="radio" name="titular" value="si" required> Sí</label>
-              <label class="opcion"><input type="radio" name="titular" value="no"> No, está a nombre de otra persona</label>
-            </div>
-          </fieldset>
-
-          <fieldset data-q="tipoTitular" class="pregunta-oculta">
-            <legend>¿El contrato es…?</legend>
-            <div class="opciones">
-              <label class="opcion"><input type="radio" name="tipoTitular" value="particular"> De particular</label>
-              <label class="opcion"><input type="radio" name="tipoTitular" value="autonomo"> De autónomo</label>
-              <label class="opcion"><input type="radio" name="tipoTitular" value="empresa"> De una empresa</label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="persona"> Yo (también si soy autónomo)</label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="empresa"> Una empresa</label>
             </div>
           </fieldset>
 
@@ -79,52 +71,24 @@
           <fieldset data-q="viaBaja" class="pregunta-oculta">
             <legend>¿Cómo pediste la baja?</legend>
             <div class="opciones">
-              <label class="opcion"><input type="radio" name="viaBaja" value="operador"> Se la pedí a esa compañía (teléfono, web, email o tienda)</label>
+              <label class="opcion"><input type="radio" name="viaBaja" value="operador"> Se la pedí a mi compañía (teléfono, web, email o tienda)</label>
               <label class="opcion"><input type="radio" name="viaBaja" value="portabilidad"> Me cambié a otra compañía y ella tramitó el cambio</label>
-              <label class="opcion"><input type="radio" name="viaBaja" value="no_recuerdo"> No lo recuerdo</label>
             </div>
           </fieldset>
 
           <fieldset data-q="pruebaBaja" class="pregunta-oculta">
-            <legend>¿Qué prueba tienes de que pediste la baja?</legend>
+            <legend>¿Tienes alguna prueba de que la pediste?</legend>
             <div class="opciones">
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="referencia"> Un número de referencia de la baja</label>
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="confirmacion"> Un email, SMS o carta de la compañía confirmándola</label>
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="justificante"> Un justificante o captura de mi solicitud</label>
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="ninguna"> No tengo ninguna prueba</label>
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="si"> Sí: número de referencia, email, SMS, carta o captura</label>
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="no"> No tengo ninguna</label>
             </div>
           </fieldset>
 
-          <div data-q="fechaSolicitud" class="pregunta-oculta">
-            <div class="campo">
-              <label for="fechaSolicitud">¿Qué día pediste la baja?</label>
-              <p class="ayuda">El día en que la solicitaste, no el de la última factura.</p>
-              <input type="date" id="fechaSolicitud" name="fechaSolicitud">
-            </div>
-            <label class="casilla"><input type="checkbox" id="pidioFecha"> Pedí que la baja fuera efectiva en una fecha concreta posterior</label>
-            <div id="campo-fecha-deseada" class="campo pregunta-oculta">
-              <label for="fechaDeseada">¿Qué fecha pediste?</label>
-              <input type="date" id="fechaDeseada" name="fechaDeseada">
-            </div>
-          </div>
-
-          <fieldset data-q="conceptos" class="pregunta-oculta">
-            <legend>¿Qué te han cobrado después de la baja?</legend>
-            <p class="ayuda">Marca todo lo que aparezca.</p>
-            <div class="opciones">
-              <label class="opcion"><input type="checkbox" name="conceptos" value="cuota"> Cuotas mensuales del servicio</label>
-              <label class="opcion"><input type="checkbox" name="conceptos" value="consumo"> Llamadas, datos u otros consumos</label>
-              <label class="opcion"><input type="checkbox" name="conceptos" value="permanencia"> Una penalización por permanencia</label>
-              <label class="opcion"><input type="checkbox" name="conceptos" value="dispositivo"> Plazos de un móvil u otro aparato</label>
-              <label class="opcion"><input type="checkbox" name="conceptos" value="equipos"> Un cargo por no devolver el router u otro equipo</label>
-            </div>
+          <fieldset data-q="fechaSolicitud" class="pregunta-oculta">
+            <legend>¿Qué día pediste la baja?</legend>
+            <div class="campo"><label for="fechaSolicitud" class="oculto-visual">Fecha en que pediste la baja</label><input type="date" id="fechaSolicitud" name="fechaSolicitud"></div>
+            <label class="opcion"><input type="checkbox" id="fechaSolicitudEnDocs" data-en-docs="fechaSolicitud"> No la recuerdo: buscadla en mis documentos</label>
           </fieldset>
-
-          <div data-q="fechaPrimeraFactura" class="pregunta-oculta campo">
-            <label for="fechaPrimeraFactura">¿Qué día te llegó la primera factura cobrada después de la baja? <span class="ayuda">(si lo sabes)</span></label>
-            <p class="ayuda">Es la fecha de emisión que aparece en la factura. Sirve para avisarte de los plazos.</p>
-            <input type="date" id="fechaPrimeraFactura" name="fechaPrimeraFactura">
-          </div>
 
           <fieldset data-q="reclamado" class="pregunta-oculta">
             <legend>¿Ya has reclamado a la compañía por estos cobros?</legend>
@@ -135,18 +99,6 @@
           </fieldset>
 
           <div id="bloque-previa" class="pregunta-oculta">
-            <div class="campo">
-              <label for="fechaReclamacion">¿Qué día reclamaste?</label>
-              <input type="date" id="fechaReclamacion" name="fechaReclamacion">
-            </div>
-            <fieldset>
-              <legend>¿Qué prueba tienes de esa reclamación?</legend>
-              <div class="opciones">
-                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="referencia"> Un número de referencia</label>
-                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="escrito"> Una copia (email, formulario, escrito)</label>
-                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="ninguna"> Ninguna, fue por teléfono sin referencia</label>
-              </div>
-            </fieldset>
             <fieldset>
               <legend>¿Qué te han contestado?</legend>
               <div class="opciones">
@@ -155,23 +107,17 @@
                 <label class="opcion"><input type="radio" name="respuesta" value="solucionado"> Ya me lo han devuelto</label>
               </div>
             </fieldset>
-            <div id="campo-fecha-respuesta" class="campo pregunta-oculta">
-              <label for="fechaRespuesta">¿Qué día te respondieron?</label>
-              <input type="date" id="fechaRespuesta" name="fechaRespuesta">
-            </div>
+            <fieldset id="campo-fecha-reclamacion">
+              <legend>¿Qué día reclamaste?</legend>
+              <div class="campo"><label for="fechaReclamacion" class="oculto-visual">Fecha de tu reclamación</label><input type="date" id="fechaReclamacion" name="fechaReclamacion"></div>
+              <label class="opcion"><input type="checkbox" id="fechaReclamacionEnDocs" data-en-docs="fechaReclamacion"> No la recuerdo: buscadla en mis documentos</label>
+            </fieldset>
+            <fieldset id="campo-fecha-respuesta" class="pregunta-oculta">
+              <legend>¿Qué día te respondieron?</legend>
+              <div class="campo"><label for="fechaRespuesta" class="oculto-visual">Fecha de la respuesta</label><input type="date" id="fechaRespuesta" name="fechaRespuesta"></div>
+              <label class="opcion"><input type="checkbox" id="fechaRespuestaEnDocs" data-en-docs="fechaRespuesta"> No la recuerdo: buscadla en mis documentos</label>
+            </fieldset>
           </div>
-
-          <fieldset data-q="situaciones" class="pregunta-oculta">
-            <legend>¿Te pasa algo de esto?</legend>
-            <div class="opciones">
-              <label class="opcion"><input type="checkbox" name="situaciones" value="morosos"> Me han metido o amenazado con un fichero de morosos</label>
-              <label class="opcion"><input type="checkbox" name="situaciones" value="suplantacion"> No reconozco el contrato</label>
-              <label class="opcion"><input type="checkbox" name="situaciones" value="judicial"> Ya hay un juicio o un abogado</label>
-              <label class="opcion"><input type="checkbox" name="situaciones" value="danos"> Quiero una indemnización por daños</label>
-              <label class="opcion"><input type="checkbox" name="situaciones" value="arbitraje"> Ya pasó por arbitraje de consumo</label>
-              <label class="opcion"><input type="checkbox" id="ninguna-situacion"> Nada de esto</label>
-            </div>
-          </fieldset>
 
           <div id="errores-paso-1" role="alert"></div>
           <div class="acciones pregunta-oculta" id="acciones-paso-1">
@@ -208,11 +154,12 @@
           <div id="alertas-datos"></div>
 
           <h3>Titular del contrato</h3>
-          <div class="campo"><label for="d-nombre">Nombre y apellidos</label><input type="text" id="d-nombre" autocomplete="name" maxlength="100"><span class="fuente" id="f-nombre"></span></div>
+          <div class="campo"><label for="d-nombre" id="l-nombre">Nombre y apellidos</label><input type="text" id="d-nombre" autocomplete="name" maxlength="100"><span class="fuente" id="f-nombre"></span></div>
           <div class="fila dos">
-            <div class="campo"><label for="d-documento">DNI o NIE</label><input type="text" id="d-documento" maxlength="12" autocapitalize="characters" autocomplete="off"><span class="fuente" id="f-documento"></span></div>
+            <div class="campo"><label for="d-documento" id="l-documento">DNI o NIE</label><input type="text" id="d-documento" maxlength="12" autocapitalize="characters" autocomplete="off"><span class="fuente" id="f-documento"></span></div>
             <div class="campo"><label for="d-telefono">Teléfono de contacto <span class="ayuda">(opcional)</span></label><input type="tel" id="d-telefono" autocomplete="tel" maxlength="20" inputmode="tel"></div>
           </div>
+          <div class="campo" id="campo-firmante" hidden><label for="d-firmante">Nombre y apellidos de quien firma en nombre de la empresa</label><input type="text" id="d-firmante" autocomplete="name" maxlength="100"></div>
           <div class="campo"><label for="d-email">Email</label><input type="email" id="d-email" autocomplete="email" maxlength="120" inputmode="email"><p class="ayuda" style="margin:4px 0 0">Te enviaremos aquí el enlace de descarga y la confirmación del pedido.</p></div>
           <div class="campo"><label for="d-domicilio">Domicilio <span class="ayuda" id="domicilio-opcional">(opcional; aparece en el escrito)</span></label><input type="text" id="d-domicilio" autocomplete="street-address" maxlength="140"></div>
           <div class="fila tres">
@@ -221,15 +168,25 @@
             <div class="campo"><label for="d-provincia">Provincia</label><input type="text" id="d-provincia" maxlength="40" autocomplete="address-level1"></div>
           </div>
 
+          <h3>Fechas</h3>
+          <div class="fila dos">
+            <div class="campo"><label for="d-fecha-solicitud">Día en que pediste la baja</label><input type="date" id="d-fecha-solicitud"><span class="fuente" id="f-fecha-solicitud"></span></div>
+            <div class="campo"><label for="d-fecha-deseada">Fecha en que pediste que fuera efectiva <span class="ayuda">(solo si pediste una posterior)</span></label><input type="date" id="d-fecha-deseada"></div>
+          </div>
+          <div class="fila dos" id="fechas-previa" hidden>
+            <div class="campo"><label for="d-fecha-reclamacion">Día en que reclamaste a la compañía</label><input type="date" id="d-fecha-reclamacion"><span class="fuente" id="f-fecha-reclamacion"></span></div>
+            <div class="campo" id="campo-fecha-respuesta-datos"><label for="d-fecha-respuesta">Día en que te respondieron</label><input type="date" id="d-fecha-respuesta"><span class="fuente" id="f-fecha-respuesta"></span></div>
+          </div>
+
           <h3>El contrato y la baja</h3>
           <div class="fila dos">
             <div class="campo"><label for="d-cliente">Nº de cliente o contrato <span class="ayuda">(si aparece)</span></label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
             <div class="campo"><label for="d-lineas">Teléfono(s) o línea(s) dadas de baja</label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
           </div>
           <div class="fila dos">
-            <div class="campo"><label for="d-canal-baja">¿Por dónde pediste la baja?</label>
+            <div class="campo"><label for="d-canal-baja">¿Por dónde pediste la baja?</label><span class="fuente" id="f-canal-baja"></span>
               <select id="d-canal-baja"><option value="">Elige</option><option value="telefono">Por teléfono</option><option value="web">En la web o la app</option><option value="escrito">Por email o por escrito</option><option value="tienda">En una tienda</option><option value="otro">Otro</option></select></div>
-            <div class="campo"><label for="d-ref-baja">Nº de referencia de la baja <span class="ayuda" id="ref-baja-opcional">(si lo tienes)</span></label><input type="text" id="d-ref-baja" maxlength="40"><span class="fuente" id="f-ref-baja"></span></div>
+            <div class="campo"><label for="d-ref-baja">Nº de referencia de la baja <span class="ayuda">(obligatorio si no subes el justificante)</span></label><input type="text" id="d-ref-baja" maxlength="40"><span class="fuente" id="f-ref-baja"></span></div>
           </div>
 
           <div id="bloque-datos-previa" hidden>

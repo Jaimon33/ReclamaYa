@@ -26,9 +26,9 @@ async function marcarEjemplo(bytes) {
 }
 
 const respuestas = {
-  titular: 'si', tipoTitular: 'particular', operador: 'Otro', operadorOtro: 'Operadora Ejemplo', servicio: 'fibra',
-  viaBaja: 'operador', pruebaBaja: 'referencia', fechaSolicitud: '2026-06-03', fechaDeseada: '',
-  conceptos: ['cuota'], situaciones: [], reclamado: 'no', fechaPrimeraFactura: '2026-06-08'
+  tipoTitular: 'persona', operador: 'Otro', operadorOtro: 'Operadora Ejemplo', servicio: 'fibra',
+  viaBaja: 'operador', pruebaBaja: 'si', fechaSolicitud: '2026-06-03', fechaDeseada: '',
+  reclamado: 'no', fechaPrimeraFactura: '2026-06-08'
 };
 const evaluacion = evaluarCaso(respuestas, '2026-07-06');
 const facturaJunio = await pdfFicticio(['Factura n.º F-EJ-0601 · Emitida el 08/06/2026', 'Periodo: 01/06/2026 a 30/06/2026', 'Cuota fibra 600 Mb ........ 30,00 €', 'IVA 21 % .................. 6,30 €', 'Total ..................... 36,30 €']);
@@ -42,6 +42,7 @@ const documentos = [
 ];
 const datos = {
   titular: { nombre: 'Ana Ejemplo Ficticia', documento: '00000000T', email: 'ana@ejemplo.invalid', telefono: '', domicilio: 'Calle Inventada 1', cp: '28000', localidad: 'Madrid', provincia: 'Madrid' },
+  fechas: { solicitud: '2026-06-03' },
   numeroCliente: 'CL-000000', lineas: '910 000 000', razonSocialOperador: '', canalBaja: 'telefono', bajaReferencia: 'BJ-000000',
   facturas: [
     { documento: 'd1', numero: 'F-EJ-0601', fechaEmision: '2026-06-08', periodoDesde: '2026-06-01', periodoHasta: '2026-06-30', importeTotal: 36.3, importeServicio: 36.3 },

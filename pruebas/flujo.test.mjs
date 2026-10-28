@@ -112,16 +112,15 @@ const HOY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).form
 const dias = (n) => { const d = new Date(`${HOY}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 const respuestasA = {
-  titular: 'si', tipoTitular: 'particular', operador: 'Vodafone', servicio: 'fibra', viaBaja: 'operador',
-  pruebaBaja: 'confirmacion', fechaSolicitud: dias(-60), conceptos: ['cuota'], situaciones: [],
-  reclamado: 'no', fechaPrimeraFactura: dias(-10)
+  tipoTitular: 'persona', operador: 'Vodafone', servicio: 'fibra', viaBaja: 'operador',
+  pruebaBaja: 'si', fechaSolicitud: '', fechaSolicitudEnDocs: true, reclamado: 'no'
 };
 
 const credA = {};
 const credB = {};
 
 test('comprobación sin datos personales y sin guardar nada', async () => {
-  const r = await api('expediente', { accion: 'evaluar', respuestas: { ...respuestasA, pruebaBaja: 'ninguna' } });
+  const r = await api('expediente', { accion: 'evaluar', respuestas: { ...respuestasA, pruebaBaja: 'no' } });
   assert.equal(r.estado, 200);
   assert.equal(r.datos.evaluacion.estado, 'incompleto');
   const excl = await api('expediente', { accion: 'crear', respuestas: { ...respuestasA, viaBaja: 'portabilidad' } });
@@ -152,13 +151,14 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
 
   const datos = {
     titular: { nombre: 'Lucía Martín Pérez', documento: '12345678A', email: 'lucia@example.com', localidad: 'Madrid' },
-    canalBaja: 'telefono', numeroCliente: 'C-998877', lineas: '910000000',
+    canalBaja: 'telefono', numeroCliente: 'C-998877', lineas: '910000000', fechas: {},
     facturas: [{ documento: docs[0].id, numero: 'FV-0001', fechaEmision: dias(-10), periodoDesde: dias(-40), periodoHasta: dias(-11), importeTotal: 36.3, importeServicio: 36.3 }]
   };
   const malo = await api('expediente', { accion: 'confirmar', ...credA, datos });
   assert.equal(malo.estado, 422);
   assert.ok(malo.datos.errores.some(e => e.includes('DNI')));
   datos.titular.documento = '12345678Z';
+  datos.fechas.solicitud = dias(-60);
   const ok = await api('expediente', { accion: 'confirmar', ...credA, datos });
   assert.equal(ok.estado, 200, JSON.stringify(ok.datos));
   assert.ok(ok.datos.vista.resumen.total > 0);
@@ -211,7 +211,7 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
 });
 
 test('recorrido B: expediente para la Oficina con formulario oficial', async () => {
-  const respuestasB = { ...respuestasA, reclamado: 'si', fechaReclamacion: dias(-45), pruebaReclamacion: 'referencia', respuesta: 'sin_respuesta', fechaPrimeraFactura: dias(-50) };
+  const respuestasB = { ...respuestasA, tipoTitular: 'empresa', fechaSolicitud: dias(-60), fechaSolicitudEnDocs: false, reclamado: 'si', fechaReclamacionEnDocs: true, respuesta: 'sin_respuesta' };
   const c = await api('expediente', { accion: 'crear', respuestas: respuestasB });
   assert.equal(c.estado, 201, JSON.stringify(c.datos));
   assert.equal(c.datos.vista.evaluacion.estado, 'B');
@@ -223,7 +223,8 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   const idFactura = f.datos.documento;
 
   const datos = {
-    titular: { nombre: 'Pedro Gómez Ruiz', documento: 'X1234567L', email: 'pedro@example.com', telefono: '600111222', domicilio: 'Calle Mayor 1, 2º A', cp: '28013', localidad: 'Madrid', provincia: 'Madrid' },
+    fechas: { reclamacion: dias(-45) },
+    titular: { nombre: 'Telecomunicaciones Ejemplo SL', documento: 'B12345674', firmante: 'Pedro Gómez Ruiz', email: 'pedro@example.com', telefono: '600111222', domicilio: 'Calle Mayor 1, 2º A', cp: '28013', localidad: 'Madrid', provincia: 'Madrid' },
     canalBaja: 'web', bajaReferencia: 'BAJA-123', canalReclamacion: 'telefono', reclamacionReferencia: 'REC-555', lineas: '600111222',
     facturas: [{ documento: idFactura, numero: 'FV-0002', fechaEmision: dias(-50), periodoDesde: dias(-55), periodoHasta: dias(-26), importeTotal: 29.99, importeServicio: 29.99 }]
   };
@@ -248,8 +249,10 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   const exp = await descargar(credB, 'expediente');
   fs.writeFileSync(path.join(SALIDA, 'B-expediente.pdf'), exp.bytes);
   const form = (await PDFDocument.load(exp.bytes)).getForm();
-  assert.equal(form.getTextField('NIFNIE').getText(), 'X1234567L');
+  assert.equal(form.getTextField('NIFNIE').getText(), 'B12345674');
   assert.equal(form.getTextField('Representante NIF/NIE').getText() ?? '', '');
+  assert.equal(form.getTextField('Representante Nombre y Apellidos').getText(), 'Pedro Gómez Ruiz');
+  assert.equal(form.getRadioGroup('Group1').getSelected(), 'Opción3');
   assert.equal(form.getCheckBox('anexo coincide').isChecked(), false, 'la declaración la marca el reclamante');
   assert.match(form.getTextField('Pretensiones del solicitante devolución tramitar baja').getText(), /devolución de/);
   for (const a of ['formulario', 'explicacion', 'guia', 'anexo-1']) {

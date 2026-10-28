@@ -245,7 +245,8 @@ export async function rellenarFormularioOaut(bytesFormulario, d) {
     campo.setText(textoSeguro(valor));
   };
   form.getCheckBox('Reclamación inicial').check();
-  form.getRadioGroup('Group1').select(d.tipoTitular === 'autonomo' ? 'Opción2' : 'Opción1');
+  form.getRadioGroup('Group1').select(d.tipoTitular === 'empresa' ? 'Opción3' : 'Opción1');
+  if (d.representante) form.getTextField('Representante Nombre y Apellidos').setText(textoSeguro(d.representante));
   poner('NIFNIE', d.documento, 10);
   poner('Nombre y Apellidos', d.nombre, 10);
   poner('Campo obligatorio', d.domicilio, 10);

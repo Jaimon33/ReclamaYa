@@ -152,28 +152,20 @@ export function fechaEfectivaBaja(fechaSolicitud, fechaDeseada) {
   return minima;
 }
 
-// ——— Elegibilidad (paso 1) ———
+// ——— Elegibilidad ———
+// El paso 1 pregunta solo lo imprescindible para saber qué recorrido toca. Las fechas que el
+// cliente no recuerde se sacan de sus documentos en el paso 2, donde la evaluación es definitiva.
 
 const OPCIONES = {
-  titular: ['si', 'no'],
-  tipoTitular: ['particular', 'autonomo', 'empresa'],
+  tipoTitular: ['persona', 'empresa'],
   servicio: ['fibra', 'movil', 'fijo', 'paquete'],
-  viaBaja: ['operador', 'portabilidad', 'no_recuerdo'],
-  pruebaBaja: ['referencia', 'confirmacion', 'justificante', 'ninguna'],
+  viaBaja: ['operador', 'portabilidad'],
+  pruebaBaja: ['si', 'no'],
   reclamado: ['no', 'si'],
-  pruebaReclamacion: ['referencia', 'escrito', 'ninguna'],
   respuesta: ['sin_respuesta', 'insatisfactoria', 'solucionado']
 };
-const CONCEPTOS_RECLAMABLES = ['cuota', 'consumo'];
-const CONCEPTOS_FUERA = ['permanencia', 'dispositivo', 'equipos'];
-const CONCEPTOS = [...CONCEPTOS_RECLAMABLES, ...CONCEPTOS_FUERA];
-const SITUACIONES_FUERA = {
-  morosos: 'Te han incluido o amenazado con incluirte en un fichero de morosos',
-  suplantacion: 'No reconoces el contrato o crees que alguien lo contrató en tu nombre',
-  judicial: 'Ya hay un juicio, un abogado o un procedimiento abierto por esto',
-  danos: 'Quieres una indemnización por daños o perjuicios',
-  arbitraje: 'El asunto ya pasó por arbitraje de consumo y hay laudo'
-};
+const FECHAS = ['fechaSolicitud', 'fechaDeseada', 'fechaPrimeraFactura', 'fechaReclamacion', 'fechaRespuesta'];
+const EN_DOCUMENTOS = ['fechaSolicitudEnDocs', 'fechaReclamacionEnDocs', 'fechaRespuestaEnDocs'];
 
 export const OPERADORES = [
   'Movistar', 'Vodafone', 'Orange', 'Jazztel', 'Yoigo', 'MásMóvil', 'Simyo', 'Lowi',
@@ -192,11 +184,10 @@ export function limpiarRespuestas(entrada = {}) {
   }
   r.operador = OPERADORES.includes(entrada.operador) ? entrada.operador : '';
   r.operadorOtro = r.operador === 'Otro' ? texto(entrada.operadorOtro, 60) : '';
-  for (const campo of ['fechaSolicitud', 'fechaDeseada', 'fechaPrimeraFactura', 'fechaReclamacion', 'fechaRespuesta']) {
-    r[campo] = esFecha(entrada[campo]) ? entrada[campo] : '';
-  }
-  r.conceptos = Array.isArray(entrada.conceptos) ? [...new Set(entrada.conceptos.filter(c => CONCEPTOS.includes(c)))] : [];
-  r.situaciones = Array.isArray(entrada.situaciones) ? [...new Set(entrada.situaciones.filter(s => s in SITUACIONES_FUERA))] : [];
+  for (const campo of FECHAS) r[campo] = esFecha(entrada[campo]) ? entrada[campo] : '';
+  for (const campo of EN_DOCUMENTOS) r[campo] = entrada[campo] === true;
+  if (r.reclamado !== 'si') Object.assign(r, { respuesta: '', fechaReclamacion: '', fechaRespuesta: '', fechaReclamacionEnDocs: false, fechaRespuestaEnDocs: false });
+  if (r.respuesta !== 'insatisfactoria') Object.assign(r, { fechaRespuesta: '', fechaRespuestaEnDocs: false });
   return r;
 }
 
@@ -208,126 +199,110 @@ function falta(motivos, codigo, mensaje) {
   motivos.push({ codigo, mensaje });
 }
 
-// Devuelve el recorrido (A: reclamar al operador; B: expediente para la Oficina),
-// lo que falta (incompleto), por qué no se puede (excluido) o que no hace falta (nada).
-export function evaluarCaso(respuestas, fechaHoy = hoy()) {
+// Devuelve el recorrido (A: reclamar a la compañía; B: expediente para la Oficina), lo que falta
+// (incompleto), por qué no se puede (excluido) o que no hace falta (nada). Con `definitiva` todas las
+// fechas son obligatorias: es la evaluación que se hace con los datos confirmados antes de pagar.
+export function evaluarCaso(respuestas, fechaHoy = hoy(), { definitiva = false } = {}) {
   const r = limpiarRespuestas(respuestas);
   const faltan = [];
   const excluyen = [];
   const avisos = [];
-  const fechas = {};
+  const fechas = { pendientes: [] };
+  const pendiente = (campo) => !r[campo] && r[`${campo}EnDocs`] && !definitiva;
 
-  if (!r.titular) falta(faltan, 'titular', 'Indica si el contrato está a tu nombre.');
-  if (r.titular === 'no') falta(excluyen, 'no_titular', 'Por ahora solo preparamos reclamaciones del titular del contrato. Si está a nombre de otra persona, tiene que reclamar ella; la Oficina admite representantes con un modelo de autorización firmado.');
-  if (!r.tipoTitular) falta(faltan, 'tipo_titular', 'Indica si el contrato es de un particular, un autónomo o una empresa.');
-  if (r.tipoTitular === 'empresa') falta(excluyen, 'empresa', 'Por ahora no preparamos reclamaciones de empresas. Las microempresas pueden acudir a la Oficina con una declaración responsable; las demás empresas, no.');
-  if (!nombreOperador(r)) falta(faltan, 'operador', 'Indica tu operador.');
-  if (!r.servicio) falta(faltan, 'servicio', 'Indica qué servicio diste de baja.');
+  if (!r.tipoTitular) falta(faltan, 'tipo_titular', 'Indica si el contrato es de una persona o de una empresa.');
+  if (!nombreOperador(r)) falta(faltan, 'operador', 'Indica tu compañía.');
+  if (!r.servicio) falta(faltan, 'servicio', 'Indica qué diste de baja.');
 
   if (!r.viaBaja) falta(faltan, 'via_baja', 'Indica cómo pediste la baja.');
   if (r.viaBaja === 'portabilidad') falta(excluyen, 'portabilidad', 'Si te diste de baja al cambiarte de compañía con portabilidad, quién debe asumir esas facturas depende de si autorizaste a la nueva compañía a tramitar la baja (art. 7.2 de la Orden ITC/1030/2007). Es un caso que todavía no preparamos.');
-  if (r.viaBaja === 'no_recuerdo') falta(faltan, 'via_baja_desconocida', 'Necesitamos saber cómo y cuándo pediste la baja. Búscalo en tus emails o en el área de cliente, o llama a tu operador y pide el número de referencia de la baja.');
 
-  if (!r.pruebaBaja) falta(faltan, 'prueba_baja', 'Indica qué prueba tienes de la baja.');
-  if (r.pruebaBaja === 'ninguna') falta(faltan, 'sin_prueba_baja', 'Necesitas una prueba de que pediste la baja. Llama a tu operador y pide el número de referencia de tu solicitud de baja: está obligado a dártelo (art. 26.2 del Real Decreto 899/2009). También vale el email o SMS de confirmación.');
+  if (!r.pruebaBaja) falta(faltan, 'prueba_baja', 'Indica si tienes alguna prueba de la baja.');
+  if (r.pruebaBaja === 'no') falta(faltan, 'sin_prueba_baja', 'Necesitas una prueba de que pediste la baja. Llama a tu compañía y pide el número de referencia de tu solicitud de baja: está obligada a dártelo (art. 26.2 del Real Decreto 899/2009). También vale el email, SMS o carta de confirmación.');
 
-  if (!r.fechaSolicitud) falta(faltan, 'fecha_solicitud', 'Indica la fecha en que pediste la baja.');
-  else if (r.fechaSolicitud > fechaHoy) falta(faltan, 'fecha_futura', 'La fecha de solicitud de la baja no puede ser posterior a hoy.');
-  else {
-    fechas.efectiva = fechaEfectivaBaja(r.fechaSolicitud, r.fechaDeseada);
-    if (fechas.efectiva > fechaHoy) {
-      falta(excluyen, 'baja_no_efectiva', `Tu baja debía hacerse efectiva el ${fechaLarga(fechas.efectiva)}. Hasta entonces el operador puede seguir facturando.`);
+  if (r.fechaSolicitud) {
+    if (r.fechaSolicitud > fechaHoy) falta(faltan, 'fecha_futura', 'La fecha de solicitud de la baja no puede ser posterior a hoy.');
+    else {
+      fechas.efectiva = fechaEfectivaBaja(r.fechaSolicitud, r.fechaDeseada);
+      if (fechas.efectiva > fechaHoy) falta(excluyen, 'baja_no_efectiva', `Tu baja debía hacerse efectiva el ${fechaLarga(fechas.efectiva)}. Hasta entonces la compañía puede seguir facturando.`);
     }
-  }
-  if (r.fechaDeseada && r.fechaSolicitud && r.fechaDeseada < r.fechaSolicitud) {
-    falta(faltan, 'fecha_deseada', 'La fecha en que querías la baja no puede ser anterior a la fecha en que la pediste.');
-  }
-
-  if (!r.conceptos.length) falta(faltan, 'conceptos', 'Indica qué te han cobrado después de la baja.');
-  else {
-    const reclamables = r.conceptos.filter(c => CONCEPTOS_RECLAMABLES.includes(c));
-    const fuera = r.conceptos.filter(c => CONCEPTOS_FUERA.includes(c));
-    if (!reclamables.length) {
-      falta(excluyen, 'solo_conceptos_fuera', 'Las penalizaciones por permanencia, los plazos de un móvil o dispositivo y los cargos por no devolver equipos son conflictos distintos que todavía no preparamos.');
-    } else if (fuera.length) {
-      avisos.push('Solo reclamaremos las cuotas y cargos del servicio posteriores a la baja. Las penalizaciones por permanencia, los plazos de dispositivos o los cargos por equipos quedan fuera del escrito.');
-    }
-  }
-
-  for (const s of r.situaciones) {
-    falta(excluyen, `situacion_${s}`, `${SITUACIONES_FUERA[s]}: es un caso más complejo que no preparamos. Te recomendamos acudir a una asociación de consumidores, a la oficina de consumo de tu ayuntamiento o a un abogado.`);
-  }
+    if (r.fechaDeseada && r.fechaDeseada < r.fechaSolicitud) falta(faltan, 'fecha_deseada', 'La fecha en que querías la baja no puede ser anterior a la fecha en que la pediste.');
+  } else if (pendiente('fechaSolicitud')) fechas.pendientes.push('fechaSolicitud');
+  else falta(faltan, 'fecha_solicitud', 'Indica la fecha en que pediste la baja o elige que la saquemos de tus documentos.');
 
   if (r.fechaPrimeraFactura && r.fechaSolicitud && r.fechaPrimeraFactura < r.fechaSolicitud) {
-    falta(faltan, 'fecha_factura', 'La factura que reclamas debería haberse emitido después de pedir la baja. Revisa la fecha.');
+    falta(faltan, 'fecha_factura', 'Las facturas que reclamas deberían ser posteriores a la solicitud de baja. Revisa las fechas.');
   }
 
   let recorrido = '';
-  if (!r.reclamado) falta(faltan, 'reclamado', 'Indica si ya has reclamado al operador por estos cobros.');
+  if (!r.reclamado) falta(faltan, 'reclamado', 'Indica si ya has reclamado a tu compañía por estos cobros.');
   else if (r.reclamado === 'no') {
     recorrido = 'A';
     if (r.fechaPrimeraFactura) {
       fechas.limiteReclamarOperador = sumarMeses(r.fechaPrimeraFactura, 1);
-      if (fechaHoy > fechas.limiteReclamarOperador) {
-        avisos.push(`Para poder acudir después a la Oficina de Atención al Usuario de Telecomunicaciones hay que reclamar al operador en el plazo de un mes desde que conociste el cobro (art. 4.1 de la Orden ITC/1030/2007). Ese mes terminó el ${fechaLarga(fechas.limiteReclamarOperador)}: puedes reclamar al operador igualmente, pero la Oficina podría no admitir una reclamación posterior.`);
-      } else {
-        avisos.push(`Presenta tu reclamación al operador antes del ${fechaLarga(fechas.limiteReclamarOperador)} para conservar la opción de acudir después a la Oficina de Atención al Usuario de Telecomunicaciones.`);
-      }
+      avisos.push(fechaHoy > fechas.limiteReclamarOperador
+        ? `Para poder acudir después a la Oficina de Atención al Usuario de Telecomunicaciones hay que reclamar a la compañía en el plazo de un mes desde que conociste el cobro (art. 4.1 de la Orden ITC/1030/2007). Ese mes terminó el ${fechaLarga(fechas.limiteReclamarOperador)}: puedes reclamar igualmente, pero la Oficina podría no admitir una reclamación posterior.`
+        : `Presenta tu reclamación a la compañía antes del ${fechaLarga(fechas.limiteReclamarOperador)} para conservar la opción de acudir después a la Oficina de Atención al Usuario de Telecomunicaciones.`);
     }
   } else {
-    if (!r.fechaReclamacion) falta(faltan, 'fecha_reclamacion', 'Indica la fecha en que reclamaste al operador.');
-    else if (r.fechaReclamacion > fechaHoy) falta(faltan, 'fecha_reclamacion_futura', 'La fecha de tu reclamación no puede ser posterior a hoy.');
-    else if (r.fechaSolicitud && r.fechaReclamacion < r.fechaSolicitud) falta(faltan, 'fecha_reclamacion_anterior', 'La reclamación por los cobros debería ser posterior a la solicitud de baja. Revisa las fechas.');
-    if (!r.pruebaReclamacion) falta(faltan, 'prueba_reclamacion', 'Indica qué prueba tienes de tu reclamación.');
-    if (!r.respuesta) falta(faltan, 'respuesta', 'Indica si el operador te ha respondido.');
-
+    if (!r.respuesta) falta(faltan, 'respuesta', 'Indica si tu compañía te ha respondido.');
     if (r.respuesta === 'solucionado') {
-      return resultado('nada', r, { faltan: [], excluyen: [], avisos: ['Si el operador ya te ha devuelto lo cobrado, no necesitas reclamar. Guarda la respuesta por si vuelven a facturarte.'], fechas });
+      return resultado('nada', r, { faltan: [], excluyen: [], avisos: ['Si la compañía ya te ha devuelto lo cobrado, no necesitas reclamar. Guarda la respuesta por si vuelven a facturarte.'], fechas });
     }
 
-    if (r.pruebaReclamacion === 'ninguna') {
-      recorrido = 'A';
-      avisos.push('Como no tienes prueba de tu reclamación anterior, la Oficina no podría comprobarla. Lo adecuado es presentar ahora una reclamación por escrito y pedir su número de referencia.');
-    } else if (r.fechaReclamacion && r.fechaReclamacion <= fechaHoy && r.respuesta) {
-      if (r.respuesta === 'sin_respuesta') {
-        fechas.finPlazoRespuesta = sumarMeses(r.fechaReclamacion, 1);
-        if (fechaHoy <= fechas.finPlazoRespuesta) {
-          falta(faltan, 'esperar_respuesta', `El operador tiene un mes para responderte: hasta el ${fechaLarga(fechas.finPlazoRespuesta)}. Si para entonces no ha contestado, vuelve a partir del día siguiente para preparar la reclamación ante la Oficina.`);
-        } else {
-          fechas.inicioPlazoOaut = fechas.finPlazoRespuesta;
-        }
-      } else if (r.respuesta === 'insatisfactoria') {
-        if (!r.fechaRespuesta) falta(faltan, 'fecha_respuesta', 'Indica la fecha de la respuesta del operador.');
-        else if (r.fechaRespuesta < r.fechaReclamacion || r.fechaRespuesta > fechaHoy) falta(faltan, 'fecha_respuesta_incoherente', 'La fecha de la respuesta debe estar entre tu reclamación y hoy.');
+    if (r.fechaReclamacion) {
+      if (r.fechaReclamacion > fechaHoy) falta(faltan, 'fecha_reclamacion_futura', 'La fecha de tu reclamación no puede ser posterior a hoy.');
+      else if (r.fechaSolicitud && r.fechaReclamacion < r.fechaSolicitud) falta(faltan, 'fecha_reclamacion_anterior', 'La reclamación por los cobros debería ser posterior a la solicitud de baja. Revisa las fechas.');
+    } else if (pendiente('fechaReclamacion')) fechas.pendientes.push('fechaReclamacion');
+    else falta(faltan, 'fecha_reclamacion', 'Indica la fecha en que reclamaste o elige que la saquemos de tus documentos.');
+
+    if (r.respuesta === 'sin_respuesta' && r.fechaReclamacion && r.fechaReclamacion <= fechaHoy) {
+      fechas.finPlazoRespuesta = sumarMeses(r.fechaReclamacion, 1);
+      if (fechaHoy <= fechas.finPlazoRespuesta) {
+        falta(faltan, 'esperar_respuesta', `Tu compañía tiene un mes para responderte: hasta el ${fechaLarga(fechas.finPlazoRespuesta)}. Si para entonces no ha contestado, vuelve a partir del día siguiente para preparar la reclamación ante la Oficina.`);
+      } else fechas.inicioPlazoOaut = fechas.finPlazoRespuesta;
+    } else if (r.respuesta === 'insatisfactoria') {
+      if (r.fechaRespuesta) {
+        if (r.fechaReclamacion && r.fechaRespuesta < r.fechaReclamacion) falta(faltan, 'fecha_respuesta_incoherente', 'La fecha de la respuesta debe ser posterior a tu reclamación.');
+        else if (r.fechaRespuesta > fechaHoy) falta(faltan, 'fecha_respuesta_futura', 'La fecha de la respuesta no puede ser posterior a hoy.');
         else fechas.inicioPlazoOaut = r.fechaRespuesta;
-      }
-      if (fechas.inicioPlazoOaut) {
-        fechas.limiteOaut = sumarMeses(fechas.inicioPlazoOaut, 3);
-        if (fechaHoy > fechas.limiteOaut) {
-          falta(excluyen, 'plazo_oaut_vencido', `El plazo de tres meses para acudir a la Oficina de Atención al Usuario de Telecomunicaciones terminó el ${fechaLarga(fechas.limiteOaut)} (art. 4.3 de la Orden ITC/1030/2007). Aún puedes acudir a la Junta Arbitral de Consumo de tu comunidad autónoma o a los servicios de consumo, que son gratuitos.`);
-        } else {
-          recorrido = 'B';
-          fechas.diasRestantesOaut = diasEntre(fechaHoy, fechas.limiteOaut);
-          avisos.push(`Tienes hasta el ${fechaLarga(fechas.limiteOaut)} para presentar la reclamación ante la Oficina (quedan ${fechas.diasRestantesOaut} días).`);
-          if (fechas.diasRestantesOaut <= 10) avisos.push('Queda poco plazo: preséntala en cuanto recibas el expediente.');
-          if (r.fechaPrimeraFactura && r.fechaReclamacion > sumarMeses(r.fechaPrimeraFactura, 1)) {
-            avisos.push('Reclamaste al operador más de un mes después de recibir la factura. La Oficina exige reclamar en el plazo de un mes desde que conociste el hecho (art. 4.1 de la Orden ITC/1030/2007) y podría no admitir tu reclamación.');
-          }
+      } else if (pendiente('fechaRespuesta')) fechas.pendientes.push('fechaRespuesta');
+      else falta(faltan, 'fecha_respuesta', 'Indica la fecha de la respuesta o elige que la saquemos de tus documentos.');
+    }
+
+    if (fechas.inicioPlazoOaut) {
+      fechas.limiteOaut = sumarMeses(fechas.inicioPlazoOaut, 3);
+      if (fechaHoy > fechas.limiteOaut) {
+        falta(excluyen, 'plazo_oaut_vencido', `El plazo de tres meses para acudir a la Oficina de Atención al Usuario de Telecomunicaciones terminó el ${fechaLarga(fechas.limiteOaut)} (art. 4.3 de la Orden ITC/1030/2007). Aún puedes acudir gratis a la Junta Arbitral de Consumo de tu comunidad autónoma o a los servicios de consumo.`);
+      } else {
+        recorrido = 'B';
+        fechas.diasRestantesOaut = diasEntre(fechaHoy, fechas.limiteOaut);
+        avisos.push(`Tienes hasta el ${fechaLarga(fechas.limiteOaut)} para presentar la reclamación ante la Oficina (quedan ${fechas.diasRestantesOaut} días).`);
+        if (fechas.diasRestantesOaut <= 10) avisos.push('Queda poco plazo: preséntala en cuanto recibas el expediente.');
+        if (r.fechaPrimeraFactura && r.fechaReclamacion > sumarMeses(r.fechaPrimeraFactura, 1)) {
+          avisos.push('Reclamaste a la compañía más de un mes después de recibir la factura. La Oficina exige reclamar en el plazo de un mes desde que conociste el hecho (art. 4.1 de la Orden ITC/1030/2007) y podría no admitir tu reclamación.');
         }
       }
+    } else if (fechas.pendientes.some(c => c === 'fechaReclamacion' || c === 'fechaRespuesta') && r.respuesta) {
+      // Recorrido provisional: los plazos se comprueban con las fechas de los documentos antes de pagar.
+      recorrido = 'B';
+      avisos.push('Comprobaremos con tus documentos que estás dentro de los plazos para acudir a la Oficina antes de que pagues nada.');
+    }
+    if (recorrido === 'B' && r.tipoTitular === 'empresa') {
+      avisos.push('La Oficina solo admite reclamaciones de empresas que sean microempresas (menos de 10 trabajadores), que deben acompañar la declaración responsable de microempresa (modelo oficial de la Oficina).');
     }
   }
 
-  avisos.push('Que una factura llegue después de la baja no significa que sea indebida: en el siguiente paso comprobaremos qué periodo cubre cada factura.');
+  if (fechas.pendientes.length) avisos.push('Las fechas que no recuerdes las sacaremos de tus documentos y podrás revisarlas.');
 
   if (excluyen.length) return resultado('excluido', r, { faltan, excluyen, avisos, fechas });
   if (faltan.length || !recorrido) return resultado('incompleto', r, { faltan, excluyen, avisos, fechas });
-  return resultado(recorrido, r, { faltan, excluyen, avisos, fechas });
+  return resultado(recorrido, r, { faltan, excluyen, avisos, fechas, provisional: fechas.pendientes.length > 0 });
 }
 
-function resultado(estado, respuestas, { faltan, excluyen, avisos, fechas }) {
+function resultado(estado, respuestas, { faltan, excluyen, avisos, fechas, provisional = false }) {
   const producto = estado === 'A' ? 'operador' : estado === 'B' ? 'oaut' : null;
-  return { estado, producto, faltan, excluyen, avisos, fechas, respuestas, versionReglas: VERSION_REGLAS };
+  return { estado, producto, provisional, faltan, excluyen, avisos, fechas, respuestas, versionReglas: VERSION_REGLAS };
 }
 
 // ——— Importes (paso 2) ———

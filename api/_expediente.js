@@ -30,6 +30,16 @@ export const SERVICIOS = {
   paquete: 'paquete de servicios (fibra, fijo y/o móvil)'
 };
 
+// Traduce el canal que aparece en un documento ("llamada", "área de clientes"…) a las opciones del formulario.
+function canalDesdeTexto(texto) {
+  const t = String(texto || '').toLowerCase();
+  if (/tel[eé]f|llamad|call/.test(t)) return 'telefono';
+  if (/web|app|[aá]rea|online|internet/.test(t)) return 'web';
+  if (/mail|correo|carta|escrito|burofax/.test(t)) return 'escrito';
+  if (/tienda/.test(t)) return 'tienda';
+  return '';
+}
+
 function normalizarNombre(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
@@ -39,7 +49,7 @@ function normalizarNombre(s) {
 export function construirPropuesta(exp) {
   const r = exp.respuestas;
   const alertas = [];
-  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [] };
+  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [], fechaSolicitud: [], fechaReclamacion: [], fechaRespuesta: [], canalBaja: [] };
   const facturas = [];
   const fuente = (doc, pagina) => ({ documento: doc.id, archivo: doc.nombre, pagina: pagina || 1 });
 
@@ -57,20 +67,25 @@ export function construirPropuesta(exp) {
     const operadorElegido = normalizarNombre(nombreOperador(r));
     const operadorDoc = normalizarNombre(`${x.operador} ${x.razonSocialOperador}`);
     if (operadorElegido && operadorDoc && !operadorDoc.includes(operadorElegido) && !operadorElegido.includes(normalizarNombre(x.operador))) {
-      alertas.push(`"${doc.nombre}" parece de ${x.operador || x.razonSocialOperador}, pero indicaste ${nombreOperador(r)}. Comprueba que el documento es de tu operador.`);
+      alertas.push(`"${doc.nombre}" parece de ${x.operador || x.razonSocialOperador}, pero indicaste ${nombreOperador(r)}. Comprueba que el documento es de tu compañía.`);
     }
 
     if (x.baja.referencia) candidatos.bajaRef.push({ valor: x.baja.referencia, fuente: fuente(doc, x.baja.pagina) });
+    if (x.baja.fechaSolicitud) candidatos.fechaSolicitud.push({ valor: x.baja.fechaSolicitud, fuente: fuente(doc, x.baja.pagina) });
     if (x.baja.fechaSolicitud && r.fechaSolicitud && x.baja.fechaSolicitud !== r.fechaSolicitud) {
-      alertas.push(`"${doc.nombre}" (pág. ${x.baja.pagina || 1}) indica que la baja se pidió el ${fechaLarga(x.baja.fechaSolicitud)}, pero indicaste el ${fechaLarga(r.fechaSolicitud)}. Si la fecha correcta es la del documento, vuelve al paso 1 y corrígela.`);
+      alertas.push(`"${doc.nombre}" (pág. ${x.baja.pagina || 1}) indica que la baja se pidió el ${fechaLarga(x.baja.fechaSolicitud)}, pero indicaste el ${fechaLarga(r.fechaSolicitud)}. Revisa la fecha abajo.`);
     }
+    const canal = canalDesdeTexto(x.baja.canal);
+    if (canal) candidatos.canalBaja.push({ valor: canal, fuente: fuente(doc, x.baja.pagina) });
     if (x.reclamacion.referencia) candidatos.reclamacionRef.push({ valor: x.reclamacion.referencia, fuente: fuente(doc, x.reclamacion.pagina) });
+    if (x.reclamacion.fecha && doc.tipoDoc === 'reclamacion') candidatos.fechaReclamacion.push({ valor: x.reclamacion.fecha, fuente: fuente(doc, x.reclamacion.pagina) });
     if (x.reclamacion.fecha && r.fechaReclamacion && x.reclamacion.fecha !== r.fechaReclamacion && doc.tipoDoc === 'reclamacion') {
-      alertas.push(`"${doc.nombre}" indica que reclamaste el ${fechaLarga(x.reclamacion.fecha)}, pero indicaste el ${fechaLarga(r.fechaReclamacion)}. Revisa la fecha en el paso 1.`);
+      alertas.push(`"${doc.nombre}" indica que reclamaste el ${fechaLarga(x.reclamacion.fecha)}, pero indicaste el ${fechaLarga(r.fechaReclamacion)}. Revisa la fecha abajo.`);
     }
     if (x.respuesta.resumen) candidatos.respuestaResumen.push({ valor: x.respuesta.resumen, fuente: fuente(doc, x.respuesta.pagina) });
+    if (x.respuesta.fecha && doc.tipoDoc === 'respuesta_operador') candidatos.fechaRespuesta.push({ valor: x.respuesta.fecha, fuente: fuente(doc, x.respuesta.pagina) });
     if (x.respuesta.fecha && r.fechaRespuesta && x.respuesta.fecha !== r.fechaRespuesta && doc.tipoDoc === 'respuesta_operador') {
-      alertas.push(`"${doc.nombre}" tiene fecha de respuesta ${fechaLarga(x.respuesta.fecha)}, pero indicaste el ${fechaLarga(r.fechaRespuesta)}. Revisa la fecha en el paso 1.`);
+      alertas.push(`"${doc.nombre}" tiene fecha de respuesta ${fechaLarga(x.respuesta.fecha)}, pero indicaste el ${fechaLarga(r.fechaRespuesta)}. Revisa la fecha abajo.`);
     }
 
     if (doc.tipoDoc === 'factura' || x.tipoDocumento === 'factura') {
@@ -103,8 +118,8 @@ export function construirPropuesta(exp) {
 
   const nombre = elegir(candidatos.nombre);
   const documento = elegir(candidatos.documento);
-  if (nombre.alternativas?.length) alertas.push(`Los documentos muestran titulares distintos (${[nombre.valor, ...nombre.alternativas].join(' / ')}). Solo puedes reclamar como titular del contrato.`);
-  if (documento.alternativas?.length) alertas.push('Los documentos muestran DNI o NIE distintos. Revisa el tuyo.');
+  if (nombre.alternativas?.length) alertas.push(`Los documentos muestran titulares distintos (${[nombre.valor, ...nombre.alternativas].join(' / ')}). Solo puede reclamar el titular del contrato.`);
+  if (documento.alternativas?.length) alertas.push('Los documentos muestran DNI, NIE o CIF distintos. Revisa el del titular.');
 
   return {
     titular: { nombre, documento },
@@ -114,6 +129,12 @@ export function construirPropuesta(exp) {
     bajaReferencia: elegir(candidatos.bajaRef),
     reclamacionReferencia: elegir(candidatos.reclamacionRef),
     respuestaResumen: elegir(candidatos.respuestaResumen),
+    canalBaja: elegir(candidatos.canalBaja),
+    fechas: {
+      solicitud: elegir(candidatos.fechaSolicitud),
+      reclamacion: elegir(candidatos.fechaReclamacion),
+      respuesta: elegir(candidatos.fechaRespuesta)
+    },
     facturas,
     alertas: [...new Set(alertas)]
   };
@@ -132,6 +153,19 @@ export function documentoValido(doc) {
   return false;
 }
 
+// CIF de sociedades: letra, siete números y dígito o letra de control.
+export function cifValido(cif) {
+  const m = String(cif || '').toUpperCase().replace(/[^0-9A-Z]/g, '').match(/^([ABCDEFGHJNPQRSUVW])(\d{7})([0-9A-J])$/);
+  if (!m) return false;
+  let suma = 0;
+  m[2].split('').map(Number).forEach((n, i) => {
+    if (i % 2) suma += n;
+    else { const doble = n * 2; suma += Math.floor(doble / 10) + (doble % 10); }
+  });
+  const control = (10 - (suma % 10)) % 10;
+  return m[3] === String(control) || m[3] === 'JABCDEFGHI'[control];
+}
+
 function txt(v, max) {
   return typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, max) : '';
 }
@@ -142,13 +176,17 @@ function num(v) {
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
 }
 
+const fecha = (v) => (esFecha(v) ? v : '');
+
 export function limpiarDatos(entrada = {}, exp) {
   const t = entrada.titular || {};
+  const f = entrada.fechas || {};
   const idsDocs = new Set(exp.documentos.map(d => d.id));
   return {
     titular: {
       nombre: txt(t.nombre, 100),
       documento: txt(t.documento, 12).toUpperCase().replace(/[^0-9A-Z]/g, ''),
+      firmante: txt(t.firmante, 100),
       email: txt(t.email, 120).toLowerCase(),
       telefono: txt(t.telefono, 20),
       domicilio: txt(t.domicilio, 140),
@@ -156,6 +194,7 @@ export function limpiarDatos(entrada = {}, exp) {
       localidad: txt(t.localidad, 60),
       provincia: txt(t.provincia, 40)
     },
+    fechas: { solicitud: fecha(f.solicitud), deseada: fecha(f.deseada), reclamacion: fecha(f.reclamacion), respuesta: fecha(f.respuesta) },
     numeroCliente: txt(entrada.numeroCliente, 40),
     lineas: txt(entrada.lineas, 120),
     razonSocialOperador: txt(entrada.razonSocialOperador, 100),
@@ -164,30 +203,59 @@ export function limpiarDatos(entrada = {}, exp) {
     canalReclamacion: Object.keys(CANALES).includes(entrada.canalReclamacion) ? entrada.canalReclamacion : '',
     reclamacionReferencia: txt(entrada.reclamacionReferencia, 40),
     respuestaResumen: txt(entrada.respuestaResumen, 300),
-    facturas: (Array.isArray(entrada.facturas) ? entrada.facturas : []).slice(0, 12).map(f => ({
-      documento: idsDocs.has(f.documento) ? f.documento : '',
-      numero: txt(f.numero, 40),
-      fechaEmision: esFecha(f.fechaEmision) ? f.fechaEmision : '',
-      periodoDesde: esFecha(f.periodoDesde) ? f.periodoDesde : '',
-      periodoHasta: esFecha(f.periodoHasta) ? f.periodoHasta : '',
-      importeTotal: num(f.importeTotal),
-      importeServicio: num(f.importeServicio)
+    facturas: (Array.isArray(entrada.facturas) ? entrada.facturas : []).slice(0, 12).map(fa => ({
+      documento: idsDocs.has(fa.documento) ? fa.documento : '',
+      numero: txt(fa.numero, 40),
+      fechaEmision: fecha(fa.fechaEmision),
+      periodoDesde: fecha(fa.periodoDesde),
+      periodoHasta: fecha(fa.periodoHasta),
+      importeTotal: num(fa.importeTotal),
+      importeServicio: num(fa.importeServicio)
     }))
   };
 }
 
-// Devuelve { errores, avisos, calculo }. Si hay errores no se puede pagar.
+// Las fechas confirmadas en el paso 2 sustituyen a las del paso 1 y la primera factura sale de los datos.
+export function respuestasDefinitivas(respuestas, datos) {
+  const emisiones = datos.facturas.map(f => f.fechaEmision).filter(Boolean).sort();
+  return {
+    ...respuestas,
+    fechaSolicitud: datos.fechas.solicitud || respuestas.fechaSolicitud,
+    fechaDeseada: datos.fechas.deseada,
+    fechaReclamacion: datos.fechas.reclamacion || respuestas.fechaReclamacion,
+    fechaRespuesta: datos.fechas.respuesta || respuestas.fechaRespuesta,
+    fechaPrimeraFactura: emisiones[0] || ''
+  };
+}
+
+// Devuelve { errores, avisos, calculo, evaluacion, respuestas }. Si hay errores no se puede pagar.
 export function validarDatos(datos, exp, fechaHoy = hoy()) {
   const errores = [];
   const avisos = [];
-  const r = exp.respuestas;
-  const evaluacion = evaluarCaso(r, fechaHoy);
+  const r = respuestasDefinitivas(exp.respuestas, datos);
+  const evaluacion = evaluarCaso(r, fechaHoy, { definitiva: true });
   const esB = evaluacion.estado === 'B';
+  const esEmpresa = r.tipoTitular === 'empresa';
   const t = datos.titular;
 
-  if (!['A', 'B'].includes(evaluacion.estado)) errores.push('Tu caso ya no encaja con las respuestas actuales. Revisa el paso 1.');
-  if (t.nombre.split(' ').filter(Boolean).length < 2) errores.push('Escribe tu nombre y apellidos como titular del contrato.');
-  if (!documentoValido(t.documento)) errores.push('El DNI o NIE no es válido. Revísalo (8 números y letra, o X/Y/Z, 7 números y letra).');
+  if (!r.fechaSolicitud) errores.push('Indica la fecha en que pediste la baja (si no aparece en tus documentos, búscala en tus emails o SMS).');
+  if (r.reclamado === 'si' && !r.fechaReclamacion) errores.push('Indica la fecha en que reclamaste a la compañía.');
+  if (r.respuesta === 'insatisfactoria' && !r.fechaRespuesta) errores.push('Indica la fecha en que te respondió la compañía.');
+  if (!['A', 'B'].includes(evaluacion.estado)) {
+    [...evaluacion.excluyen, ...evaluacion.faltan].filter(m => !/^fecha_(solicitud|reclamacion|respuesta)$/.test(m.codigo)).forEach(m => errores.push(m.mensaje));
+    if (!errores.length) errores.push('Con estos datos tu caso no encaja. Revisa las fechas o vuelve al paso 1.');
+  } else if (evaluacion.producto !== exp.evaluacion?.producto) {
+    errores.push('Con las fechas de tus documentos cambia el tipo de reclamación que corresponde. Vuelve al paso 1 y revisa tus respuestas.');
+  }
+
+  if (esEmpresa) {
+    if (t.nombre.length < 3) errores.push('Escribe la razón social de la empresa titular del contrato.');
+    if (!cifValido(t.documento)) errores.push('El CIF no es válido. Revísalo (letra, 7 números y un número o letra de control).');
+    if (t.firmante.split(' ').filter(Boolean).length < 2) errores.push('Escribe el nombre y apellidos de quien firma en nombre de la empresa.');
+  } else {
+    if (t.nombre.split(' ').filter(Boolean).length < 2) errores.push('Escribe tu nombre y apellidos como titular del contrato.');
+    if (!documentoValido(t.documento)) errores.push('El DNI o NIE no es válido. Revísalo (8 números y letra, o X/Y/Z, 7 números y letra).');
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t.email)) errores.push('Escribe un correo electrónico válido: ahí te enviaremos el enlace de descarga.');
   if (t.telefono && !/^[+\d][\d\s]{8,17}$/.test(t.telefono)) errores.push('El teléfono de contacto no parece válido.');
   if (esB) {
@@ -201,27 +269,25 @@ export function validarDatos(datos, exp, fechaHoy = hoy()) {
   const tipos = new Set(exp.documentos.map(d => d.tipoDoc));
   if (!exp.documentos.length) errores.push('Añade al menos una factura posterior a la baja.');
   if (!tipos.has('factura')) errores.push('Falta la factura posterior a la baja: súbela y márcala como "Factura posterior a la baja".');
-  if (!tipos.has('prueba_baja')) {
-    if (r.pruebaBaja === 'referencia') {
-      if (!datos.bajaReferencia) errores.push('Escribe el número de referencia de tu solicitud de baja o sube el documento que la acredita.');
-    } else errores.push('Falta la prueba de la baja: sube el email, SMS, captura o justificante y márcalo como "Prueba de la solicitud de baja".');
+  if (!tipos.has('prueba_baja') && !datos.bajaReferencia) {
+    errores.push('Falta la prueba de la baja: sube el email, SMS, carta o captura (marcado como "Prueba de la solicitud de baja") o escribe su número de referencia.');
   }
   if (esB) {
-    if (!datos.canalReclamacion) errores.push('Indica por dónde reclamaste al operador.');
-    if (!tipos.has('reclamacion') && !datos.reclamacionReferencia) errores.push('Para la Oficina hace falta acreditar tu reclamación previa: sube una copia o escribe su número de referencia.');
-    if (r.respuesta === 'insatisfactoria' && !tipos.has('respuesta_operador')) avisos.push('Te recomendamos añadir la respuesta del operador: la Oficina pide copia de los documentos que respaldan tu reclamación.');
-    if (r.respuesta === 'insatisfactoria' && !datos.respuestaResumen) errores.push('Resume en una frase qué te respondió el operador.');
+    if (!datos.canalReclamacion) errores.push('Indica por dónde reclamaste a la compañía.');
+    if (!tipos.has('reclamacion') && !datos.reclamacionReferencia) errores.push('Para la Oficina hace falta acreditar tu reclamación anterior: sube una copia o escribe su número de referencia. Si no tienes ninguna prueba, vuelve al paso 1 y marca que no has reclamado: prepararemos primero una reclamación por escrito.');
+    if (r.respuesta === 'insatisfactoria' && !tipos.has('respuesta_operador')) avisos.push('Te recomendamos añadir la respuesta de la compañía: la Oficina pide copia de los documentos que respaldan tu reclamación.');
+    if (r.respuesta === 'insatisfactoria' && !datos.respuestaResumen) errores.push('Resume en una frase qué te respondió la compañía.');
   }
 
   if (!datos.facturas.length) errores.push('Confirma los datos de al menos una factura.');
   const usados = new Set();
-  datos.facturas.forEach((f, i) => {
-    const etiqueta = f.numero ? `Factura ${f.numero}` : `Factura ${i + 1}`;
-    if (!f.documento || exp.documentos.find(d => d.id === f.documento)?.tipoDoc !== 'factura') errores.push(`${etiqueta}: indica en qué archivo está.`);
-    const clave = `${f.documento}|${f.numero}|${f.periodoDesde}`;
+  datos.facturas.forEach((fa, i) => {
+    const etiqueta = fa.numero ? `Factura ${fa.numero}` : `Factura ${i + 1}`;
+    if (!fa.documento || exp.documentos.find(d => d.id === fa.documento)?.tipoDoc !== 'factura') errores.push(`${etiqueta}: indica en qué archivo está.`);
+    const clave = `${fa.documento}|${fa.numero}|${fa.periodoDesde}`;
     if (usados.has(clave)) errores.push(`${etiqueta}: está repetida.`);
     usados.add(clave);
-    validarFactura(f, fechaHoy).forEach(e => errores.push(`${etiqueta}: ${e}.`));
+    validarFactura(fa, fechaHoy).forEach(e => errores.push(`${etiqueta}: ${e}${e.startsWith('falta el importe') ? ' (si solo cobra permanencia, un dispositivo o equipos, no podemos reclamarla)' : ''}.`));
   });
 
   let calculo = null;
@@ -233,7 +299,8 @@ export function validarDatos(datos, exp, fechaHoy = hoy()) {
     calculo.lineas.filter(l => l.tipo === 'fuera').forEach(l => avisos.push(`La factura ${l.numero || ''} (periodo ${fechaCorta(l.periodoDesde)} a ${fechaCorta(l.periodoHasta)}) es anterior a la fecha efectiva de la baja y no se reclamará.`.replace('  ', ' ')));
     calculo.lineas.filter(l => l.tipo === 'parcial').forEach(l => avisos.push(`De la factura ${l.numero || ''} solo se reclaman ${l.diasReclamables} de ${l.totalDias} días (la parte posterior a la baja): ${euros(l.reclamado)}.`.replace('  ', ' ')));
   }
-  return { errores: [...new Set(errores)], avisos, calculo, evaluacion };
+  avisos.push(...evaluacion.avisos.filter(a => !/sacaremos de tus documentos|Comprobaremos con tus documentos/.test(a)));
+  return { errores: [...new Set(errores)], avisos: [...new Set(avisos)], calculo, evaluacion, respuestas: evaluacion.respuestas };
 }
 
 // Vista del expediente que se envía al navegador. Nunca incluye el escrito ni los documentos generados.

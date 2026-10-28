@@ -97,15 +97,17 @@ export default async function handler(req, res) {
         if (exp.estado !== 'borrador') return enviar(res, 409, { error: 'Este expediente ya está pagado y no se puede modificar.' });
         await anularPagoPendiente(exp);
         const datos = limpiarDatos(cuerpo.datos, exp);
-        const { errores, avisos, calculo, evaluacion } = validarDatos(datos, exp);
+        const { errores, avisos, calculo, evaluacion, respuestas } = validarDatos(datos, exp);
         exp.datos = datos;
-        exp.evaluacion = evaluacionPublica(evaluacion);
         if (errores.length) {
           delete exp.resumen;
           delete exp.calculo;
           await guardarExpediente(exp);
           return enviar(res, 422, { errores, avisos, vista: vistaPublica(exp) });
         }
+        // Con los datos confirmados, las fechas leídas de los documentos pasan a ser las del caso.
+        exp.respuestas = respuestas;
+        exp.evaluacion = evaluacionPublica(evaluacion);
         exp.calculo = calculo;
         exp.resumen = { ...construirResumen(exp, datos, calculo), avisos };
         await guardarExpediente(exp);

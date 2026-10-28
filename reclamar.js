@@ -1,6 +1,6 @@
 // Formulario en tres pasos. Todo el texto que viene del servidor o de los documentos
 // se pinta con textContent: nunca como HTML.
-import { PRODUCTOS, LIMITES, formatearPrecio, formatearMegas } from './config-publica.js';
+import { LIMITES, formatearPrecio, formatearMegas } from './config-publica.js';
 
 const OPERADORES = ['Movistar', 'Vodafone', 'Orange', 'Jazztel', 'Yoigo', 'MásMóvil', 'Simyo', 'Lowi', 'O2', 'Pepephone', 'Digi', 'Finetwork', 'Euskaltel', 'R', 'Telecable', 'Avatel', 'Adamo', 'Otro'];
 const TIPOS_DOC = {
@@ -107,31 +107,39 @@ document.addEventListener('click', (e) => {
 // ——— Paso 1: comprobar el caso ———
 
 const form1 = $('#form-caso');
-const ORDEN = ['titular', 'tipoTitular', 'operador', 'servicio', 'viaBaja', 'pruebaBaja', 'fechaSolicitud', 'conceptos', 'fechaPrimeraFactura', 'reclamado', 'situaciones'];
-const DECISIVAS = { titular: 'no', tipoTitular: 'empresa', viaBaja: 'portabilidad' };
+const ORDEN = ['tipoTitular', 'operador', 'servicio', 'viaBaja', 'pruebaBaja', 'fechaSolicitud', 'reclamado'];
+// Respuestas que ya deciden el caso: no tiene sentido seguir preguntando.
+const DECISIVAS = { viaBaja: 'portabilidad', pruebaBaja: 'no' };
+const EN_DOCS = ['fechaSolicitud', 'fechaReclamacion', 'fechaRespuesta'];
 
 $('#operador').append(...OPERADORES.map(o => el('option', { value: o, texto: o === 'Otro' ? 'Otra compañía' : o })));
 
 function leerRespuestas() {
   const f = new FormData(form1);
   const r = {};
-  for (const campo of ['titular', 'tipoTitular', 'operador', 'operadorOtro', 'servicio', 'viaBaja', 'pruebaBaja', 'fechaSolicitud', 'fechaPrimeraFactura', 'reclamado', 'fechaReclamacion', 'pruebaReclamacion', 'respuesta', 'fechaRespuesta']) {
+  for (const campo of ['tipoTitular', 'operador', 'operadorOtro', 'servicio', 'viaBaja', 'pruebaBaja', 'fechaSolicitud', 'reclamado', 'respuesta', 'fechaReclamacion', 'fechaRespuesta']) {
     r[campo] = (f.get(campo) || '').toString().trim();
   }
-  r.fechaDeseada = $('#pidioFecha').checked ? $('#fechaDeseada').value : '';
-  r.conceptos = f.getAll('conceptos');
-  r.situaciones = f.getAll('situaciones');
-  if (r.reclamado !== 'si') Object.assign(r, { fechaReclamacion: '', pruebaReclamacion: '', respuesta: '', fechaRespuesta: '' });
-  if (r.respuesta !== 'insatisfactoria') r.fechaRespuesta = '';
+  for (const campo of EN_DOCS) {
+    r[`${campo}EnDocs`] = $(`#${campo}EnDocs`).checked;
+    if (r[`${campo}EnDocs`]) r[campo] = '';
+  }
+  if (r.reclamado !== 'si') Object.assign(r, { respuesta: '', fechaReclamacion: '', fechaRespuesta: '', fechaReclamacionEnDocs: false, fechaRespuestaEnDocs: false });
+  if (r.respuesta !== 'insatisfactoria') Object.assign(r, { fechaRespuesta: '', fechaRespuestaEnDocs: false });
   return r;
 }
 
+const fechaContestada = (r, campo) => Boolean(r[campo] || r[`${campo}EnDocs`]);
+
 function respondida(clave, r) {
-  if (clave === 'conceptos') return r.conceptos.length > 0;
-  if (clave === 'situaciones') return true;
-  if (clave === 'fechaPrimeraFactura') return true;
   if (clave === 'operador') return r.operador && (r.operador !== 'Otro' || r.operadorOtro);
-  if (clave === 'reclamado') return r.reclamado === 'no' || (r.reclamado === 'si' && r.fechaReclamacion && r.pruebaReclamacion && r.respuesta && (r.respuesta !== 'insatisfactoria' || r.fechaRespuesta));
+  if (clave === 'fechaSolicitud') return fechaContestada(r, 'fechaSolicitud');
+  if (clave === 'reclamado') {
+    if (r.reclamado === 'no') return true;
+    if (r.reclamado !== 'si' || !r.respuesta) return false;
+    if (r.respuesta === 'solucionado') return true;
+    return fechaContestada(r, 'fechaReclamacion') && (r.respuesta !== 'insatisfactoria' || fechaContestada(r, 'fechaRespuesta'));
+  }
   return Boolean(r[clave]);
 }
 
@@ -146,10 +154,11 @@ function actualizarVisibilidad() {
     if (!respondida(clave, r)) visible = false;
   }
   $('#campo-operador-otro').classList.toggle('pregunta-oculta', r.operador !== 'Otro');
-  $('#campo-fecha-deseada').classList.toggle('pregunta-oculta', !$('#pidioFecha').checked);
   const bloqueReclamado = form1.querySelector('[data-q="reclamado"]');
   $('#bloque-previa').classList.toggle('pregunta-oculta', r.reclamado !== 'si' || bloqueReclamado.classList.contains('pregunta-oculta'));
+  $('#campo-fecha-reclamacion').classList.toggle('pregunta-oculta', !r.respuesta || r.respuesta === 'solucionado');
   $('#campo-fecha-respuesta').classList.toggle('pregunta-oculta', r.respuesta !== 'insatisfactoria');
+  for (const campo of EN_DOCS) $(`#${campo}`).disabled = $(`#${campo}EnDocs`).checked;
   $('#acciones-paso-1').classList.toggle('pregunta-oculta', !(decisiva || visible));
   guardarAlmacen(ALMACEN.respuestas, r);
   if (!leerAlmacen(ALMACEN.inicio)) {
@@ -161,25 +170,21 @@ function actualizarVisibilidad() {
 function rellenarRespuestas(r) {
   if (!r) return;
   for (const [campo, valor] of Object.entries(r)) {
-    if (Array.isArray(valor)) {
-      form1.querySelectorAll(`input[name="${campo}"]`).forEach(i => { i.checked = valor.includes(i.value); });
-    } else {
-      const radios = form1.querySelectorAll(`input[type="radio"][name="${campo}"]`);
-      if (radios.length) radios.forEach(i => { i.checked = i.value === valor; });
-      else if (form1.elements[campo]) form1.elements[campo].value = valor || '';
+    if (typeof valor === 'boolean') {
+      const casilla = document.getElementById(campo);
+      if (casilla) casilla.checked = valor;
+      continue;
     }
+    const radios = form1.querySelectorAll(`input[type="radio"][name="${campo}"]`);
+    if (radios.length) radios.forEach(i => { i.checked = i.value === valor; });
+    else if (form1.elements[campo]) form1.elements[campo].value = valor || '';
   }
-  if (r.fechaDeseada) { $('#pidioFecha').checked = true; $('#fechaDeseada').value = r.fechaDeseada; }
-  $('#ninguna-situacion').checked = Array.isArray(r.situaciones) && r.situaciones.length === 0 && Boolean(r.reclamado);
   actualizarVisibilidad();
 }
 
-form1.addEventListener('input', actualizarVisibilidad);
-form1.addEventListener('change', (e) => {
-  if (e.target.id === 'ninguna-situacion' && e.target.checked) form1.querySelectorAll('input[name="situaciones"]').forEach(i => { i.checked = false; });
-  if (e.target.name === 'situaciones' && e.target.checked) $('#ninguna-situacion').checked = false;
-  actualizarVisibilidad();
-});
+// Si cambia cualquier respuesta, el resultado anterior deja de valer.
+form1.addEventListener('input', () => { $('#resultado').replaceChildren(); actualizarVisibilidad(); });
+form1.addEventListener('change', () => { $('#resultado').replaceChildren(); actualizarVisibilidad(); });
 
 form1.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -197,40 +202,47 @@ form1.addEventListener('submit', async (e) => {
   }
 });
 
+function documentosNecesarios(ev) {
+  const r = ev.respuestas || leerRespuestas();
+  const lista = ['Las facturas que te han cobrado después de la baja (PDF o foto).', 'La prueba de la baja: email, SMS, carta, captura o su número de referencia.'];
+  if (ev.estado === 'B') {
+    lista.push('Tu reclamación a la compañía (copia o número de referencia).');
+    if (r.respuesta === 'insatisfactoria') lista.push('La respuesta de la compañía, si la tienes por escrito.');
+  }
+  return lista;
+}
+
 function pintarResultado(ev) {
   const caja = $('#resultado');
   caja.replaceChildren();
   const avisos = ev.avisos?.length ? el('div', { class: 'mensaje aviso' }, el('ul', {}, ev.avisos.map(a => el('li', { texto: a })))) : null;
 
   if (ev.estado === 'A' || ev.estado === 'B') {
-    const p = PRODUCTOS[ev.producto];
-    const titulo = ev.estado === 'A' ? 'Tu caso encaja: reclamación a la compañía' : 'Tu caso encaja: expediente para la Oficina del Ministerio';
+    const titulo = ev.estado === 'A' ? 'Tu caso se puede reclamar a la compañía' : 'Tu caso se puede llevar a la Oficina del Ministerio';
     const explicacion = ev.estado === 'A'
-      ? 'Como todavía no has reclamado (o no puedes acreditarlo), el primer paso es reclamar por escrito a la compañía.'
-      : 'Ya reclamaste y la compañía no lo ha solucionado en plazo: puedes acudir a la Oficina de Atención al Usuario de Telecomunicaciones.';
+      ? 'El primer paso es reclamar por escrito a tu compañía. Te prepararemos el escrito con tus facturas y la prueba de baja como anexos.'
+      : 'Ya reclamaste y la compañía no lo ha solucionado: puedes acudir a la Oficina de Atención al Usuario de Telecomunicaciones. Te prepararemos el expediente con el formulario oficial.';
     caja.append(el('div', { class: 'tarjeta' },
       el('h2', { texto: titulo }),
       el('p', { texto: explicacion }),
-      el('p', { class: 'precio' }, formatearPrecio(p.precioCentimos), ' ', el('small', { texto: 'IVA incluido' })),
-      el('p', { class: 'rotulo', texto: 'Recibirás:' }),
-      el('ul', { class: 'lista-si' }, p.entrega.map(t => el('li', { texto: t }))),
+      el('p', { class: 'rotulo', texto: 'Ahora necesitamos:' }),
+      el('ul', {}, documentosNecesarios(ev).map(t => el('li', { texto: t }))),
+      el('p', { class: 'ayuda', texto: 'Leemos los datos de tus documentos y tú los revisas. Antes de pagar verás el resumen con lo que se reclama.' }),
       avisos,
-      el('p', { class: 'ayuda', texto: 'Ahora te pediremos tus documentos. No pagas nada hasta el último paso.' }),
-      el('div', { class: 'acciones' }, el('button', { type: 'button', class: 'boton ancho', onclick: continuarAPaso2, texto: 'Continuar: añadir documentos' }))
+      el('div', { class: 'acciones' }, el('button', { type: 'button', class: 'boton ancho', onclick: continuarAPaso2, texto: 'Comprobar datos y documentación' }))
     ));
   } else if (ev.estado === 'incompleto') {
     caja.append(el('div', { class: 'tarjeta' },
       el('h2', { texto: 'Nos falta algo para seguir' }),
       el('ul', {}, ev.faltan.map(f => el('li', { texto: f.mensaje }))),
-      avisos,
-      el('p', { class: 'ayuda', texto: 'Cuando lo tengas, corrige tus respuestas arriba y vuelve a comprobar. No te hemos cobrado nada ni guardado tus respuestas.' })
+      el('p', { class: 'ayuda', texto: 'Cuando lo tengas, corrige tus respuestas arriba y vuelve a comprobar. No hemos guardado nada.' })
     ));
   } else if (ev.estado === 'excluido') {
     caja.append(el('div', { class: 'tarjeta' },
       el('h2', { texto: 'Este caso no lo podemos preparar' }),
       el('ul', {}, ev.excluyen.map(f => el('li', { texto: f.mensaje }))),
       el('p', { texto: 'Puedes reclamar gratis por tu cuenta a la compañía y, después, a la Oficina de Atención al Usuario de Telecomunicaciones (usuariosteleco.digital.gob.es) o a la oficina de consumo de tu ayuntamiento o comunidad autónoma.' }),
-      el('p', { class: 'ayuda', texto: 'No te hemos cobrado nada ni guardado tus respuestas.' })
+      el('p', { class: 'ayuda', texto: 'No hemos guardado nada.' })
     ));
   } else {
     caja.append(el('div', { class: 'tarjeta' }, el('h2', { texto: 'No necesitas reclamar' }), avisos));
@@ -270,7 +282,7 @@ function requisitos() {
   const tipos = new Set(vista.documentos.map(d => d.tipoDoc));
   const lista = [
     { texto: 'Las facturas cobradas después de la baja', ok: tipos.has('factura') },
-    { texto: r.pruebaBaja === 'referencia' ? 'La prueba de la baja (documento o, al menos, su número de referencia)' : 'La prueba de que pediste la baja (email, SMS, carta o captura)', ok: tipos.has('prueba_baja') }
+    { texto: 'La prueba de la baja: email, SMS, carta o captura (o escribe abajo su número de referencia)', ok: tipos.has('prueba_baja') }
   ];
   if (vista.evaluacion.estado === 'B') {
     lista.push({ texto: 'Tu reclamación a la compañía (copia o número de referencia)', ok: tipos.has('reclamacion') });
@@ -410,17 +422,23 @@ zona.addEventListener('drop', (e) => { e.preventDefault(); zona.classList.remove
 
 // Datos: se rellenan con lo confirmado, con el borrador del navegador y, si están vacíos, con lo leído.
 const CAMPOS = {
-  'd-nombre': ['titular', 'nombre'], 'd-documento': ['titular', 'documento'], 'd-email': ['titular', 'email'],
+  'd-nombre': ['titular', 'nombre'], 'd-documento': ['titular', 'documento'], 'd-firmante': ['titular', 'firmante'], 'd-email': ['titular', 'email'],
   'd-telefono': ['titular', 'telefono'], 'd-domicilio': ['titular', 'domicilio'], 'd-cp': ['titular', 'cp'],
   'd-localidad': ['titular', 'localidad'], 'd-provincia': ['titular', 'provincia'],
+  'd-fecha-solicitud': ['fechas', 'solicitud'], 'd-fecha-deseada': ['fechas', 'deseada'],
+  'd-fecha-reclamacion': ['fechas', 'reclamacion'], 'd-fecha-respuesta': ['fechas', 'respuesta'],
   'd-cliente': ['numeroCliente'], 'd-lineas': ['lineas'], 'd-canal-baja': ['canalBaja'], 'd-ref-baja': ['bajaReferencia'],
   'd-canal-recl': ['canalReclamacion'], 'd-ref-recl': ['reclamacionReferencia'], 'd-respuesta': ['respuestaResumen']
 };
+// Valor leído de los documentos para cada campo (con su archivo y página de origen).
 const PROPUESTA = {
   'd-nombre': (p) => p.titular.nombre, 'd-documento': (p) => p.titular.documento, 'd-cliente': (p) => p.numeroCliente,
-  'd-lineas': (p) => p.lineas, 'd-ref-baja': (p) => p.bajaReferencia, 'd-ref-recl': (p) => p.reclamacionReferencia, 'd-respuesta': (p) => p.respuestaResumen
+  'd-lineas': (p) => p.lineas, 'd-ref-baja': (p) => p.bajaReferencia, 'd-ref-recl': (p) => p.reclamacionReferencia, 'd-respuesta': (p) => p.respuestaResumen,
+  'd-canal-baja': (p) => p.canalBaja, 'd-fecha-solicitud': (p) => p.fechas?.solicitud,
+  'd-fecha-reclamacion': (p) => p.fechas?.reclamacion, 'd-fecha-respuesta': (p) => p.fechas?.respuesta
 };
-const FUENTE = { 'd-nombre': 'f-nombre', 'd-documento': 'f-documento', 'd-cliente': 'f-cliente', 'd-lineas': 'f-lineas', 'd-ref-baja': 'f-ref-baja', 'd-ref-recl': 'f-ref-recl', 'd-respuesta': 'f-respuesta' };
+// Lo que el cliente ya contestó en el paso 1.
+const DEL_PASO_1 = { 'd-fecha-solicitud': 'fechaSolicitud', 'd-fecha-reclamacion': 'fechaReclamacion', 'd-fecha-respuesta': 'fechaRespuesta' };
 
 function textoFuente(fuentes) {
   if (!fuentes?.length) return '';
@@ -431,22 +449,31 @@ function textoFuente(fuentes) {
 const obtener = (obj, ruta) => ruta.reduce((o, k) => (o == null ? undefined : o[k]), obj);
 
 function pintarDatos() {
+  const r = vista.respuestas;
   const esB = vista.evaluacion.estado === 'B';
+  const esEmpresa = r.tipoTitular === 'empresa';
   const borrador = leerAlmacen(ALMACEN.datos) || {};
   const confirmados = vista.datos || {};
   const p = vista.propuesta;
   for (const [id, ruta] of Object.entries(CAMPOS)) {
     const input = document.getElementById(id);
     if (document.activeElement === input) continue;
-    let valor = obtener(borrador, ruta) ?? obtener(confirmados, ruta) ?? '';
-    if (!valor && p && PROPUESTA[id]) valor = PROPUESTA[id](p).valor || '';
+    let valor = obtener(borrador, ruta) || obtener(confirmados, ruta) || (DEL_PASO_1[id] ? r[DEL_PASO_1[id]] : '') || '';
+    const leido = p && PROPUESTA[id] ? PROPUESTA[id](p) : null;
+    if (!valor && leido?.valor) valor = leido.valor;
     if (!input.value || input.dataset.auto === '1') { input.value = valor; input.dataset.auto = obtener(borrador, ruta) ? '0' : '1'; }
-    if (FUENTE[id]) $(`#${FUENTE[id]}`).textContent = p && PROPUESTA[id] && input.value && input.value === PROPUESTA[id](p).valor ? textoFuente(PROPUESTA[id](p).fuentes) : '';
+    const fuente = document.getElementById(id.replace(/^d-/, 'f-'));
+    if (fuente) fuente.textContent = leido?.valor && input.value === leido.valor ? textoFuente(leido.fuentes) : '';
   }
+  $('#l-nombre').textContent = esEmpresa ? 'Razón social de la empresa' : 'Nombre y apellidos';
+  $('#l-documento').textContent = esEmpresa ? 'CIF' : 'DNI o NIE';
+  $('#d-nombre').autocomplete = esEmpresa ? 'organization' : 'name';
+  $('#campo-firmante').hidden = !esEmpresa;
   $('#domicilio-opcional').textContent = esB ? '(obligatorio para la Oficina)' : '(opcional; aparece en el escrito)';
-  $('#ref-baja-opcional').textContent = vista.respuestas.pruebaBaja === 'referencia' ? '(obligatorio si no subes el documento)' : '(si lo tienes)';
+  $('#fechas-previa').hidden = r.reclamado !== 'si';
+  $('#campo-fecha-respuesta-datos').hidden = r.respuesta !== 'insatisfactoria';
   $('#bloque-datos-previa').hidden = !esB;
-  $('#campo-respuesta-resumen').hidden = !(esB && vista.respuestas.respuesta === 'insatisfactoria');
+  $('#campo-respuesta-resumen').hidden = !(esB && r.respuesta === 'insatisfactoria');
   const alertas = p?.alertas || [];
   mostrarMensaje($('#alertas-datos'), 'aviso', alertas.length ? 'Revisa estos puntos:' : '', alertas);
   pintarFacturas(borrador.facturas || confirmados.facturas);
@@ -523,10 +550,10 @@ function leerFacturas() {
 }
 
 function leerDatos() {
-  const d = { titular: {} };
+  const d = { titular: {}, fechas: {} };
   for (const [id, ruta] of Object.entries(CAMPOS)) {
     const v = document.getElementById(id).value.trim();
-    if (ruta.length === 2) d.titular[ruta[1]] = v; else d[ruta[0]] = v;
+    if (ruta.length === 2) d[ruta[0]][ruta[1]] = v; else d[ruta[0]] = v;
   }
   d.facturas = leerFacturas();
   return d;

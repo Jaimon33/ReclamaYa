@@ -39,6 +39,8 @@ function contexto(exp) {
     fechaHoy: exp.fechaDocumento || hoy(),
     servicio: SERVICIOS[r.servicio],
     lineas: d.lineas,
+    empresa: r.tipoTitular === 'empresa',
+    etiquetaDoc: r.tipoTitular === 'empresa' ? 'CIF' : 'DNI/NIE',
     anexoDe: (tipoDoc) => exp.documentos.map((doc, i) => ({ doc, n: i + 1 })).filter(x => x.doc.tipoDoc === tipoDoc).map(x => x.n),
     anexoDeDocumento: (id) => exp.documentos.findIndex(doc => doc.id === id) + 1
   };
@@ -100,10 +102,16 @@ function indiceDocumental(m, exp) {
   ], exp.documentos.map((doc, i) => [String(i + 1), TIPOS_DOCUMENTO[doc.tipoDoc], doc.nombre, String(doc.paginas)]));
 }
 
+function firma(m, c, despues) {
+  m.texto(c.empresa ? c.t.firmante : c.t.nombre, { fuente: 'negrita', despues: c.empresa ? 0 : despues });
+  if (c.empresa) m.texto(`En nombre y representación de ${c.t.nombre}`, { despues });
+}
+
 function cabeceraRemitente(m, c) {
   const { t } = c;
   m.texto(t.nombre, { fuente: 'negrita', despues: 0 });
-  m.texto(`DNI/NIE: ${t.documento}`, { despues: 0 });
+  m.texto(`${c.etiquetaDoc}: ${t.documento}`, { despues: 0 });
+  if (c.empresa) m.texto(`Representada por: ${t.firmante}`, { despues: 0 });
   const domicilio = [t.domicilio, [t.cp, t.localidad].filter(Boolean).join(' '), t.provincia].filter(Boolean).join(', ');
   if (domicilio) m.texto(domicilio, { despues: 0 });
   m.texto([t.email, t.telefono].filter(Boolean).join(' · '), { despues: 14 });
@@ -123,7 +131,7 @@ async function documentoEscritoA(exp, anexos) {
   const ref = [d.numeroCliente && `Cliente o contrato nº ${d.numeroCliente}`, c.lineas && `Línea(s): ${c.lineas}`].filter(Boolean).join(' · ');
   m.texto(`Asunto: Reclamación por cobros posteriores a la baja del servicio${ref ? ` · ${ref}` : ''}`, { fuente: 'negrita', despues: 12 });
 
-  m.texto(`${t.nombre}, con DNI/NIE ${t.documento}, titular del contrato${d.numeroCliente ? ` nº ${d.numeroCliente}` : ''} con ${c.operador}, presento esta reclamación por los cobros realizados después de la baja del servicio.`);
+  m.texto(`${c.empresa ? `${t.firmante}, en nombre y representación de ${t.nombre}, con CIF ${t.documento},` : `${t.nombre}, con DNI/NIE ${t.documento},`} titular del contrato${d.numeroCliente ? ` nº ${d.numeroCliente}` : ''} con ${c.operador}, presento esta reclamación por los cobros realizados después de la baja del servicio.`);
 
   m.titulo('Hechos', { tam: 11 });
   m.texto(`1. ${hechoBaja(c)}`);
@@ -143,7 +151,7 @@ async function documentoEscritoA(exp, anexos) {
   m.texto(`Si en el plazo de un mes no recibo respuesta o no se resuelve lo solicitado, podré acudir a la ${OAUT.nombre}.`, { despues: 18 });
 
   m.texto('Firma:', { despues: 30 });
-  m.texto(t.nombre, { fuente: 'negrita', despues: 16 });
+  firma(m, c, 16);
   m.separador();
   indiceDocumental(m, exp);
   m.numerar(`Reclamación de ${t.nombre} a ${c.operador} · ref. ${exp.referencia}`);
@@ -217,6 +225,7 @@ async function formularioB(exp) {
     tipoTitular: c.r.tipoTitular,
     documento: t.documento,
     nombre: t.nombre,
+    representante: c.empresa ? t.firmante : '',
     domicilio: t.domicilio,
     localidad: t.localidad,
     cp: t.cp,
@@ -234,7 +243,7 @@ async function escribirExplicacionB(m, exp) {
   m.nuevaPagina();
   m.texto('Anexo al formulario de reclamación', { tam: 9, despues: 2 });
   m.titulo(`Escrito explicativo · ${OAUT.nombre}`, { tam: 14 });
-  m.texto(`Reclamante: ${t.nombre}, DNI/NIE ${t.documento}. Operador reclamado: ${c.operador}${d.razonSocialOperador ? ` (${d.razonSocialOperador})` : ''}.${d.numeroCliente ? ` Cliente o contrato nº ${d.numeroCliente}.` : ''}${c.lineas ? ` Línea(s): ${c.lineas}.` : ''}`);
+  m.texto(`Reclamante: ${t.nombre}, ${c.etiquetaDoc} ${t.documento}${c.empresa ? `, representada por ${t.firmante}` : ''}. Operador reclamado: ${c.operador}${d.razonSocialOperador ? ` (${d.razonSocialOperador})` : ''}.${d.numeroCliente ? ` Cliente o contrato nº ${d.numeroCliente}.` : ''}${c.lineas ? ` Línea(s): ${c.lineas}.` : ''}`);
   m.titulo('Hechos', { tam: 11 });
   m.texto(`1. ${hechoBaja(c)}`);
   m.texto(`2. ${hechoEfectiva(c)}`);
@@ -258,7 +267,7 @@ async function escribirExplicacionB(m, exp) {
   tablaImportes(m, c);
   m.texto(`En ${t.localidad}, a ______ de ____________ de ______`, { despues: 26 });
   m.texto('Firma:', { despues: 30 });
-  m.texto(t.nombre, { fuente: 'negrita', despues: 14 });
+  firma(m, c, 14);
   m.separador();
   indiceDocumental(m, exp);
   m.numerar(`Escrito explicativo de ${t.nombre} · ref. ${exp.referencia}`);
@@ -291,7 +300,9 @@ async function documentoGuiaB(exp) {
     ['1. Revisa y firma', [
       'Comprueba tus datos en el formulario oficial (páginas 1 y 2 del expediente) y en el escrito explicativo.',
       'En la página 2 del formulario: escribe la fecha, firma y marca la casilla en la que declaras que las copias coinciden con los originales. Firma también el escrito explicativo.',
-      'Los apartados del representante quedan en blanco: solo se rellenan si presenta otra persona en tu nombre, con el modelo de autorización de la Oficina.'
+      ...(c.empresa
+        ? ['Como el titular es una empresa, la Oficina solo la admite si es una microempresa (menos de 10 trabajadores). Añade la declaración responsable de microempresa, firmada: https://usuariosteleco.digital.gob.es/content/dam/usuarios-teleco/documents/microempresa.pdf', 'Hemos puesto como representante a la persona que firma; añade su NIF en el apartado 2 del formulario.']
+        : ['Los apartados del representante quedan en blanco: solo se rellenan si presenta otra persona en tu nombre, con el modelo de autorización de la Oficina.'])
     ]],
     ['2a. Presentación por internet', [
       `Con certificado digital o DNI electrónico: formulario de reclamaciones de la Oficina, ${OAUT.sedeNueva}`,
