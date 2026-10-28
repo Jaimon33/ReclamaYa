@@ -142,7 +142,7 @@ test('sugerencia de importe: separa penalizaciones y terminales', () => {
     { descripcion: 'Cuota Fibra 600Mb', importe: 30 },
     { descripcion: 'Cuota terminal financiado', importe: 20 }
   ] });
-  assert.equal(s.importe, 30);
+  assert.equal(s.importe, 36); // 30 de 50 sin impuestos, sobre un total de 60 con impuestos
   assert.ok(s.revisar);
   assert.deepEqual(s.excluidos, ['Cuota terminal financiado']);
   // Conceptos sin IVA y línea de IVA aparte: la cuota se propone con su parte de impuestos.
