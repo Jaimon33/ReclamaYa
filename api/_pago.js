@@ -125,9 +125,10 @@ function htmlEmail(exp, enlace, adjuntados) {
 
 async function enviarEmailEntrega(exp, archivos, token) {
   const r = clienteResend();
-  const enlace = `${urlBase()}/exito.html#t=${token}`;
+  // El enlace lleva a la misma dirección desde la que se pagó; el token no se escribe nunca en los registros.
+  const enlace = `${exp.pago.origen || urlBase()}/exito.html#t=${token}`;
   if (!r) {
-    console.log(`[sin Resend] Email de entrega para ${exp.referencia}: ${enlace}`);
+    console.log(`Email de entrega no enviado para ${exp.referencia}: falta RESEND_API_KEY en este entorno`);
     return false;
   }
   // Se adjuntan los archivos si caben con holgura; si no, basta el enlace.

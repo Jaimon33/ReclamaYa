@@ -76,11 +76,11 @@ export default async function handler(req, res) {
         success_url: `${base}/exito.html?e=${exp.id}`,
         cancel_url: `${base}/reclamar.html#revisar`
       });
-      exp.pago = { sesion: sesion.id, producto: producto.codigo, importeCentimos: producto.precioCentimos, creada: new Date().toISOString() };
+      exp.pago = { sesion: sesion.id, producto: producto.codigo, importeCentimos: producto.precioCentimos, creada: new Date().toISOString(), origen: base };
       url = sesion.url;
     } else if (enLocal()) {
       // Solo en local y sin claves: pasarela simulada del servidor de desarrollo.
-      exp.pago = { sesion: `cs_simulada_${exp.id}`, producto: producto.codigo, importeCentimos: producto.precioCentimos, creada: new Date().toISOString() };
+      exp.pago = { sesion: `cs_simulada_${exp.id}`, producto: producto.codigo, importeCentimos: producto.precioCentimos, creada: new Date().toISOString(), origen: base };
       url = `${base}/__dev/pagar?e=${exp.id}`;
     } else {
       throw new Error('Stripe no configurado');
