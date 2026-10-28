@@ -32,6 +32,19 @@ export function urlBase() {
   return `http://localhost:${process.env.PORT || 5050}`;
 }
 
+// Direcciones desde las que se puede volver del pago. El navegador guarda la clave del expediente
+// por dirección, así que hay que volver a la misma desde la que se pagó.
+const ORIGENES_PERMITIDOS = [
+  /^https:\/\/(www\.)?reclamoia\.es$/,
+  /^https:\/\/reclamaia-[a-z0-9-]+-jaimon33\.vercel\.app$/,
+  /^http:\/\/localhost:\d+$/
+];
+
+export function urlDeVuelta(req) {
+  const origen = String(req.headers.origin || '');
+  return ORIGENES_PERMITIDOS.some(re => re.test(origen)) ? origen : urlBase();
+}
+
 export function enProduccion() {
   return process.env.VERCEL_ENV === 'production';
 }

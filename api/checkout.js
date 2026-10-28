@@ -1,6 +1,6 @@
 // Crea el pago en Stripe. Antes comprueba el expediente y prepara una prueba completa de los
 // documentos (sin guardarla) para no cobrar si algún archivo no se puede incorporar.
-import { PRODUCTOS, MONEDA, urlBase, enLocal } from './_config.js';
+import { PRODUCTOS, MONEDA, urlDeVuelta, enLocal } from './_config.js';
 import { leerBinario } from './_almacen.js';
 import { enviar, leerCuerpoJSON, expedienteAutorizado, guardarExpediente, credenciales, noAutorizado } from './_seguridad.js';
 import { validarDatos } from './_expediente.js';
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     }
 
     exp.aceptacion = aceptacion;
-    const base = urlBase();
+    const base = urlDeVuelta(req);
     let url;
     if (stripe) {
       const sesion = await stripe.checkout.sessions.create({
