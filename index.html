@@ -1,290 +1,167 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReclamoIA — Escritos de reclamación con IA y legislación verificada</title>
-  <meta name="description" content="Genera escritos de reclamación profesionales con legislación verificada en el BOE y EUR-Lex. Sin abogados. Sin esperas. Desde 9,99€.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BajaClara — Reclama los cobros después de dar de baja tu teléfono o fibra</title>
+  <meta name="description" content="¿Te siguen cobrando después de la baja de tu teléfono o fibra? Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.">
   <link rel="canonical" href="https://reclamoia.es/">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ReclamoIA">
   <meta property="og:url" content="https://reclamoia.es/">
-  <meta property="og:title" content="ReclamoIA — Escritos de reclamación con IA y legislación verificada">
-  <meta property="og:description" content="Genera escritos de reclamación profesionales con legislación verificada en el BOE y EUR-Lex. Sin abogados. Sin esperas. Desde 9,99€.">
-  <meta property="og:image" content="https://reclamoia.es/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:title" content="¿Te siguen cobrando después de dar de baja tu teléfono o fibra?">
+  <meta property="og:description" content="Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.">
+  <meta property="og:image" content="https://reclamoia.es/marca/og.png">
   <meta property="og:locale" content="es_ES">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ReclamoIA — Escritos de reclamación con IA y legislación verificada">
-  <meta name="twitter:description" content="Genera escritos de reclamación profesionales con legislación verificada en el BOE y EUR-Lex. Sin abogados. Sin esperas. Desde 9,99€.">
-  <meta name="twitter:image" content="https://reclamoia.es/og-image.png">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <meta name="theme-color" content="#0b5d57">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/estilos.css">
+  <script type="module" src="/sitio.js"></script>
 </head>
 <body>
-
-  <nav id="navbar">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" class="nav-logo-img">
-      </a>
-      <div class="nav-links">
-        <a href="#como-funciona">Cómo funciona</a>
-        <a href="#categorias">Categorías</a>
-        <a href="/reclamar.html" class="nav-cta">Reclamar ahora</a>
-      </div>
-      <a href="/reclamar.html" class="nav-mobile-btn">Reclamar</a>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <nav class="navegacion" aria-label="Principal">
+        <a href="#como-funciona" class="solo-ancho">Cómo funciona</a>
+        <a href="#precios">Precios</a>
+        <a href="#preguntas">Ayuda</a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <section id="hero">
-    <div class="hero-inner">
-      <div class="hero-badge">✓ Legislación verificada en el BOE y EUR-Lex en cada escrito</div>
-      <h1>Reclama lo que es tuyo.<br><span class="hero-accent">Con respaldo legal real.</span></h1>
-      <p class="hero-sub">Escritos de reclamación profesionales con legislación verificada en el BOE y EUR-Lex.<br>Sin abogados. Sin esperas. Desde 9,99€ — con guía de presentación paso a paso por 13,99€.</p>
-      <div class="hero-btns">
-        <a href="/reclamar.html" class="btn-primary">Generar mi escrito →</a>
-        <a href="#como-funciona" class="btn-secondary">Ver cómo funciona</a>
+  <main id="contenido">
+    <section class="portada">
+      <div class="contenedor estrecho">
+        <h1>¿Te siguen cobrando después de dar de baja tu teléfono o fibra?</h1>
+        <p class="entrada">Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.</p>
+        <a class="boton ancho" href="/reclamar.html">Comprobar mi caso</a>
+        <ul class="notas">
+          <li>Comprobarlo es gratis y sin registrarte</li>
+          <li>Tú presentas la reclamación</li>
+          <li>Desde <span data-precio="operador">13,99 €</span>, IVA incluido</li>
+        </ul>
       </div>
-      <div class="hero-trust">
-        <span>🔒 Pago seguro con Stripe</span>
-        <span>🛡️ Datos protegidos (RGPD)</span>
-        <span>✕ Sin suscripción</span>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="como-funciona">
-    <div class="section-inner">
-      <p class="section-label">Cómo funciona</p>
-      <h2 class="section-title">Tres pasos. Menos de 3 minutos.</h2>
-      <div class="pasos-grid">
-        <div class="paso-card">
-          <div class="paso-num">1</div>
-          <span class="paso-icon">📝</span>
-          <h3>Rellena el formulario</h3>
-          <p>Describe tu caso en menos de 2 minutos. Puedes adjuntar la notificación, factura o documento que tengas.</p>
-        </div>
-        <div class="paso-arrow">→</div>
-        <div class="paso-card">
-          <div class="paso-num">2</div>
-          <span class="paso-icon">⚖️</span>
-          <h3>La IA redacta tu escrito</h3>
-          <p>Verificamos la legislación en el BOE y EUR-Lex antes de redactar. Cada escrito es único y adaptado a tu caso.</p>
-        </div>
-        <div class="paso-arrow">→</div>
-        <div class="paso-card">
-          <div class="paso-num">3</div>
-          <span class="paso-icon">📨</span>
-          <h3>Descarga y presenta</h3>
-<p>Recibe tu escrito en PDF por email. Con la opción completa también recibes una guía paso a paso para saber exactamente cómo presentarlo.</p>
-        </div>
+    <section class="seccion" aria-labelledby="t-problema">
+      <div class="contenedor estrecho">
+        <h2 id="t-problema">El problema</h2>
+        <p>Pediste la baja y la compañía siguió cobrándote cuotas. La ley le prohíbe facturar lo que corresponda a después de la fecha en que debía hacerse efectiva tu baja (artículo 7 del Real Decreto 899/2009). Para recuperarlo hay que reclamar por escrito, con pruebas y en plazo.</p>
+        <p>Te ayudamos a preparar esa reclamación sin que tengas que saber de leyes: comprobamos qué periodo cubre cada factura, calculamos lo que corresponde reclamar y lo ordenamos todo en un PDF listo para presentar.</p>
       </div>
-      <div style="text-align:center; margin-top:2.5rem;">
-        <a href="/reclamar.html" class="btn-primary" style="background:#0D1B2A; color:#fff;">Empezar ahora →</a>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="ejemplo">
-    <div class="section-inner">
-      <p class="section-label">Un ejemplo real</p>
-      <h2 class="section-title">Así es el escrito que vas a recibir</h2>
-      <p class="section-sub">Mismo membrete, marca de agua y código de verificación que recibirás con tu propia reclamación.</p>
-      <div class="documento-ejemplo">
-        <div class="documento-ejemplo-marca-agua">RECLAMOIA</div>
-        <div class="documento-ejemplo-cabecera">
-          <div class="documento-ejemplo-marca">
-            <img src="logo-reclamoia.png" alt="ReclamoIA" class="documento-ejemplo-logo">
-            <span>Reclamo<em>IA</em> · Escrito de reclamación</span>
+    <section class="seccion" aria-labelledby="t-casos">
+      <div class="contenedor">
+        <h2 id="t-casos">¿Encaja tu caso?</h2>
+        <div class="rejilla dos">
+          <div class="tarjeta">
+            <h3>Sí, si…</h3>
+            <ul class="lista-si">
+              <li>El contrato de fibra, móvil, fijo o paquete está a tu nombre (particular o autónomo).</li>
+              <li>Pediste la baja directamente a la compañía.</li>
+              <li>Tienes una prueba: número de referencia, email, SMS, carta o captura.</li>
+              <li>Te han cobrado cuotas o consumos de periodos posteriores a la baja.</li>
+            </ul>
           </div>
-          <div class="documento-ejemplo-ref">Ref. expediente: RC-20260923-EJEM<br>Categoría: Aerolíneas</div>
-        </div>
-        <div class="documento-ejemplo-cuerpo">
-          <p><strong>A LA ATENCIÓN DEL SERVICIO DE ATENCIÓN AL CLIENTE</strong><br><strong>[AEROLÍNEA RECLAMADA]</strong></p>
-          <p class="documento-ejemplo-asunto"><strong>Asunto:</strong> Reclamación formal en materia de transporte aéreo</p>
-          <p>Muy señores míos:</p>
-          <p>Por medio del presente escrito, D./Dña. [NOMBRE DEL RECLAMANTE] se dirige a esa compañía a fin de formular RECLAMACIÓN FORMAL por los hechos que a continuación se exponen:</p>
-          <p><strong>PRIMERO.-</strong> Que con fecha [FECHA DEL VUELO], el reclamante tenía contratada plaza en el vuelo con código de reserva [LOCALIZADOR], el cual sufrió un retraso superior a tres horas en su llegada al aeropuerto de destino, sin que la compañía ofreciera una causa de fuerza mayor que lo justificase.</p>
-          <p><strong>SEGUNDO.-</strong> Que, al amparo del Reglamento (CE) nº 261/2004 del Parlamento Europeo y del Consejo, de 11 de febrero de 2004, los pasajeros afectados por un retraso de estas características tienen derecho a una compensación económica de entre 250 y 600 euros en función de la distancia del vuelo, además del derecho de asistencia reconocido en su artículo 9.</p>
-          <p><strong>TERCERO.-</strong> Que, pese a lo anterior, esa compañía no ha ofrecido de forma espontánea la compensación que legalmente corresponde al reclamante, por lo que...</p>
-        </div>
-        <div class="documento-ejemplo-fade"></div>
-        <div class="documento-ejemplo-cta">
-          <span>🔒 Esto es solo el principio</span>
-          <p>Tu escrito completo, con tus datos, tu caso concreto y la legislación verificada en el BOE y EUR-Lex, lo recibes en PDF al generarlo — listo para presentar.</p>
-          <a href="/reclamar.html" class="btn-primary" style="background:#0D1B2A; color:#fff;">Generar mi escrito →</a>
+          <div class="tarjeta">
+            <h3>Por ahora no preparamos</h3>
+            <ul class="lista-no">
+              <li>Bajas por portabilidad a otra compañía.</li>
+              <li>Penalizaciones por permanencia o plazos de un móvil financiado.</li>
+              <li>Cargos por no devolver el router u otros equipos.</li>
+              <li>Ficheros de morosos, suplantaciones, indemnizaciones o juicios.</li>
+              <li>Contratos de empresa.</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="categorias">
-    <div class="section-inner">
-      <p class="section-label">Categorías</p>
-      <h2 class="section-title">¿A quién quieres reclamar?</h2>
-      <p class="section-sub">Cubrimos las reclamaciones más habituales de particulares y empresas en España.</p>
-      <div class="categorias-grid">
-        <a href="/reclamar-banco.html" class="cat-card">
-          <span class="cat-icon">🏦</span>
-          <p class="cat-titulo">Bancos y seguros</p>
-          <p class="cat-sub">Cobros indebidos, hipotecas, tarjetas</p>
-        </a>
-        <a href="/reclamar.html?categoria=administracion" class="cat-card">
-          <span class="cat-icon">🧾</span>
-          <p class="cat-titulo">AEAT / Seguridad Social</p>
-          <p class="cat-sub">Multas, embargos, aplazamientos</p>
-        </a>
-        <a href="/reclamar-retraso-vuelo.html" class="cat-card">
-          <span class="cat-icon">✈️</span>
-          <p class="cat-titulo">Aerolíneas</p>
-          <p class="cat-sub">Retrasos, cancelaciones, compensaciones</p>
-        </a>
-        <a href="/reclamar-compania-telefonica.html" class="cat-card">
-          <span class="cat-icon">📱</span>
-          <p class="cat-titulo">Telecomunicaciones</p>
-          <p class="cat-sub">Cobros, bajas, servicios no prestados</p>
-        </a>
-        <a href="/reclamar.html?categoria=energia" class="cat-card">
-          <span class="cat-icon">⚡</span>
-          <p class="cat-titulo">Energía y suministros</p>
-          <p class="cat-sub">Iberdrola, Endesa, Naturgy...</p>
-        </a>
-        <a href="/reclamar.html?categoria=administracion" class="cat-card">
-          <span class="cat-icon">🚗</span>
-          <p class="cat-titulo">Multas de tráfico</p>
-          <p class="cat-sub">DGT, ayuntamientos, radares</p>
-        </a>
-        <a href="/reclamar.html?categoria=comercio" class="cat-card">
-          <span class="cat-icon">🛍️</span>
-          <p class="cat-titulo">Comercio online</p>
-          <p class="cat-sub">Amazon, devoluciones, fraudes</p>
-        </a>
-        <a href="/reclamar.html?categoria=deudas" class="cat-card">
-          <span class="cat-icon">🤝</span>
-          <p class="cat-titulo">Deudas e impagos</p>
-          <p class="cat-sub">Préstamos, facturas, particulares</p>
-        </a>
+    <section class="seccion" id="como-funciona" aria-labelledby="t-como">
+      <div class="contenedor">
+        <h2 id="t-como">Cómo funciona</h2>
+        <div class="rejilla tres">
+          <div class="tarjeta"><span class="paso-num">1</span><h3>Comprueba tu caso</h3><p>Unas preguntas cortas, sin datos personales. Te decimos si encaja, qué falta o por qué no.</p></div>
+          <div class="tarjeta"><span class="paso-num">2</span><h3>Añade tus documentos</h3><p>Sube facturas y la prueba de baja (PDF o foto). Leemos los datos por ti y tú los confirmas.</p></div>
+          <div class="tarjeta"><span class="paso-num">3</span><h3>Revisa y paga</h3><p>Ves un resumen con importes y precio. Al pagar, recibes los documentos para descargar y por email.</p></div>
+        </div>
       </div>
-      <p class="section-sub" style="margin:1.5rem 0 0;">¿No ves tu caso? <a href="/reclamar.html" style="color:#C9A84C; font-weight:600;">Reclama cualquier otro asunto, a una empresa o a un particular →</a></p>
-    </div>
-  </section>
+    </section>
 
-  <section id="diferenciadores">
-    <div class="section-inner">
-      <p class="section-label">Por qué ReclamoIA</p>
-      <h2 class="section-title">Legislación verificada en tiempo real</h2>
-      <p class="section-sub">A diferencia de otros generadores, ReclamoIA consulta fuentes oficiales antes de redactar tu escrito.</p>
-     <div class="dif-grid">
-  <div class="dif-card">
-    <span class="dif-icon">📋</span>
-    <h3>BOE actualizado</h3>
-    <p>Consultamos el Boletín Oficial del Estado en tiempo real para asegurarnos de que la legislación citada está vigente.</p>
-  </div>
-  <div class="dif-card">
-    <span class="dif-icon">🇪🇺</span>
-    <h3>EUR-Lex europeo</h3>
-    <p>Verificamos la normativa europea aplicable: reglamentos, directivas y decisiones de obligado cumplimiento en España.</p>
-  </div>
-  <div class="dif-card">
-    <span class="dif-icon">🏛️</span>
-    <h3>Organismos reguladores</h3>
-    <p>Incluimos referencias a la CNMC, Banco de España, AEPD y AESA según el tipo de reclamación.</p>
-  </div>
-</div>
-<div class="dif-grid-bottom">
-  <div class="dif-card">
-    <span class="dif-icon">📄</span>
-    <h3>100% listo para presentar</h3>
-    <p>Sin campos en blanco, sin corchetes. Tu escrito sale con todos tus datos reales y listo para enviar.</p>
-  </div>
-  <div class="dif-card">
-    <span class="dif-icon">🗺️</span>
-    <h3>Guía de presentación incluida</h3>
-    <p>Con la opción completa recibes una guía personalizada: canal oficial, plazos legales y qué hacer si no responden.</p>
-  </div>
-</div>
-    </div>
-  </section>
+    <section class="seccion" id="precios" aria-labelledby="t-precios">
+      <div class="contenedor">
+        <h2 id="t-precios">Qué recibes y cuánto cuesta</h2>
+        <p class="explicacion">Primero se reclama a la compañía. Si en un mes no responde o no lo soluciona, tienes tres meses para acudir a la Oficina de Atención al Usuario de Telecomunicaciones del Ministerio. No necesitas saber cuál te toca: el formulario te lo indica.</p>
+        <div class="rejilla dos">
+          <div class="tarjeta">
+            <span class="etiqueta">Primer paso</span>
+            <h3 style="margin-top:10px">Reclamación a la compañía</h3>
+            <p class="precio"><span data-precio="operador">13,99 €</span> <small>IVA incluido</small></p>
+            <ul class="lista-si">
+              <li>Escrito personalizado dirigido a tu compañía</li>
+              <li>Índice y tus documentos como anexos numerados, en un solo PDF</li>
+              <li>Guía para presentarlo y guardar la prueba</li>
+            </ul>
+          </div>
+          <div class="tarjeta">
+            <span class="etiqueta">Si no lo solucionan</span>
+            <h3 style="margin-top:10px">Expediente para la Oficina del Ministerio</h3>
+            <p class="precio"><span data-precio="oaut">29,90 €</span> <small>IVA incluido</small></p>
+            <ul class="lista-si">
+              <li>Formulario oficial de reclamación cumplimentado</li>
+              <li>Explicación del caso y relación de importes</li>
+              <li>Anexos numerados, también por separado</li>
+              <li>Guía para presentarlo por internet o en papel</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:16px">Reclamar a la compañía y a la Oficina es <strong>gratis</strong> y puedes hacerlo por tu cuenta por los canales oficiales. Lo que pagas es la preparación de la documentación. No presentamos la reclamación en tu nombre ni garantizamos el resultado.</p>
+      </div>
+    </section>
 
-  <section id="faq">
-    <div class="section-inner">
-      <p class="section-label">Preguntas frecuentes</p>
-      <h2 class="section-title">Antes de que te decidas</h2>
-      <div class="faq-lista">
-        <details class="faq-item">
-          <summary>¿Es esto legal? ¿Sustituye a un abogado?</summary>
-          <p>ReclamoIA es una herramienta de asistencia en la redacción de escritos de reclamación extrajudicial, no un servicio de asesoría jurídica. El escrito generado es un documento de apoyo, listo para presentar, pero no constituye consejo legal profesional. Para casos complejos o de importes elevados, recomendamos también asesoramiento jurídico especializado.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Me quedo solo una vez que tengo el escrito?</summary>
-          <p>No. Pasado el plazo legal de respuesta te escribimos automáticamente para preguntarte si has recibido contestación y, si no, indicarte el organismo exacto al que acudir a continuación. Además, cada escrito incluye un código de verificación (<a href="/verificar.html">reclamoia.es/verificar</a>) que permite comprobar en cualquier momento que es un documento auténtico generado por ReclamoIA.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Puedo pedir el reembolso si no me convence?</summary>
-          <p>Al tratarse de un documento digital de entrega inmediata, el derecho de desistimiento no aplica una vez recibido el escrito por email (así lo exige la ley para este tipo de contenido). Si hay un problema técnico y no recibes tu documento, contáctanos en <a href="mailto:hola@reclamoia.es">hola@reclamoia.es</a> y lo resolvemos. Puedes leer el detalle completo en nuestras <a href="/condiciones-venta.html">Condiciones de Venta</a>.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Qué pasa con mis datos personales?</summary>
-          <p>Tus datos se usan únicamente para generar tu escrito y enviártelo por email. No los usamos con fines publicitarios ni los vendemos a terceros. Puedes consultar todos los detalles en nuestra <a href="/privacidad.html">Política de Privacidad</a>.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Garantizáis que voy a ganar mi reclamación?</summary>
-          <p>No, y desconfía de quien te lo prometa. Ningún generador de escritos ni abogado puede garantizar el resultado de una reclamación, ya que depende de la empresa, el organismo regulador o, en última instancia, los tribunales. Lo que sí garantizamos es un escrito bien fundamentado, con la legislación aplicable verificada en el BOE y EUR-Lex.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Cómo se procesa el pago?</summary>
-          <p>A través de Stripe, uno de los proveedores de pago más usados y seguros del mundo. Nosotros no almacenamos ni vemos los datos de tu tarjeta en ningún momento.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Necesito tener toda la documentación para reclamar?</summary>
-          <p>No. Cuanta más información aportes (facturas, contratos, capturas), más sólido será tu escrito, y los PDF e imágenes que subas se adjuntan al final del escrito como documentos anexos numerados. Pero puedes generarlo igualmente con lo que tengas — todos los campos del formulario, salvo tu nombre, email, la empresa y una breve descripción de los hechos, son opcionales.</p>
-        </details>
+    <section class="seccion" id="ejemplo" aria-labelledby="t-ejemplo">
+      <div class="contenedor estrecho">
+        <h2 id="t-ejemplo">Un ejemplo completo</h2>
+        <div class="tarjeta">
+          <p><strong>Caso ficticio.</strong> Ana pidió la baja de su fibra el 3 de junio por teléfono y recibió un SMS con el número de referencia. En julio le cobraron otra cuota completa de 36,30 € (periodo del 1 al 31 de julio) y una factura de junio que cubría todo el mes.</p>
+          <p>La baja debía ser efectiva el 5 de junio (dos días hábiles después). La reclamación pide la cuota de julio entera y solo la parte de junio posterior a la baja: 25 de 30 días.</p>
+          <a class="boton secundario" href="/ejemplo.html">Ver el ejemplo completo</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="cta-final">
-    <div class="section-inner">
-      <div class="cta-box">
-        <h2>¿Listo para reclamar lo que es tuyo?</h2>
-        <p>Genera tu escrito de reclamación en menos de 3 minutos.</p>
-        <a href="/reclamar.html" class="btn-primary">Empezar ahora →</a>
-        <p class="cta-sub">Sin registro. Sin suscripción. Solo pagas si descargas el PDF.</p>
+    <section class="seccion" id="preguntas" aria-labelledby="t-preguntas">
+      <div class="contenedor estrecho">
+        <h2 id="t-preguntas">Preguntas frecuentes</h2>
+        <details class="pregunta"><summary>Si reclamar es gratis, ¿qué estoy pagando?</summary><div><p>La preparación de la documentación: comprobar tu caso con reglas revisadas, calcular lo que corresponde a cada factura, redactar el escrito y montar un PDF ordenado con tus documentos como anexos, más la guía para presentarlo. Puedes reclamar por tu cuenta sin pagarnos nada.</p></div></details>
+        <details class="pregunta"><summary>¿Presentáis vosotros la reclamación?</summary><div><p>No. Tú la presentas a tu compañía (o a la Oficina) siguiendo la guía. No te representamos ni hacemos el seguimiento del procedimiento.</p></div></details>
+        <details class="pregunta"><summary>¿Me garantizáis que me devuelvan el dinero?</summary><div><p>No. Depende de la compañía, de la Oficina y de tus pruebas. Lo que sí hacemos es aplicar reglas con su fuente oficial y no reclamar lo que no corresponde.</p></div></details>
+        <details class="pregunta"><summary>Me llegó una factura después de la baja. ¿Es indebida?</summary><div><p>No siempre. Muchas facturas se emiten después pero cobran días anteriores a la baja. Por eso miramos el periodo que cubre cada factura y solo reclamamos los días posteriores a la fecha en que la baja debía ser efectiva.</p></div></details>
+        <details class="pregunta"><summary>¿Qué documentos necesito?</summary><div><p>Las facturas cobradas después de la baja y una prueba de que la pediste (número de referencia, email, SMS, carta o captura). Si vas a la Oficina, también tu reclamación a la compañía y su respuesta si la hubo. Admitimos PDF, JPG y PNG.</p></div></details>
+        <details class="pregunta"><summary>¿Qué hacéis con mis documentos?</summary><div><p>Los usamos solo para preparar tu reclamación. Se guardan en almacenamiento privado y se borran solos: a las 48 horas si no pagas y a los 30 días de la entrega si pagas. Usamos inteligencia artificial para leer las facturas y proponerte los datos; tú los revisas antes de pagar. Más detalle en la <a href="/privacidad.html">política de privacidad</a>.</p></div></details>
+        <details class="pregunta"><summary>¿Puedo desistir o pedir que me devolváis el dinero?</summary><div><p>Tienes 14 días para desistir. Si pides que preparemos los documentos de inmediato y quedan a tu disposición, el servicio está ejecutado y ya no cabe desistir. Si algo está mal por nuestra parte, lo corregimos gratis o te devolvemos el importe. Consulta las <a href="/condiciones-venta.html">condiciones</a>.</p></div></details>
+        <details class="pregunta"><summary>¿Cómo os contacto?</summary><div><p>Escríbenos a <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a>.</p></div></details>
+        <div class="cta-centro"><a class="boton ancho" href="/reclamar.html">Comprobar mi caso</a></div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" style="height:34px; width:auto; filter:brightness(0) invert(1);">
-      </div>
-      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
-      <div class="footer-links">
-        <a href="/legal.html">Aviso Legal</a>
-        <a href="/privacidad.html">Política de Privacidad</a>
-        <a href="/condiciones-venta.html">Condiciones de Venta</a>
-        <a href="/verificar.html">Verificar documento</a>
-        <a href="mailto:hola@reclamoia.es">Contacto</a>
-      </div>
-      <p class="footer-copy">© 2026 ReclamoIA. Todos los derechos reservados.<br>ReclamoIA no presta servicios de asesoría jurídica. Los escritos generados son documentos de apoyo.</p>
+  <footer class="pie">
+    <div class="contenedor">
+      <p><strong data-marca>BajaClara</strong> es un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid. Contacto: <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a></p>
+      <nav class="enlaces" aria-label="Información legal">
+        <a href="/legal.html">Aviso legal</a>
+        <a href="/privacidad.html">Privacidad</a>
+        <a href="/condiciones-venta.html">Condiciones</a>
+        <a href="/#preguntas">Ayuda</a>
+        <a data-email href="mailto:hola@reclamoia.es">Contacto</a>
+      </nav>
+      <p>Preparamos documentación; no prestamos asesoramiento jurídico ni representamos ante la compañía o la Administración. No somos un organismo público.</p>
     </div>
   </footer>
-
-  <script>
-    window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
-      if (window.scrollY > 50) navbar.classList.add('scrolled');
-      else navbar.classList.remove('scrolled');
-    });
-  </script>
-  <script src="cookies.js"></script>
-  <script defer src="/_vercel/insights/script.js"></script>
-
 </body>
 </html>

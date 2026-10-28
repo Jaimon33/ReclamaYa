@@ -1,12 +1,20 @@
 {
-  "name": "reclamaya",
+  "name": "reclamoia",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
     "pdf-lib": "^1.17.1",
     "resend": "^3.2.0",
-    "stripe": "^14.21.0",
-    "jspdf": "^2.5.1"
+    "stripe": "^14.21.0"
+  },
+  "scripts": {
+    "dev": "node scripts/servidor-local.mjs",
+    "test": "node --test pruebas/reglas.test.mjs pruebas/flujo.test.mjs",
+    "paginas": "node scripts/generar-paginas.mjs && node scripts/generar-ejemplo.mjs"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

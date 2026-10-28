@@ -1,769 +1,291 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Genera tu escrito — ReclamoIA</title>
-  <meta name="description" content="Genera tu escrito de reclamación profesional con legislación verificada en el BOE y EUR-Lex.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comprueba tu caso — BajaClara</title>
+  <meta name="description" content="Comprueba gratis si puedes reclamar los cobros de tu teléfono o fibra posteriores a la baja.">
   <link rel="canonical" href="https://reclamoia.es/reclamar.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ReclamoIA">
-  <meta property="og:url" content="https://reclamoia.es/reclamar.html">
-  <meta property="og:title" content="Genera tu escrito — ReclamoIA">
-  <meta property="og:description" content="Genera tu escrito de reclamación profesional con legislación verificada en el BOE y EUR-Lex.">
-  <meta property="og:image" content="https://reclamoia.es/og-image.png">
-  <meta property="og:locale" content="es_ES">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Genera tu escrito — ReclamoIA">
-  <meta name="twitter:description" content="Genera tu escrito de reclamación profesional con legislación verificada en el BOE y EUR-Lex.">
-  <meta name="twitter:image" content="https://reclamoia.es/og-image.png">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <meta name="theme-color" content="#0b5d57">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="reclamar.css">
+  <link rel="stylesheet" href="/estilos.css">
+  <script type="module" src="/sitio.js"></script>
+  <script type="module" src="/reclamar.js"></script>
 </head>
-<body class="reclamar-page">
-
-  <nav id="navbar">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" class="nav-logo-img">
-      </a>
-      <div class="nav-links">
-        <a href="/">← Volver al inicio</a>
-      </div>
-      <a href="/" class="nav-mobile-btn-link">← Inicio</a>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <nav class="navegacion" aria-label="Principal"><a href="/#preguntas">Ayuda</a></nav>
     </div>
-  </nav>
+  </header>
 
-  <main class="reclamar-main">
-    <div class="reclamar-inner">
+  <main id="contenido" class="asistente">
+    <div class="contenedor estrecho">
+      <ol class="progreso" aria-label="Pasos">
+        <li id="prog-1" class="activo" aria-current="step">1. Comprueba tu caso</li>
+        <li id="prog-2">2. Añade tus documentos</li>
+        <li id="prog-3">3. Revisa y paga</li>
+      </ol>
 
-      <div class="reclamar-header">
-        <h1>Genera tu escrito de reclamación</h1>
-        <p>Describe tu caso y obtén tu escrito con legislación verificada en el BOE y EUR-Lex.</p>
-      </div>
+      <noscript><p class="mensaje error">Para usar el formulario necesitas activar JavaScript.</p></noscript>
 
-      <div class="form-card">
-        <div class="form-steps-nav">
-          <div class="form-step-nav active" id="nav-step-1">
-            <span class="step-nav-num">1</span>
-            <span class="step-nav-label">Tus datos</span>
-          </div>
-          <div class="step-nav-line"></div>
-          <div class="form-step-nav" id="nav-step-2">
-            <span class="step-nav-num">2</span>
-            <span class="step-nav-label">Reclamación</span>
-          </div>
-          <div class="step-nav-line"></div>
-          <div class="form-step-nav" id="nav-step-3">
-            <span class="step-nav-num">3</span>
-            <span class="step-nav-label">Documentos</span>
-          </div>
-          <div class="step-nav-line"></div>
-          <div class="form-step-nav" id="nav-step-4">
-            <span class="step-nav-num">4</span>
-            <span class="step-nav-label">Descargar</span>
-          </div>
-        </div>
+      <!-- PASO 1 -->
+      <section id="paso-1" aria-labelledby="t-paso-1">
+        <h1 id="t-paso-1" tabindex="-1">Comprueba tu caso</h1>
+        <p class="ayuda">Unas preguntas rápidas. No te pedimos nombre, DNI ni email hasta saber si tu caso encaja.</p>
+        <form id="form-caso" novalidate>
+          <fieldset data-q="titular">
+            <legend>¿El contrato está a tu nombre?</legend>
+            <div class="opciones dos-col">
+              <label class="opcion"><input type="radio" name="titular" value="si" required> Sí</label>
+              <label class="opcion"><input type="radio" name="titular" value="no"> No, está a nombre de otra persona</label>
+            </div>
+          </fieldset>
 
-        <form id="reclamacion-form">
+          <fieldset data-q="tipoTitular" class="pregunta-oculta">
+            <legend>¿El contrato es…?</legend>
+            <div class="opciones">
+              <label class="opcion"><input type="radio" name="tipoTitular" value="particular"> De particular</label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="autonomo"> De autónomo</label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="empresa"> De una empresa</label>
+            </div>
+          </fieldset>
 
-          <!-- PASO 1: DATOS PERSONALES -->
-          <div class="form-step" id="step-1">
-            <div class="campo">
-              <label>Tipo de reclamante</label>
-              <div class="radio-group">
-                <label class="radio-opcion">
-                  <input type="radio" name="tipo" value="particular" checked onchange="toggleTipo(this.value)">
-                  <span>Particular</span>
-                </label>
-                <label class="radio-opcion">
-                  <input type="radio" name="tipo" value="empresa" onchange="toggleTipo(this.value)">
-                  <span>Empresa</span>
-                </label>
-              </div>
-            </div>
-            <div id="campos-firmante" style="display:none;">
-              <div class="grid-2">
-                <div class="campo">
-                  <label for="firmante-nombre">Persona que firma en nombre de la empresa <span class="campo-opcional">(recomendado)</span></label>
-                  <input type="text" id="firmante-nombre" placeholder="Ej: María Pérez Gómez">
-                </div>
-                <div class="campo">
-                  <label for="firmante-cargo">Cargo <span class="campo-opcional">(opcional)</span></label>
-                  <input type="text" id="firmante-cargo" placeholder="Ej: Administradora única">
-                </div>
-              </div>
-            </div>
-            <div class="campo" id="campo-representacion">
-              <label>¿Actúas en nombre propio o en representación de otra persona?</label>
-              <div class="radio-group">
-                <label class="radio-opcion">
-                  <input type="radio" name="representacion" value="propio" checked onchange="toggleRepresentacion(this.value)">
-                  <span>En nombre propio</span>
-                </label>
-                <label class="radio-opcion">
-                  <input type="radio" name="representacion" value="representacion" onchange="toggleRepresentacion(this.value)">
-                  <span>En representación</span>
-                </label>
-              </div>
-            </div>
-            <div id="campos-representacion" style="display:none;">
-              <div class="aviso-info">
-                <p>ℹ️ En el paso 3 podrás adjuntar el documento de autorización firmado por el titular.</p>
-              </div>
-              <div class="grid-2">
-                <div class="campo">
-                  <label for="rep-nombre">Nombre del representado</label>
-                  <input type="text" id="rep-nombre" placeholder="Nombre completo del titular">
-                </div>
-                <div class="campo">
-                  <label for="rep-documento">DNI/CIF del representado</label>
-                  <input type="text" id="rep-documento" placeholder="12345678A">
-                </div>
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="campo">
-                <label for="nombre" id="label-nombre">Nombre completo</label>
-                <input type="text" id="nombre" placeholder="Juan García López" required>
-              </div>
-              <div class="campo">
-                <label for="documento" id="label-documento">DNI <span class="campo-opcional">(opcional)</span></label>
-                <input type="text" id="documento" placeholder="12345678A">
-              </div>
-            </div>
-            <div class="campo">
-              <label for="direccion">Dirección completa <span class="campo-opcional">(opcional)</span></label>
-              <input type="text" id="direccion" placeholder="Calle Mayor 10, 2º B">
-            </div>
-            <div class="grid-2">
-              <div class="campo">
-                <label for="ciudad">Ciudad <span class="campo-opcional">(opcional)</span></label>
-                <input type="text" id="ciudad" placeholder="Madrid">
-              </div>
-              <div class="campo">
-                <label for="cp">Código postal <span class="campo-opcional">(opcional)</span></label>
-                <input type="text" id="cp" placeholder="28001">
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="campo">
-                <label for="telefono">Teléfono <span class="campo-opcional">(opcional)</span></label>
-                <div class="telefono-grupo">
-                  <select id="prefijo-telefono" aria-label="Prefijo del país">
-                    <option value="+34" selected>🇪🇸 +34</option>
-                    <option value="+351">🇵🇹 +351</option>
-                    <option value="+33">🇫🇷 +33</option>
-                    <option value="+49">🇩🇪 +49</option>
-                    <option value="+39">🇮🇹 +39</option>
-                    <option value="+44">🇬🇧 +44</option>
-                    <option value="+376">🇦🇩 +376</option>
-                    <option value="+212">🇲🇦 +212</option>
-                    <option value="+31">🇳🇱 +31</option>
-                    <option value="+32">🇧🇪 +32</option>
-                    <option value="+41">🇨🇭 +41</option>
-                    <option value="+353">🇮🇪 +353</option>
-                    <option value="+48">🇵🇱 +48</option>
-                    <option value="+40">🇷🇴 +40</option>
-                    <option value="+46">🇸🇪 +46</option>
-                    <option value="+47">🇳🇴 +47</option>
-                    <option value="+45">🇩🇰 +45</option>
-                    <option value="+358">🇫🇮 +358</option>
-                    <option value="+43">🇦🇹 +43</option>
-                    <option value="+30">🇬🇷 +30</option>
-                    <option value="+420">🇨🇿 +420</option>
-                    <option value="+36">🇭🇺 +36</option>
-                    <option value="+1">🇺🇸/🇨🇦 +1</option>
-                    <option value="+52">🇲🇽 +52</option>
-                    <option value="+54">🇦🇷 +54</option>
-                    <option value="+57">🇨🇴 +57</option>
-                    <option value="+56">🇨🇱 +56</option>
-                    <option value="+51">🇵🇪 +51</option>
-                    <option value="+58">🇻🇪 +58</option>
-                    <option value="+55">🇧🇷 +55</option>
-                    <option value="+593">🇪🇨 +593</option>
-                    <option value="+598">🇺🇾 +598</option>
-                    <option value="+591">🇧🇴 +591</option>
-                    <option value="+595">🇵🇾 +595</option>
-                    <option value="+506">🇨🇷 +506</option>
-                    <option value="+507">🇵🇦 +507</option>
-                    <option value="+502">🇬🇹 +502</option>
-                    <option value="+53">🇨🇺 +53</option>
-                    <option value="+61">🇦🇺 +61</option>
-                    <option value="+86">🇨🇳 +86</option>
-                    <option value="+81">🇯🇵 +81</option>
-                    <option value="+91">🇮🇳 +91</option>
-                    <option value="+7">🇷🇺 +7</option>
-                  </select>
-                  <input type="tel" id="telefono" placeholder="600 123 456">
-                </div>
-              </div>
-              <div class="campo">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="juan@email.com" required>
-              </div>
-            </div>
-            <div class="form-nav-btns">
-              <div></div>
-              <button type="button" class="btn-siguiente" onclick="irPaso(2)">Siguiente →</button>
+          <div data-q="operador" class="pregunta-oculta campo">
+            <label for="operador">¿Con qué compañía?</label>
+            <select id="operador" name="operador">
+              <option value="">Elige tu compañía</option>
+            </select>
+            <div id="campo-operador-otro" class="campo pregunta-oculta" style="margin-top:10px">
+              <label for="operadorOtro">Nombre de la compañía</label>
+              <input type="text" id="operadorOtro" name="operadorOtro" maxlength="60" autocomplete="off">
             </div>
           </div>
 
-          <!-- PASO 2: LA RECLAMACIÓN -->
-          <div class="form-step" id="step-2" style="display:none;">
-            <div class="campo">
-              <label>¿A quién reclamas?</label>
-              <div class="radio-group">
-                <label class="radio-opcion">
-                  <input type="radio" name="tipo-destinatario" value="empresa" checked onchange="toggleDestinatario(this.value)">
-                  <span>A una empresa o entidad</span>
-                </label>
-                <label class="radio-opcion">
-                  <input type="radio" name="tipo-destinatario" value="persona" onchange="toggleDestinatario(this.value)">
-                  <span>A una persona física</span>
-                </label>
-              </div>
+          <fieldset data-q="servicio" class="pregunta-oculta">
+            <legend>¿Qué diste de baja?</legend>
+            <div class="opciones dos-col">
+              <label class="opcion"><input type="radio" name="servicio" value="fibra"> Fibra o internet en casa</label>
+              <label class="opcion"><input type="radio" name="servicio" value="movil"> Línea móvil</label>
+              <label class="opcion"><input type="radio" name="servicio" value="fijo"> Teléfono fijo</label>
+              <label class="opcion"><input type="radio" name="servicio" value="paquete"> Un paquete (fibra, móvil…)</label>
             </div>
-            <div class="campo">
-              <label for="categoria-empresa">Categoría <span class="campo-opcional">(opcional)</span></label>
-              <select id="categoria-empresa" onchange="mostrarCamposCategoria(this.value)">
-                <option value="">Selecciona una categoría...</option>
-                <option value="Telecomunicaciones">Telecomunicaciones</option>
-                <option value="Energía y suministros">Energía y suministros</option>
-                <option value="Aerolíneas y transporte">Aerolíneas y transporte</option>
-                <option value="Banca y seguros">Banca y seguros</option>
-                <option value="Administración pública">Administración pública</option>
-                <option value="Comercio y tiendas online">Comercio y tiendas online</option>
-                <option value="Sanidad y salud">Sanidad y salud</option>
-                <option value="Inmobiliaria y alquiler">Inmobiliaria y alquiler</option>
-                <option value="Educación">Educación</option>
-                <option value="Deudas, préstamos e impagos">Deudas, préstamos e impagos</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-            <div class="campo">
-              <label for="empresa" id="label-empresa">Nombre de la empresa o entidad</label>
-              <input type="text" id="empresa" placeholder="Escribe el nombre exacto" required>
-            </div>
-            <div class="campo">
-              <label for="domicilio-destinatario" id="label-domicilio-destinatario">Dirección postal de la empresa <span class="campo-opcional">(opcional)</span></label>
-              <input type="text" id="domicilio-destinatario" placeholder="Calle, número, código postal y ciudad">
-            </div>
-            <div class="grid-2">
-              <div class="campo">
-                <label for="referencia">Nº contrato o referencia <span class="campo-opcional">(opcional)</span></label>
-                <input type="text" id="referencia" placeholder="Ej: 123456789">
-              </div>
-              <div class="campo">
-                <label for="fecha-hecho">Fecha del hecho <span class="campo-opcional">(opcional)</span></label>
-                <input type="date" id="fecha-hecho">
-              </div>
-            </div>
+          </fieldset>
 
-            <!-- CAMPOS DINÁMICOS POR CATEGORÍA -->
-            <div id="campos-categoria"></div>
+          <fieldset data-q="viaBaja" class="pregunta-oculta">
+            <legend>¿Cómo pediste la baja?</legend>
+            <div class="opciones">
+              <label class="opcion"><input type="radio" name="viaBaja" value="operador"> Se la pedí a esa compañía (teléfono, web, email o tienda)</label>
+              <label class="opcion"><input type="radio" name="viaBaja" value="portabilidad"> Me cambié a otra compañía y ella tramitó el cambio</label>
+              <label class="opcion"><input type="radio" name="viaBaja" value="no_recuerdo"> No lo recuerdo</label>
+            </div>
+          </fieldset>
 
-            <div class="campo">
-              <label for="importe">Importe reclamado en euros <span class="campo-opcional">(opcional)</span></label>
-              <input type="number" id="importe" placeholder="Ej: 45.90" min="0" step="0.01">
+          <fieldset data-q="pruebaBaja" class="pregunta-oculta">
+            <legend>¿Qué prueba tienes de que pediste la baja?</legend>
+            <div class="opciones">
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="referencia"> Un número de referencia de la baja</label>
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="confirmacion"> Un email, SMS o carta de la compañía confirmándola</label>
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="justificante"> Un justificante o captura de mi solicitud</label>
+              <label class="opcion"><input type="radio" name="pruebaBaja" value="ninguna"> No tengo ninguna prueba</label>
             </div>
+          </fieldset>
 
-            <div class="seccion-titulo">1. Expone</div>
+          <div data-q="fechaSolicitud" class="pregunta-oculta">
             <div class="campo">
-              <label for="descripcion">Cuéntanos, con todo el detalle que quieras, qué ha ocurrido</label>
-              <textarea id="descripcion" rows="8" placeholder="Explica con tus palabras qué pasó, cuándo, y qué respuesta has recibido hasta ahora. Cuanto más detalle des, más sólido será tu escrito." required></textarea>
+              <label for="fechaSolicitud">¿Qué día pediste la baja?</label>
+              <p class="ayuda">El día en que la solicitaste, no el de la última factura.</p>
+              <input type="date" id="fechaSolicitud" name="fechaSolicitud">
             </div>
-            <div class="campo">
-              <label for="reclamacion-previa">¿Has reclamado antes por este asunto? <span class="campo-opcional">(opcional)</span></label>
-              <select id="reclamacion-previa" onchange="toggleReclamacionPrevia(this.value)">
-                <option value="">Selecciona...</option>
-                <option value="no">No, es mi primera reclamación</option>
-                <option value="si-sin-respuesta">Sí, por teléfono o presencialmente, sin respuesta</option>
-                <option value="si-email">Sí, por email o formulario web, sin respuesta satisfactoria</option>
-                <option value="si-respuesta-negativa">Sí, y la respuesta fue negativa o insatisfactoria</option>
-              </select>
-            </div>
-            <div id="campos-reclamacion-previa" style="display:none;">
-              <div class="campo">
-                <label for="num-reclamacion-previa">Nº de reclamación o expediente previo (si lo tienes)</label>
-                <input type="text" id="num-reclamacion-previa" placeholder="Ej: INC-2026-123456">
-              </div>
-              <div class="campo">
-                <label for="respuesta-previa">Resumen de la respuesta recibida</label>
-                <textarea id="respuesta-previa" rows="2" placeholder="Ej: Me dijeron que no era su responsabilidad..."></textarea>
-              </div>
-            </div>
-            <div class="campo">
-              <label for="tiene-documentacion">¿Tienes documentación que acredite lo que reclamas? <span class="campo-opcional">(opcional)</span></label>
-              <select id="tiene-documentacion" onchange="toggleAvisoDocumentacion(this.value)">
-                <option value="">Selecciona...</option>
-                <option value="si">Sí, tengo facturas, contratos, capturas u otros documentos</option>
-                <option value="no">No tengo documentación</option>
-                <option value="parcial">Tengo alguna documentación pero no toda</option>
-              </select>
-            </div>
-            <div id="aviso-documentacion" style="display:none;">
-              <div class="aviso-exito">
-                <p>✓ Perfecto — en el paso 3 podrás adjuntar esos documentos. Cuantos más adjuntes, más contundente y preciso será tu escrito.</p>
-              </div>
-            </div>
-
-            <div class="seccion-titulo">2. Solicita</div>
-            <div class="campo">
-              <label for="solicita">Explica, con todo el detalle que quieras, qué le solicitas a la otra parte</label>
-              <textarea id="solicita" rows="5" placeholder="Ej: Que me devuelvan el dinero cobrado indebidamente, que solucionen la avería, que anulen la multa, que me indemnicen por los daños causados..."></textarea>
-            </div>
-
-            <div class="form-nav-btns">
-              <button type="button" class="btn-atras" onclick="irPaso(1)">← Atrás</button>
-              <button type="button" class="btn-siguiente" onclick="irPaso(3)">Siguiente →</button>
+            <label class="casilla"><input type="checkbox" id="pidioFecha"> Pedí que la baja fuera efectiva en una fecha concreta posterior</label>
+            <div id="campo-fecha-deseada" class="campo pregunta-oculta">
+              <label for="fechaDeseada">¿Qué fecha pediste?</label>
+              <input type="date" id="fechaDeseada" name="fechaDeseada">
             </div>
           </div>
 
-          <!-- PASO 3: DOCUMENTOS -->
-          <div class="form-step" id="step-3" style="display:none;">
-            <div class="campo">
-              <label>Adjunta documentos relacionados</label>
-              <p style="font-size:12px; color:#888; margin-bottom:10px; margin-top:-4px; line-height:1.6;">Cuantos más documentos adjuntes, más preciso y contundente será tu escrito. Puedes adjuntar notificaciones, facturas, contratos, emails, capturas de pantalla o cualquier documento relevante.</p>
-              <div class="upload-area" id="upload-area" onclick="document.getElementById('archivos').click()">
-                <span class="upload-icon">📎</span>
-                <p class="upload-texto">Haz clic para adjuntar o arrastra aquí</p>
-                <p class="upload-sub">Los PDF y las imágenes se adjuntan a tu escrito como documentos anexos, tal cual. Word y Excel: súbelos en PDF si quieres que se adjunten. Máx. 3 MB entre todos los PDF.</p>
-              </div>
-              <input type="file" id="archivos" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="mostrarArchivos(this.files)">
-              <div id="lista-archivos"></div>
+          <fieldset data-q="conceptos" class="pregunta-oculta">
+            <legend>¿Qué te han cobrado después de la baja?</legend>
+            <p class="ayuda">Marca todo lo que aparezca.</p>
+            <div class="opciones">
+              <label class="opcion"><input type="checkbox" name="conceptos" value="cuota"> Cuotas mensuales del servicio</label>
+              <label class="opcion"><input type="checkbox" name="conceptos" value="consumo"> Llamadas, datos u otros consumos</label>
+              <label class="opcion"><input type="checkbox" name="conceptos" value="permanencia"> Una penalización por permanencia</label>
+              <label class="opcion"><input type="checkbox" name="conceptos" value="dispositivo"> Plazos de un móvil u otro aparato</label>
+              <label class="opcion"><input type="checkbox" name="conceptos" value="equipos"> Un cargo por no devolver el router u otro equipo</label>
             </div>
-            <div class="form-nav-btns">
-              <button type="button" class="btn-atras" onclick="irPaso(2)">← Atrás</button>
-              <button type="button" class="btn-siguiente" onclick="irPaso(4)">Siguiente →</button>
+          </fieldset>
+
+          <div data-q="fechaPrimeraFactura" class="pregunta-oculta campo">
+            <label for="fechaPrimeraFactura">¿Qué día te llegó la primera factura cobrada después de la baja? <span class="ayuda">(si lo sabes)</span></label>
+            <p class="ayuda">Es la fecha de emisión que aparece en la factura. Sirve para avisarte de los plazos.</p>
+            <input type="date" id="fechaPrimeraFactura" name="fechaPrimeraFactura">
+          </div>
+
+          <fieldset data-q="reclamado" class="pregunta-oculta">
+            <legend>¿Ya has reclamado a la compañía por estos cobros?</legend>
+            <div class="opciones dos-col">
+              <label class="opcion"><input type="radio" name="reclamado" value="no"> No, todavía no</label>
+              <label class="opcion"><input type="radio" name="reclamado" value="si"> Sí, ya reclamé</label>
+            </div>
+          </fieldset>
+
+          <div id="bloque-previa" class="pregunta-oculta">
+            <div class="campo">
+              <label for="fechaReclamacion">¿Qué día reclamaste?</label>
+              <input type="date" id="fechaReclamacion" name="fechaReclamacion">
+            </div>
+            <fieldset>
+              <legend>¿Qué prueba tienes de esa reclamación?</legend>
+              <div class="opciones">
+                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="referencia"> Un número de referencia</label>
+                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="escrito"> Una copia (email, formulario, escrito)</label>
+                <label class="opcion"><input type="radio" name="pruebaReclamacion" value="ninguna"> Ninguna, fue por teléfono sin referencia</label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>¿Qué te han contestado?</legend>
+              <div class="opciones">
+                <label class="opcion"><input type="radio" name="respuesta" value="sin_respuesta"> Nada, no han respondido</label>
+                <label class="opcion"><input type="radio" name="respuesta" value="insatisfactoria"> Respondieron, pero no me devuelven el dinero</label>
+                <label class="opcion"><input type="radio" name="respuesta" value="solucionado"> Ya me lo han devuelto</label>
+              </div>
+            </fieldset>
+            <div id="campo-fecha-respuesta" class="campo pregunta-oculta">
+              <label for="fechaRespuesta">¿Qué día te respondieron?</label>
+              <input type="date" id="fechaRespuesta" name="fechaRespuesta">
             </div>
           </div>
 
-          <!-- PASO 4: DESCARGAR -->
-          <div class="form-step" id="step-4" style="display:none;">
-            <div class="opciones-precio">
-              <div class="opcion-precio" id="opcion-basica" onclick="seleccionarOpcion('basica')">
-                <div class="opcion-precio-header">
-                  <span class="opcion-precio-nombre">Solo escrito</span>
-                  <span class="opcion-precio-precio">9,99€</span>
-                </div>
-                <ul class="opcion-precio-lista">
-                  <li>✓ Escrito formal completo en PDF</li>
-                  <li>✓ Legislación verificada (BOE · EUR-Lex)</li>
-                  <li>✓ Enviado a tu email al instante</li>
-                  <li>✓ Listo para enviar sin modificaciones</li>
-                </ul>
-              </div>
-              <div class="opcion-precio opcion-recomendada" id="opcion-completa" onclick="seleccionarOpcion('completa')">
-                <div class="opcion-badge">Recomendado</div>
-                <div class="opcion-precio-header">
-                  <span class="opcion-precio-nombre">Escrito + Guía</span>
-                  <span class="opcion-precio-precio">13,99€</span>
-                </div>
-                <ul class="opcion-precio-lista">
-                  <li>✓ Todo lo del plan básico</li>
-                  <li>✓ Guía paso a paso personalizada</li>
-                  <li>✓ Canal correcto según empresa y CCAA</li>
-                  <li>✓ Qué hacer si no responden</li>
-                </ul>
-              </div>
+          <fieldset data-q="situaciones" class="pregunta-oculta">
+            <legend>¿Te pasa algo de esto?</legend>
+            <div class="opciones">
+              <label class="opcion"><input type="checkbox" name="situaciones" value="morosos"> Me han metido o amenazado con un fichero de morosos</label>
+              <label class="opcion"><input type="checkbox" name="situaciones" value="suplantacion"> No reconozco el contrato</label>
+              <label class="opcion"><input type="checkbox" name="situaciones" value="judicial"> Ya hay un juicio o un abogado</label>
+              <label class="opcion"><input type="checkbox" name="situaciones" value="danos"> Quiero una indemnización por daños</label>
+              <label class="opcion"><input type="checkbox" name="situaciones" value="arbitraje"> Ya pasó por arbitraje de consumo</label>
+              <label class="opcion"><input type="checkbox" id="ninguna-situacion"> Nada de esto</label>
             </div>
-            <div class="campo">
-              <label class="check-opcion" id="wrap-check-privacidad">
-                <input type="checkbox" id="check-privacidad">
-                <span>He leído y acepto la <a href="/privacidad.html" target="_blank">Política de Privacidad</a>. Entiendo que mis datos personales se usarán para generar mi escrito de reclamación.</span>
-              </label>
-            </div>
-            <div class="form-nav-btns">
-              <button type="button" class="btn-atras" onclick="irPaso(3)">← Atrás</button>
-              <button type="submit" id="btn-generar">Generar mi escrito →</button>
-            </div>
-          </div>
+          </fieldset>
 
+          <div id="errores-paso-1" role="alert"></div>
+          <div class="acciones pregunta-oculta" id="acciones-paso-1">
+            <button type="submit" class="boton ancho">Comprobar</button>
+          </div>
         </form>
 
-        <datalist id="lista-aeropuertos"></datalist>
-      </div>
+        <div id="resultado" class="resultado" tabindex="-1" aria-live="polite"></div>
+      </section>
 
-      <div id="resultado" style="display:none;">
-        <div id="loading" style="text-align:center; padding:3rem 0;">
-          <div class="spinner"></div>
-          <p id="loading-text" style="color:#666; font-size:0.95rem; margin-top:1rem;">Analizando tu caso...</p>
-        </div>
-        <div id="carta-generada" style="display:none;">
-          <div class="form-card">
-            <div class="form-header">
-              <div class="form-icon">✅</div>
-              <div>
-                <p class="form-title">Tu escrito está listo</p>
-                <p class="form-subtitle">Vista previa — el documento completo llegará a tu email</p>
-              </div>
-            </div>
-            <div id="aviso-caso" class="aviso-caso" style="display:none;">
-              <p class="aviso-caso-titulo">⚠️ Antes de continuar, lee esto</p>
-              <p id="aviso-caso-texto"></p>
-              <label class="check-opcion" id="wrap-check-aviso" style="display:none;">
-                <input type="checkbox" id="check-aviso">
-                <span>He leído el aviso y quiero el escrito igualmente.</span>
-              </label>
-            </div>
-            <div id="cabecera-escrito" class="cabecera-escrito" style="display:none;">
-              <p class="cabecera-titulo">Revisa el encabezado de tu escrito</p>
-              <div class="cabecera-fila"><span class="cabecera-etiqueta">De</span><div id="cab-remitente"></div></div>
-              <div class="cabecera-fila"><span class="cabecera-etiqueta">Para</span><div id="cab-destinatario"></div></div>
-              <div class="cabecera-fila"><span class="cabecera-etiqueta">Asunto</span><div id="cab-asunto"></div></div>
-              <button type="button" id="btn-corregir" class="btn-corregir">✏️ ¿Algún dato está mal? Corregir antes de pagar</button>
-            </div>
-            <div class="carta-preview-wrapper">
-              <div id="carta-visible"></div>
-              <div class="carta-blur-overlay">
-                <div class="blur-content">
-                  <div class="blur-icon">🔒</div>
-                  <p class="blur-titulo">Tu escrito completo está listo</p>
-                  <p class="blur-sub">Descarga el PDF con todas las referencias legales verificadas y listo para presentar.</p>
-                  <label class="check-opcion check-opcion-pago" id="wrap-check-venta">
-                    <input type="checkbox" id="check-condiciones-venta">
-                    <span>He leído y acepto las <a href="/condiciones-venta.html" target="_blank">Condiciones de Venta</a>. Solicito la ejecución inmediata del servicio y entiendo que, al ser contenido digital de entrega inmediata, pierdo mi derecho de desistimiento en cuanto reciba el escrito por email.</span>
-                  </label>
-                  <button id="btn-pagar" class="btn-pagar">⬇️ Descargar escrito completo en PDF — 9,99€</button>
-                  <p class="blur-garantia">✓ Pago seguro con Stripe &nbsp;·&nbsp; ✓ Envío inmediato por email &nbsp;·&nbsp; ✓ Sin suscripción</p>
-                </div>
-              </div>
-            </div>
-            <div class="descargo-legal">
-              <p>⚖️ <strong>Aviso legal:</strong> Las referencias normativas incluidas en este escrito han sido verificadas contra fuentes oficiales (BOE y EUR-Lex). ReclamoIA es una herramienta de asistencia en la redacción y no presta servicios de asesoría jurídica.</p>
-            </div>
-            <button id="btn-nueva">Generar otro escrito</button>
+      <!-- PASO 2 -->
+      <section id="paso-2" hidden aria-labelledby="t-paso-2">
+        <h1 id="t-paso-2" tabindex="-1">Añade tus documentos</h1>
+        <p class="ayuda" id="limites"></p>
+        <h2 class="rotulo">Lo que necesitamos</h2>
+        <ul class="requisitos" id="requisitos"></ul>
+
+        <div class="zona-subida" id="zona-subida">
+          <p style="margin:0">Sube tus facturas y pruebas, una a una o varias a la vez.</p>
+          <div class="botones">
+            <button type="button" class="boton" data-abrir="archivos">Elegir archivos</button>
+            <button type="button" class="boton secundario" data-abrir="foto">Hacer una foto</button>
           </div>
+          <input type="file" id="archivos" hidden multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+          <input type="file" id="foto" hidden accept="image/jpeg,image/png" capture="environment">
+          <p class="ayuda" style="margin:0">Fotos: con buena luz, planas y que se vea la hoja entera.</p>
         </div>
-      </div>
+        <div id="mensajes-docs" aria-live="polite"></div>
+        <ul class="lista-docs" id="lista-docs" aria-label="Documentos añadidos"></ul>
 
+        <form id="form-datos" novalidate hidden>
+          <h2>Confirma tus datos</h2>
+          <p class="ayuda">Los hemos leído de tus documentos cuando ha sido posible. Revísalos y corrige lo que haga falta: no inventamos nada que no aparezca.</p>
+          <div id="alertas-datos"></div>
+
+          <h3>Titular del contrato</h3>
+          <div class="campo"><label for="d-nombre">Nombre y apellidos</label><input type="text" id="d-nombre" autocomplete="name" maxlength="100"><span class="fuente" id="f-nombre"></span></div>
+          <div class="fila dos">
+            <div class="campo"><label for="d-documento">DNI o NIE</label><input type="text" id="d-documento" maxlength="12" autocapitalize="characters" autocomplete="off"><span class="fuente" id="f-documento"></span></div>
+            <div class="campo"><label for="d-telefono">Teléfono de contacto <span class="ayuda">(opcional)</span></label><input type="tel" id="d-telefono" autocomplete="tel" maxlength="20" inputmode="tel"></div>
+          </div>
+          <div class="campo"><label for="d-email">Email</label><input type="email" id="d-email" autocomplete="email" maxlength="120" inputmode="email"><p class="ayuda" style="margin:4px 0 0">Te enviaremos aquí el enlace de descarga y la confirmación del pedido.</p></div>
+          <div class="campo"><label for="d-domicilio">Domicilio <span class="ayuda" id="domicilio-opcional">(opcional; aparece en el escrito)</span></label><input type="text" id="d-domicilio" autocomplete="street-address" maxlength="140"></div>
+          <div class="fila tres">
+            <div class="campo"><label for="d-cp">Código postal</label><input type="text" id="d-cp" inputmode="numeric" maxlength="5" autocomplete="postal-code"></div>
+            <div class="campo"><label for="d-localidad">Localidad</label><input type="text" id="d-localidad" maxlength="60" autocomplete="address-level2"></div>
+            <div class="campo"><label for="d-provincia">Provincia</label><input type="text" id="d-provincia" maxlength="40" autocomplete="address-level1"></div>
+          </div>
+
+          <h3>El contrato y la baja</h3>
+          <div class="fila dos">
+            <div class="campo"><label for="d-cliente">Nº de cliente o contrato <span class="ayuda">(si aparece)</span></label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
+            <div class="campo"><label for="d-lineas">Teléfono(s) o línea(s) dadas de baja</label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
+          </div>
+          <div class="fila dos">
+            <div class="campo"><label for="d-canal-baja">¿Por dónde pediste la baja?</label>
+              <select id="d-canal-baja"><option value="">Elige</option><option value="telefono">Por teléfono</option><option value="web">En la web o la app</option><option value="escrito">Por email o por escrito</option><option value="tienda">En una tienda</option><option value="otro">Otro</option></select></div>
+            <div class="campo"><label for="d-ref-baja">Nº de referencia de la baja <span class="ayuda" id="ref-baja-opcional">(si lo tienes)</span></label><input type="text" id="d-ref-baja" maxlength="40"><span class="fuente" id="f-ref-baja"></span></div>
+          </div>
+
+          <div id="bloque-datos-previa" hidden>
+            <h3>Tu reclamación anterior</h3>
+            <div class="fila dos">
+              <div class="campo"><label for="d-canal-recl">¿Por dónde reclamaste?</label>
+                <select id="d-canal-recl"><option value="">Elige</option><option value="telefono">Por teléfono</option><option value="web">En la web o la app</option><option value="escrito">Por email o por escrito</option><option value="tienda">En una tienda</option><option value="otro">Otro</option></select></div>
+              <div class="campo"><label for="d-ref-recl">Nº de referencia de la reclamación</label><input type="text" id="d-ref-recl" maxlength="40"><span class="fuente" id="f-ref-recl"></span></div>
+            </div>
+            <div class="campo" id="campo-respuesta-resumen" hidden><label for="d-respuesta">¿Qué te respondieron? <span class="ayuda">(en una frase)</span></label><textarea id="d-respuesta" maxlength="300"></textarea><span class="fuente" id="f-respuesta"></span></div>
+          </div>
+
+          <h3>Facturas cobradas después de la baja</h3>
+          <p class="ayuda">Para cada factura indica el periodo que cubre y cuánto corresponde al servicio dado de baja (cuotas y consumos, IVA incluido). Solo reclamaremos los días posteriores a la baja.</p>
+          <div id="facturas"></div>
+          <button type="button" class="boton discreto" id="anadir-factura">+ Añadir otra factura</button>
+
+          <div id="errores-datos" role="alert"></div>
+          <div class="acciones">
+            <button type="submit" class="boton ancho">Revisar</button>
+            <button type="button" class="boton discreto" data-ir="1">Volver al paso 1</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- PASO 3 -->
+      <section id="paso-3" hidden aria-labelledby="t-paso-3">
+        <h1 id="t-paso-3" tabindex="-1">Revisa y paga</h1>
+        <div id="resumen"></div>
+        <form id="form-pago" novalidate>
+          <div class="tarjeta" style="margin:16px 0">
+            <label class="casilla"><input type="checkbox" id="acepta-condiciones"> <span>He leído y acepto las <a href="/condiciones-venta.html" target="_blank" rel="noopener">condiciones de contratación</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+            <label class="casilla"><input type="checkbox" id="ejecucion-inmediata"> <span>Pido que preparéis los documentos de inmediato. Sé que, cuando estén preparados y a mi disposición, pierdo el derecho de desistimiento; mis derechos si tienen algún defecto se mantienen.</span></label>
+          </div>
+          <p class="ayuda">Puedes reclamar gratis por tu cuenta por los canales oficiales. Pagas la preparación de la documentación. El pago lo procesa Stripe.</p>
+          <div id="errores-pago" role="alert"></div>
+          <div class="acciones">
+            <button type="submit" class="boton ancho" id="boton-pagar">Pagar</button>
+          </div>
+        </form>
+        <div class="acciones">
+          <button type="button" class="boton discreto" data-ir="2">Corregir documentos o datos</button>
+          <button type="button" class="boton discreto" data-ir="1">Corregir respuestas</button>
+          <button type="button" class="boton discreto" id="borrar-expediente">Borrar mis datos y empezar de nuevo</button>
+        </div>
+      </section>
     </div>
   </main>
 
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" style="height:38px; width:auto; filter:brightness(0) invert(1);">
-      </div>
-      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
-      <div class="footer-links">
-        <a href="/legal.html">Aviso Legal</a>
-        <a href="/privacidad.html">Política de Privacidad</a>
-        <a href="/condiciones-venta.html">Condiciones de Venta</a>
-        <a href="/verificar.html">Verificar documento</a>
-        <a href="mailto:hola@reclamoia.es">Contacto</a>
-      </div>
-      <p class="footer-copy">© 2026 ReclamoIA. Todos los derechos reservados.<br>ReclamoIA no presta servicios de asesoría jurídica. Los escritos generados son documentos de apoyo.</p>
+  <footer class="pie">
+    <div class="contenedor">
+      <p><strong data-marca>BajaClara</strong> es un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z. Contacto: <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a></p>
+      <nav class="enlaces" aria-label="Información legal">
+        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/condiciones-venta.html">Condiciones</a><a href="/#preguntas">Ayuda</a>
+      </nav>
     </div>
   </footer>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="reclamar.js"></script>
-  <script src="aeropuertos-datalist.js" defer></script>
-  <script>
-
-    const CAMPOS_CATEGORIA = {
-      'Telecomunicaciones': `
-        <div class="campo"><label for="cat-linea">Número de línea o contrato afectado</label><input type="text" id="cat-linea" placeholder="Ej: 612345678 o CTR-123456"></div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-servicio">Tipo de servicio afectado</label><select id="cat-servicio"><option value="">Selecciona...</option><option>Móvil</option><option>Fibra/ADSL</option><option>Televisión</option><option>Pack combinado</option></select></div>
-          <div class="campo"><label for="cat-baja">¿Sigues siendo cliente?</label><select id="cat-baja"><option value="">Selecciona...</option><option value="si">Sí, sigo siendo cliente</option><option value="no">No, ya me di de baja</option><option value="intentando">Intento darme de baja y no puedo</option></select></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-incidencia">Nº de incidencia abierta (si tienes)</label><input type="text" id="cat-incidencia" placeholder="Ej: INC-2026-123456"></div>
-          <div class="campo"><label for="cat-fecha-alta">Fecha de alta o contratación del servicio</label><input type="date" id="cat-fecha-alta"></div>
-        </div>`,
-
-      'Aerolíneas y transporte': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-vuelo">Número de vuelo</label><input type="text" id="cat-vuelo" placeholder="Ej: VY1234 o IB3456"></div>
-          <div class="campo"><label for="cat-localizador">Localizador de reserva</label><input type="text" id="cat-localizador" placeholder="Ej: ABC123"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-origen">Aeropuerto de origen</label><input type="text" id="cat-origen" list="lista-aeropuertos" placeholder="Escribe la ciudad o el código..." autocomplete="off"></div>
-          <div class="campo"><label for="cat-destino">Aeropuerto de destino</label><input type="text" id="cat-destino" list="lista-aeropuertos" placeholder="Escribe la ciudad o el código..." autocomplete="off"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-retraso">Horas de retraso (si aplica)</label><input type="number" id="cat-retraso" placeholder="Ej: 4" min="0"></div>
-          <div class="campo"><label for="cat-compensacion">¿La aerolínea ofreció compensación?</label><select id="cat-compensacion"><option value="">Selecciona...</option><option value="no">No ofreció nada</option><option value="voucher">Ofreció voucher o bono</option><option value="parcial">Ofreció compensación insuficiente</option><option value="si">Sí, la acepté</option></select></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-operador">Compañía que operó el vuelo <span class="campo-opcional">(si es distinta)</span></label><input type="text" id="cat-operador" placeholder="Ej: reservado con Opodo, operado por Iberia"></div>
-          <div class="campo"><label for="cat-distancia">Distancia aproximada del trayecto</label><select id="cat-distancia"><option value="">Selecciona...</option><option value="corta (1.500 km o menos)">Corta — hasta 1.500 km</option><option value="media (entre 1.500 y 3.500 km)">Media — entre 1.500 y 3.500 km</option><option value="larga (más de 3.500 km)">Larga — más de 3.500 km</option></select></div>
-        </div>`,
-
-      'Banca y seguros': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-producto">Tipo de producto</label><select id="cat-producto"><option value="">Selecciona...</option><option>Hipoteca</option><option>Préstamo personal</option><option>Tarjeta de crédito/débito</option><option>Seguro de vida</option><option>Seguro de hogar</option><option>Plan de pensiones</option><option>Cuenta corriente</option><option>Otro</option></select></div>
-          <div class="campo"><label for="cat-cuenta">Últimos 4 dígitos de cuenta/póliza</label><input type="text" id="cat-cuenta" placeholder="Ej: 4521" maxlength="4"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-sat-banco">¿Reclamaste antes al Servicio de Atención al Cliente del banco?</label><select id="cat-sat-banco"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-respuesta">Sí, sin respuesta</option><option value="si-negativa">Sí, con respuesta negativa</option></select></div>
-          <div class="campo"><label for="cat-reclamacion-oficial">¿Has reclamado al Banco de España / DGSFP?</label><select id="cat-reclamacion-oficial"><option value="">Selecciona...</option><option value="no">No, aún no</option><option value="si">Sí, ya la he presentado</option></select></div>
-        </div>`,
-
-      'Administración pública': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-organismo">Organismo concreto</label><select id="cat-organismo"><option value="">Selecciona...</option><option>AEAT (Agencia Tributaria)</option><option>DGT (Tráfico)</option><option>Seguridad Social / TGSS</option><option>SEPE (Desempleo)</option><option>Ayuntamiento</option><option>Comunidad Autónoma</option><option>Otro organismo</option></select></div>
-          <div class="campo"><label for="cat-expediente">Nº de expediente administrativo</label><input type="text" id="cat-expediente" placeholder="Ej: 2026/EXP/123456"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-tipo-recurso">¿Es una reclamación nueva o un recurso?</label><select id="cat-tipo-recurso"><option value="">Selecciona...</option><option value="nueva">Reclamación nueva</option><option value="reposicion">Recurso de reposición</option><option value="alzada">Recurso de alzada</option><option value="revision">Solicitud de revisión de oficio</option></select></div>
-          <div class="campo"><label for="cat-registro">Nº de registro de entrada <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-registro" placeholder="Ej: REG-2026-000123"></div>
-        </div>`,
-
-      'Energía y suministros': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-cups">Código CUPS (en tu factura)</label><input type="text" id="cat-cups" placeholder="Ej: ES0021000012345678AB"></div>
-          <div class="campo"><label for="cat-suministro">Tipo de suministro</label><select id="cat-suministro"><option value="">Selecciona...</option><option>Electricidad</option><option>Gas natural</option><option>Ambos</option><option>Agua</option></select></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-corte">¿El suministro fue interrumpido?</label><select id="cat-corte"><option value="">Selecciona...</option><option value="no">No, sigue activo</option><option value="si">Sí, fue cortado</option><option value="amenaza">Me amenazan con cortarlo</option></select></div>
-          <div class="campo"><label for="cat-meses">¿Cuántos meses lleva el problema?</label><input type="number" id="cat-meses" placeholder="Ej: 3" min="0"></div>
-        </div>
-        <div class="campo"><label for="cat-titular-suministro">Titular del contrato <span class="campo-opcional">(si es distinto de ti)</span></label><input type="text" id="cat-titular-suministro" placeholder="Nombre del titular del contrato"></div>`,
-
-      'Comercio y tiendas online': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-pedido">Número de pedido</label><input type="text" id="cat-pedido" placeholder="Ej: PED-2026-123456"></div>
-          <div class="campo"><label for="cat-vendedor">¿Quién es el vendedor?</label><select id="cat-vendedor"><option value="">Selecciona...</option><option value="plataforma">La propia plataforma (Amazon, etc.)</option><option value="tercero">Un vendedor tercero en la plataforma</option><option value="tienda">Tienda online independiente</option></select></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-recibido">¿Recibiste el producto?</label><select id="cat-recibido"><option value="">Selecciona...</option><option value="no">No llegó</option><option value="defectuoso">Llegó defectuoso</option><option value="incorrecto">Llegó pero no era lo pedido</option><option value="si">Sí llegó pero hay otro problema</option></select></div>
-          <div class="campo"><label for="cat-devuelto">¿Ya devolviste el producto?</label><select id="cat-devuelto"><option value="">Selecciona...</option><option value="no">No</option><option value="si-sin-reembolso">Sí, pero no me han reembolsado</option><option value="si-reembolso-parcial">Sí, con reembolso parcial</option></select></div>
-        </div>
-        <div class="campo"><label for="cat-metodo-pago">Método de pago utilizado <span class="campo-opcional">(opcional)</span></label><select id="cat-metodo-pago"><option value="">Selecciona...</option><option>Tarjeta de crédito/débito</option><option>PayPal</option><option>Transferencia bancaria</option><option>Contrareembolso</option><option>Financiación / a plazos</option></select></div>`,
-
-      'Inmobiliaria y alquiler': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-rol">¿Eres arrendador o arrendatario?</label><select id="cat-rol"><option value="">Selecciona...</option><option value="arrendatario">Arrendatario (inquilino)</option><option value="arrendador">Arrendador (propietario)</option><option value="comprador">Comprador</option><option value="vendedor">Vendedor</option></select></div>
-          <div class="campo"><label for="cat-contrato">¿Tienes contrato vigente?</label><select id="cat-contrato"><option value="">Selecciona...</option><option value="si">Sí</option><option value="no">No</option><option value="vencido">Venció y no se renovó</option></select></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-inmueble">Dirección del inmueble afectado</label><input type="text" id="cat-inmueble" placeholder="Calle y número del inmueble"></div>
-          <div class="campo"><label for="cat-fianza">Importe de la fianza depositada <span class="campo-opcional">(opcional)</span></label><input type="number" id="cat-fianza" placeholder="Ej: 900" min="0" step="0.01"></div>
-        </div>`,
-
-      'Sanidad y salud': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-tipo-sanidad">Tipo de asistencia</label><select id="cat-tipo-sanidad"><option value="">Selecciona...</option><option>Sanidad pública</option><option>Seguro médico privado</option><option>Clínica privada</option></select></div>
-          <div class="campo"><label for="cat-nhc">Nº de historia clínica o expediente</label><input type="text" id="cat-nhc" placeholder="Ej: HC-2026-123456"></div>
-        </div>
-        <div class="campo"><label for="cat-fecha-asistencia">Fecha de la asistencia o intervención <span class="campo-opcional">(opcional)</span></label><input type="date" id="cat-fecha-asistencia"></div>`,
-
-      'Educación': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-tipo-centro">Tipo de centro</label><select id="cat-tipo-centro"><option value="">Selecciona...</option><option>Universidad pública</option><option>Universidad privada</option><option>Centro de formación</option><option>Academia</option><option>Colegio público</option><option>Colegio concertado/privado</option></select></div>
-          <div class="campo"><label for="cat-expediente-edu">Nº de expediente o matrícula</label><input type="text" id="cat-expediente-edu" placeholder="Ej: MAT-2026-123"></div>
-        </div>
-        <div class="campo"><label for="cat-curso">Curso académico afectado <span class="campo-opcional">(opcional)</span></label><input type="text" id="cat-curso" placeholder="Ej: 2025/2026"></div>`,
-
-      'Deudas, préstamos e impagos': `
-        <div class="grid-2">
-          <div class="campo"><label for="cat-tipo-deuda">Origen de la deuda</label><select id="cat-tipo-deuda"><option value="">Selecciona...</option><option>Préstamo de dinero</option><option>Factura o servicio impagado</option><option>Venta no pagada</option><option>Otra deuda</option></select></div>
-          <div class="campo"><label for="cat-fecha-deuda">Fecha del préstamo o de la deuda</label><input type="date" id="cat-fecha-deuda"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-importe-original">Importe total prestado o facturado (€)</label><input type="number" id="cat-importe-original" placeholder="Ej: 30000" min="0" step="0.01"></div>
-          <div class="campo"><label for="cat-importe-devuelto">Importe ya devuelto o pagado (€)</label><input type="number" id="cat-importe-devuelto" placeholder="Ej: 5400" min="0" step="0.01"></div>
-        </div>
-        <div class="grid-2">
-          <div class="campo"><label for="cat-ultimo-pago">Fecha del último pago recibido <span class="campo-opcional">(opcional)</span></label><input type="date" id="cat-ultimo-pago"></div>
-          <div class="campo"><label for="cat-prueba-deuda">¿Qué prueba tienes de la deuda?</label><select id="cat-prueba-deuda"><option value="">Selecciona...</option><option>Contrato o documento firmado</option><option>Reconocimiento de deuda firmado</option><option>Transferencias o recibos</option><option>Mensajes o emails en los que se reconoce</option><option>Ninguna por escrito</option></select></div>
-        </div>
-        <div class="campo"><label for="cat-relacion-laboral">¿Existe o existió una relación laboral entre las partes?</label><select id="cat-relacion-laboral"><option value="">Selecciona...</option><option value="no">No</option><option value="sí, el deudor es o fue trabajador del acreedor">Sí, el deudor es o fue trabajador del acreedor</option><option value="sí, el deudor es o fue empleador del acreedor">Sí, el deudor es o fue empleador del acreedor</option></select></div>`
-    };
-
-    function mostrarCamposCategoria(categoria) {
-      const contenedor = document.getElementById('campos-categoria');
-      if (CAMPOS_CATEGORIA[categoria]) {
-        contenedor.innerHTML = `<div class="campos-categoria-wrapper">${CAMPOS_CATEGORIA[categoria]}</div>`;
-      } else {
-        contenedor.innerHTML = '';
-      }
-    }
-
-    function toggleTipo(valor) {
-      const labelNombre = document.getElementById('label-nombre');
-      const labelDoc = document.getElementById('label-documento');
-      const inputDoc = document.getElementById('documento');
-      const esEmpresa = valor === 'empresa';
-      labelNombre.textContent = esEmpresa ? 'Razón social' : 'Nombre completo';
-      labelDoc.innerHTML = `${esEmpresa ? 'CIF' : 'DNI'} <span class="campo-opcional">(opcional)</span>`;
-      inputDoc.placeholder = esEmpresa ? 'B12345678' : '12345678A';
-      document.getElementById('campos-firmante').style.display = esEmpresa ? 'block' : 'none';
-      document.getElementById('campo-representacion').style.display = esEmpresa ? 'none' : 'block';
-      if (esEmpresa) {
-        document.querySelector('input[name="representacion"][value="propio"]').checked = true;
-        toggleRepresentacion('propio');
-      }
-    }
-
-    function toggleDestinatario(valor) {
-      const esPersona = valor === 'persona';
-      const inputDomicilio = document.getElementById('domicilio-destinatario');
-      document.getElementById('label-empresa').textContent = esPersona ? 'Nombre y apellidos de la persona' : 'Nombre de la empresa o entidad';
-      document.getElementById('empresa').placeholder = esPersona ? 'Ej: Manuel García López' : 'Escribe el nombre exacto';
-      document.getElementById('label-domicilio-destinatario').innerHTML = esPersona
-        ? 'Domicilio de la persona <span class="campo-opcional">(necesario para enviarle el escrito por burofax)</span>'
-        : 'Dirección postal de la empresa <span class="campo-opcional">(opcional)</span>';
-      inputDomicilio.required = esPersona;
-    }
-
-    function toggleRepresentacion(valor) {
-      const campos = document.getElementById('campos-representacion');
-      campos.style.display = valor === 'representacion' ? 'block' : 'none';
-    }
-    function toggleReclamacionPrevia(valor) {
-      const campos = document.getElementById('campos-reclamacion-previa');
-      campos.style.display = (valor && valor !== 'no') ? 'block' : 'none';
-    }
-
-    function toggleAvisoDocumentacion(valor) {
-      const aviso = document.getElementById('aviso-documentacion');
-      aviso.style.display = (valor === 'si' || valor === 'parcial') ? 'block' : 'none';
-    }
-
-    function seleccionarOpcion(tipo) {
-      document.getElementById('opcion-basica').classList.remove('seleccionada');
-      document.getElementById('opcion-completa').classList.remove('seleccionada');
-      document.getElementById('opcion-' + tipo).classList.add('seleccionada');
-      window._opcionSeleccionada = tipo;
-    }
-
-    function irPaso(num) {
-      const campos1 = ['nombre','documento','direccion','ciudad','cp','telefono','email'];
-      const campos2 = ['categoria-empresa','empresa','domicilio-destinatario','fecha-hecho','descripcion'];
-
-      if (num === 2) {
-        for (const id of campos1) {
-          const el = document.getElementById(id);
-          if (el && el.required && !el.value.trim()) {
-            el.focus();
-            el.style.borderColor = '#c0392b';
-            setTimeout(() => { el.style.borderColor = ''; }, 2000);
-            return;
-          }
-        }
-      }
-
-      if (num === 3 || num === 4) {
-        for (const id of campos2) {
-          const el = document.getElementById(id);
-          if (el && el.required && !el.value.trim()) {
-            el.focus();
-            el.style.borderColor = '#c0392b';
-            setTimeout(() => { el.style.borderColor = ''; }, 2000);
-            irPaso(2);
-            return;
-          }
-        }
-      }
-
-      document.getElementById('step-1').style.display = 'none';
-      document.getElementById('step-2').style.display = 'none';
-      document.getElementById('step-3').style.display = 'none';
-      document.getElementById('step-4').style.display = 'none';
-      document.getElementById('step-' + num).style.display = 'block';
-
-      ['nav-step-1','nav-step-2','nav-step-3','nav-step-4'].forEach((id, i) => {
-        const el = document.getElementById(id);
-        el.classList.remove('active','done');
-        if (i + 1 < num) el.classList.add('done');
-        if (i + 1 === num) el.classList.add('active');
-      });
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function mostrarArchivos(files) {
-      const lista = document.getElementById('lista-archivos');
-      const area = document.getElementById('upload-area');
-      lista.innerHTML = '';
-      if (files.length === 0) return;
-      area.style.borderColor = '#0D1B2A';
-      let pesoPdf = 0;
-      Array.from(files).forEach((file) => {
-        const ext = file.name.split('.').pop().toLowerCase();
-        if (ext === 'pdf') pesoPdf += file.size;
-        const anexable = ['pdf', 'jpg', 'jpeg', 'png', 'webp'].includes(ext);
-
-        const item = document.createElement('div');
-        item.className = 'archivo-item';
-        const icono = document.createElement('span');
-        icono.className = 'archivo-icono';
-        icono.textContent = getIcono(file.name);
-        const nombre = document.createElement('span');
-        nombre.className = 'archivo-nombre';
-        nombre.textContent = file.name;
-        const nota = document.createElement('span');
-        nota.className = 'archivo-peso';
-        nota.textContent = anexable ? 'Irá como anexo' : 'Solo lectura · súbelo en PDF para adjuntarlo';
-        item.append(icono, nombre, nota);
-        lista.appendChild(item);
-      });
-      if (pesoPdf > 3 * 1024 * 1024) {
-        const aviso = document.createElement('p');
-        aviso.className = 'archivo-aviso';
-        aviso.textContent = `Los PDF ocupan ${(pesoPdf / 1024 / 1024).toFixed(1)} MB y el máximo es 3 MB en total. Quita alguno o redúcelo antes de continuar.`;
-        lista.appendChild(aviso);
-      }
-    }
-
-    function getIcono(nombre) {
-      const ext = nombre.split('.').pop().toLowerCase();
-      if (['jpg','jpeg','png','webp'].includes(ext)) return '🖼️';
-      if (ext === 'pdf') return '📕';
-      if (['doc','docx'].includes(ext)) return '📘';
-      if (['xls','xlsx'].includes(ext)) return '📗';
-      return '📄';
-    }
-
-    const uploadArea = document.getElementById('upload-area');
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.style.borderColor = '#0D1B2A';
-    });
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      document.getElementById('archivos').files = e.dataTransfer.files;
-      mostrarArchivos(e.dataTransfer.files);
-    });
-
-    window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
-      if (window.scrollY > 50) navbar.classList.add('scrolled');
-      else navbar.classList.remove('scrolled');
-    });
-
-    seleccionarOpcion('completa');
-
-    const CATEGORIA_POR_PARAMETRO = {
-      aerolineas: 'Aerolíneas y transporte',
-      telecomunicaciones: 'Telecomunicaciones',
-      banca: 'Banca y seguros',
-      energia: 'Energía y suministros',
-      administracion: 'Administración pública',
-      comercio: 'Comercio y tiendas online',
-      sanidad: 'Sanidad y salud',
-      alquiler: 'Inmobiliaria y alquiler',
-      educacion: 'Educación',
-      deudas: 'Deudas, préstamos e impagos'
-    };
-    const categoriaInicial = CATEGORIA_POR_PARAMETRO[new URLSearchParams(window.location.search).get('categoria')];
-    if (categoriaInicial) {
-      document.getElementById('categoria-empresa').value = categoriaInicial;
-      mostrarCamposCategoria(categoriaInicial);
-    }
-  </script>
-  <script src="cookies.js"></script>
-  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

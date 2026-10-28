@@ -1,22 +1,28 @@
 {
   "functions": {
-    "api/generar.js": {
-      "maxDuration": 120
-    },
-    "api/webhook.js": {
-      "maxDuration": 60
-    },
-    "api/pdf.js": {
-      "maxDuration": 30
-    },
-    "api/seguimiento-cron.js": {
-      "maxDuration": 30
-    }
+    "api/extraer.js": { "maxDuration": 60 },
+    "api/checkout.js": { "maxDuration": 60, "includeFiles": "api/_recursos/**" },
+    "api/webhook.js": { "maxDuration": 60, "includeFiles": "api/_recursos/**" },
+    "api/estado.js": { "maxDuration": 60, "includeFiles": "api/_recursos/**" },
+    "api/documentos.js": { "maxDuration": 30 },
+    "api/seguimiento-cron.js": { "maxDuration": 60 }
   },
   "crons": [
+    { "path": "/api/seguimiento-cron", "schedule": "0 8 * * *" }
+  ],
+  "headers": [
     {
-      "path": "/api/seguimiento-cron",
-      "schedule": "0 8 * * *"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
     }
   ]
 }

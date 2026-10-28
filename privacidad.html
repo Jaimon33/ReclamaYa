@@ -1,342 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidad — ReclamoIA</title>
-  <meta name="description" content="Política de privacidad de ReclamoIA: qué datos tratamos, con qué finalidad y cómo ejercer tus derechos RGPD.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Política de privacidad — BajaClara</title>
+  <meta name="description" content="Qué datos tratamos, para qué, durante cuánto tiempo y con qué proveedores.">
   <link rel="canonical" href="https://reclamoia.es/privacidad.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ReclamoIA">
-  <meta property="og:url" content="https://reclamoia.es/privacidad.html">
-  <meta property="og:title" content="Política de Privacidad — ReclamoIA">
-  <meta property="og:image" content="https://reclamoia.es/og-image.png">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <meta name="theme-color" content="#0b5d57">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .legal-main {
-      padding-top: 76px;
-      min-height: 100vh;
-      background: #FAFAF8;
-    }
-    .legal-inner {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem 2rem 6rem;
-    }
-    .legal-header {
-      border-bottom: 2px solid #0D1B2A;
-      padding-bottom: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-    .legal-header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #0D1B2A;
-      margin-bottom: 0.4rem;
-      letter-spacing: -0.3px;
-    }
-    .legal-header p {
-      font-size: 13px;
-      color: #999;
-    }
-    .legal-seccion {
-      margin-bottom: 2.5rem;
-    }
-    .legal-seccion h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #0D1B2A;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #E8E4DC;
-    }
-    .legal-seccion h3 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #0D1B2A;
-      margin: 1.25rem 0 0.5rem;
-    }
-    .legal-seccion p {
-      font-size: 14px;
-      color: #444;
-      line-height: 1.8;
-      margin-bottom: 0.75rem;
-    }
-    .legal-seccion ul {
-      padding-left: 1.5rem;
-      margin-bottom: 0.75rem;
-    }
-    .legal-seccion ul li {
-      font-size: 14px;
-      color: #444;
-      line-height: 1.8;
-      margin-bottom: 0.25rem;
-    }
-    .legal-tabla {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 1rem;
-      font-size: 13px;
-    }
-    .legal-tabla th {
-      background: #0D1B2A;
-      color: #fff;
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 600;
-    }
-    .legal-tabla td {
-      padding: 10px 14px;
-      border-bottom: 1px solid #E8E4DC;
-      color: #444;
-      vertical-align: top;
-    }
-    .legal-tabla tr:nth-child(even) td {
-      background: #fdf9f0;
-    }
-    .aviso-destacado {
-      background: #fdf9f0;
-      border-left: 3px solid #C9A84C;
-      padding: 1rem 1.25rem;
-      border-radius: 0 8px 8px 0;
-      margin-bottom: 1rem;
-    }
-    .aviso-destacado p {
-      margin: 0 !important;
-      font-size: 13px !important;
-      color: #8a6a1a !important;
-    }
-    .derechos-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .derecho-card {
-      background: #fff;
-      border: 1px solid #E8E4DC;
-      border-radius: 8px;
-      padding: 1rem;
-    }
-    .derecho-card strong {
-      display: block;
-      font-size: 13px;
-      color: #0D1B2A;
-      margin-bottom: 4px;
-    }
-    .derecho-card span {
-      font-size: 12px;
-      color: #666;
-      line-height: 1.5;
-    }
-    @media (max-width: 480px) {
-      .derechos-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="/estilos.css">
+  <script type="module" src="/sitio.js"></script>
 </head>
 <body>
-
-  <nav id="navbar">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" class="nav-logo-img">
-      </a>
-      <div class="nav-links">
-        <a href="/">← Volver al inicio</a>
-      </div>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <nav class="navegacion" aria-label="Principal"><a href="/#precios">Precios</a><a href="/#preguntas">Ayuda</a></nav>
     </div>
-  </nav>
-
-  <main class="legal-main">
-    <div class="legal-inner">
-
-      <div class="legal-header">
-        <h1>Política de Privacidad</h1>
-        <p>Última actualización: septiembre de 2026 · En cumplimiento del Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD)</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>1. Responsable del tratamiento</h2>
-        <table class="legal-tabla">
-          <tr><th>Dato</th><th>Información</th></tr>
-          <tr><td>Responsable</td><td>Jaime Porras Rodríguez</td></tr>
-          <tr><td>NIF</td><td>51141641Z</td></tr>
-          <tr><td>Domicilio</td><td>Camino de la Huerta 209, 28055 Madrid, España</td></tr>
-          <tr><td>Correo electrónico</td><td>hola@reclamoia.es</td></tr>
-          <tr><td>Sitio web</td><td>reclamoia.es</td></tr>
-        </table>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>2. Datos que recogemos y finalidad del tratamiento</h2>
-        <p>ReclamoIA recoge y trata los siguientes datos personales de sus usuarios:</p>
-
-        <h3>2.1 Datos del formulario de reclamación</h3>
-        <table class="legal-tabla">
-          <tr><th>Categoría de datos</th><th>Finalidad</th><th>Base legal</th></tr>
-          <tr><td>Nombre y apellidos, DNI/CIF</td><td>Identificación del reclamante en el escrito generado</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-          <tr><td>Dirección postal</td><td>Inclusión en el escrito de reclamación</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-          <tr><td>Teléfono y email</td><td>Entrega del documento generado y comunicaciones del servicio</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-          <tr><td>Descripción del caso y datos de la reclamación</td><td>Generación del escrito mediante IA</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-          <tr><td>Documentos adjuntos (facturas, contratos, etc.)</td><td>Enriquecer el contenido del escrito generado e incorporarlos como documentos anexos al PDF final</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-          <tr><td>Referencia de expediente, fecha de generación, categoría y email</td><td>Envío del recordatorio de seguimiento pasado el plazo legal de respuesta y verificación de autenticidad del documento</td><td>Ejecución del contrato (art. 6.1.b RGPD)</td></tr>
-        </table>
-
-        <h3>2.2 Datos de pago</h3>
-        <p>Los datos de pago (tarjeta de crédito/débito) son procesados directamente por <strong>Stripe, Inc.</strong>, nuestro proveedor de servicios de pago. ReclamoIA no almacena ni tiene acceso a los datos completos de su tarjeta. Stripe actúa como encargado del tratamiento y cumple con la normativa PCI DSS. Puede consultar la política de privacidad de Stripe en <a href="https://stripe.com/es/privacy" style="color:#C9A84C;">stripe.com/es/privacy</a>.</p>
-
-        <h3>2.3 Datos de navegación</h3>
-        <p>Con carácter general, el Sitio Web puede recoger datos técnicos de navegación (dirección IP, tipo de navegador, páginas visitadas) con fines estadísticos y de seguridad, al amparo del interés legítimo del responsable (art. 6.1.f RGPD).</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>3. Conservación de los datos</h2>
-        <table class="legal-tabla">
-          <tr><th>Tipo de datos</th><th>Plazo de conservación</th></tr>
-          <tr><td>Datos del formulario, documentos adjuntos y contenido de los escritos generados (almacenamiento temporal)</td><td>Máximo 1 hora desde la generación, para permitir la entrega por email. Se eliminan en cuanto el escrito se entrega. Solo si hay una incidencia técnica en la entrega se conservan hasta 72 horas, para poder completarla</td></tr>
-          <tr><td>Referencia de expediente, fecha, categoría y email (para seguimiento y verificación)</td><td>Máximo 24 meses desde la generación del escrito</td></tr>
-          <tr><td>Datos de transacción (a efectos contables y fiscales)</td><td>5 años, conforme a la normativa tributaria y mercantil española</td></tr>
-          <tr><td>Datos de navegación</td><td>Máximo 13 meses</td></tr>
-        </table>
-        <div class="aviso-destacado">
-          <p>ℹ️ ReclamoIA <strong>no crea perfiles de usuario</strong> ni almacena el contenido de los escritos generados de forma permanente. Únicamente conserva una referencia mínima del expediente (número de referencia, fecha, categoría y email) durante un máximo de 24 meses, con el único fin de enviar el recordatorio de seguimiento tras el plazo legal de respuesta y permitir la verificación de autenticidad del documento.</p>
-        </div>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>4. Cesión de datos a terceros</h2>
-        <p>ReclamoIA puede comunicar datos personales a los siguientes terceros, estrictamente en la medida necesaria para la prestación del servicio:</p>
-        <table class="legal-tabla">
-          <tr><th>Destinatario</th><th>Finalidad</th><th>País</th></tr>
-          <tr><td>Anthropic, PBC (Claude API)</td><td>Generación del escrito mediante IA</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
-          <tr><td>Stripe, Inc.</td><td>Procesamiento del pago</td><td>EE.UU. (Privacy Shield / cláusulas tipo)</td></tr>
-          <tr><td>Resend, Inc.</td><td>Envío del documento por email</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
-          <tr><td>PDFShift</td><td>Conversión del documento a PDF</td><td>Francia (UE)</td></tr>
-          <tr><td>Upstash</td><td>Almacenamiento temporal de datos</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
-          <tr><td>Vercel, Inc.</td><td>Hospedaje del Sitio Web</td><td>EE.UU. (cláusulas contractuales tipo UE)</td></tr>
-        </table>
-        <p>No se realizan cesiones de datos a terceros para fines comerciales o publicitarios. Todos los proveedores mencionados actúan como encargados del tratamiento y están sujetos a contratos de encargo que garantizan el cumplimiento del RGPD.</p>
-        <p>Para las transferencias internacionales de datos a países fuera del Espacio Económico Europeo, ReclamoIA aplica las garantías adecuadas previstas en el artículo 46 del RGPD, principalmente mediante la firma de cláusulas contractuales tipo adoptadas por la Comisión Europea.</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>5. Derechos del usuario</h2>
-        <p>Conforme al RGPD y la LOPDGDD, el usuario tiene derecho a:</p>
-        <div class="derechos-grid">
-          <div class="derecho-card">
-            <strong>Acceso</strong>
-            <span>Conocer qué datos personales suyos están siendo tratados.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Rectificación</strong>
-            <span>Corregir datos inexactos o incompletos.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Supresión ("derecho al olvido")</strong>
-            <span>Solicitar la eliminación de sus datos cuando ya no sean necesarios.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Oposición</strong>
-            <span>Oponerse al tratamiento de sus datos en determinadas circunstancias.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Limitación del tratamiento</strong>
-            <span>Solicitar que se restrinja el tratamiento de sus datos.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Portabilidad</strong>
-            <span>Recibir sus datos en formato estructurado y de uso común.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>No ser objeto de decisiones automatizadas</strong>
-            <span>No estar sujeto a decisiones con efectos jurídicos basadas únicamente en tratamiento automatizado.</span>
-          </div>
-          <div class="derecho-card">
-            <strong>Retirada del consentimiento</strong>
-            <span>Retirar el consentimiento en cualquier momento, sin efecto retroactivo.</span>
-          </div>
-        </div>
-        <p>Para ejercer cualquiera de estos derechos, el usuario puede dirigirse a <a href="mailto:hola@reclamoia.es" style="color:#C9A84C;">hola@reclamoia.es</a>, adjuntando copia de su documento de identidad. ReclamoIA responderá en el plazo máximo de un mes desde la recepción de la solicitud.</p>
-        <p>Si considera que el tratamiento de sus datos no se ajusta a la normativa vigente, tiene derecho a presentar una reclamación ante la <strong>Agencia Española de Protección de Datos (AEPD)</strong>, a través de su sede electrónica en <a href="https://www.aepd.es" style="color:#C9A84C;">www.aepd.es</a>.</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>6. Seguridad de los datos</h2>
-        <p>ReclamoIA ha adoptado las medidas técnicas y organizativas necesarias para garantizar la seguridad e integridad de los datos personales tratados, y para evitar su pérdida, alteración o acceso por parte de terceros no autorizados, teniendo en cuenta el estado de la tecnología, la naturaleza de los datos y los riesgos a los que están expuestos.</p>
-        <p>Entre las medidas implementadas se incluyen:</p>
-        <ul>
-          <li>Cifrado de las comunicaciones mediante protocolo HTTPS/TLS.</li>
-          <li>Almacenamiento temporal del contenido de los escritos con expiración automática máxima de 1 hora (72 horas únicamente en caso de incidencia técnica en la entrega).</li>
-          <li>Acceso restringido a los datos mediante tokens de autenticación.</li>
-          <li>No almacenamiento permanente del contenido de los escritos generados ni de datos de pago. Solo se conserva una referencia mínima del expediente (ref., fecha, categoría, email) hasta 24 meses, para el seguimiento del plazo de respuesta y la verificación de autenticidad del documento.</li>
-        </ul>
-        <p>No obstante, el usuario debe ser consciente de que las medidas de seguridad en Internet no son inexpugnables. En caso de que ReclamoIA detecte una violación de seguridad que afecte a datos personales, lo notificará a las autoridades competentes y, si fuera necesario, a los usuarios afectados, en los plazos establecidos por el RGPD.</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>7. Uso de inteligencia artificial y decisiones automatizadas</h2>
-        <p>El servicio de ReclamoIA utiliza sistemas de inteligencia artificial (Anthropic Claude API) para la generación automatizada de escritos de reclamación. Este proceso implica el tratamiento automatizado de los datos personales introducidos en el formulario.</p>
-        <p>Sin embargo, el escrito generado <strong>no produce efectos jurídicos significativos ni afecta de forma similar al usuario</strong>, en el sentido del artículo 22 del RGPD, ya que únicamente constituye un documento de apoyo en la redacción que el propio usuario decide si utiliza o no. Por tanto, no resulta aplicable la prohibición de decisiones automatizadas del artículo 22.1 RGPD.</p>
-        <p>Los datos introducidos en el formulario son transmitidos a la API de Anthropic para la generación del escrito. Anthropic procesa estos datos conforme a sus propias políticas de privacidad y condiciones de servicio para uso de API, que no permiten el uso de datos de la API para entrenar sus modelos sin consentimiento expreso.</p>
-      </div>
-
-      <div class="legal-seccion" id="cookies">
-        <h2>8. Cookies</h2>
-        <p>El Sitio Web puede utilizar cookies técnicas estrictamente necesarias para su funcionamiento. No se utilizan cookies de seguimiento, publicidad o perfilado de usuarios.</p>
-        <p>Los pagos procesados a través de Stripe pueden generar cookies propias de Stripe en el proceso de pago. Estas cookies están sujetas a la política de cookies de Stripe.</p>
-        <p>El usuario puede configurar su navegador para rechazar o eliminar las cookies. Sin embargo, la desactivación de cookies técnicas puede afectar al correcto funcionamiento del Sitio Web.</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>9. Modificaciones de la política de privacidad</h2>
-        <p>ReclamoIA se reserva el derecho de modificar la presente Política de Privacidad para adaptarla a novedades legislativas, jurisprudenciales o técnicas. En caso de modificaciones sustanciales, se informará a los usuarios a través del Sitio Web. Se recomienda revisar esta política periódicamente.</p>
-        <p>La fecha de la última actualización figura en el encabezado de este documento.</p>
-      </div>
-
-      <div class="legal-seccion">
-        <h2>10. Contacto y DPO</h2>
-        <p>Para cualquier consulta relacionada con el tratamiento de sus datos personales o para el ejercicio de sus derechos, puede contactar con el responsable del tratamiento en:</p>
-        <p><strong>Jaime Porras Rodríguez</strong><br>
-        Camino de la Huerta 209, 28055 Madrid<br>
-        Correo electrónico: <a href="mailto:hola@reclamoia.es" style="color:#C9A84C;">hola@reclamoia.es</a></p>
-        <p>Dado que ReclamoIA no realiza tratamientos de datos a gran escala ni trata categorías especiales de datos de forma sistemática, no está obligada a designar un Delegado de Protección de Datos (DPD/DPO) conforme al artículo 37 del RGPD. No obstante, cualquier cuestión relativa a protección de datos puede dirigirse al responsable del tratamiento en la dirección indicada.</p>
-      </div>
-
+  </header>
+  <main id="contenido" class="legal">
+    <div class="contenedor estrecho">
+      <h1>Política de privacidad</h1>
+      <p class="fecha">Actualizada el 28 de octubre de 2026. Pendiente de revisión por un profesional de protección de datos.</p>
+      <h2>1. Responsable</h2>
+      <p>Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid, España. Correo: <a href="mailto:hola@reclamoia.es">hola@reclamoia.es</a>. BajaClara es el nombre comercial del servicio.</p>
+      <h2>2. Qué datos tratamos y para qué</h2>
+      <ul>
+        <li><strong>Comprobación del caso (paso 1).</strong> Tus respuestas no incluyen datos identificativos. Si tu caso no encaja, no las guardamos. Si continúas, se guardan con tu expediente.</li>
+        <li><strong>Expediente (pasos 2 y 3).</strong> Nombre, DNI o NIE, email, teléfono y domicilio si los das, datos del contrato y de la baja, y los documentos que subes (facturas, pruebas, reclamaciones). Los usamos solo para preparar la documentación que pides. Base: ejecución del contrato o aplicación de medidas precontractuales a tu petición (art. 6.1.b RGPD).</li>
+        <li><strong>Lectura automática de documentos.</strong> Para proponerte los datos de tus facturas enviamos cada documento a la API de Anthropic, que actúa como encargado del tratamiento. Tratamos lo que devuelve como una propuesta que tú confirmas. El contenido de tus archivos no se usa para dar órdenes al sistema.</li>
+        <li><strong>Pago.</strong> Lo gestiona Stripe. No vemos ni guardamos los datos de tu tarjeta.</li>
+        <li><strong>Emails.</strong> Te enviamos el enlace de descarga y la confirmación del pedido. Si compras la reclamación a la compañía, te enviamos un único recordatorio a los 35 días con el siguiente paso; puedes pedirnos que no lo hagamos (interés legítimo, art. 6.1.f RGPD).</li>
+        <li><strong>Registro del pedido.</strong> Guardamos un registro mínimo (referencia, producto, importe, fecha, email y versión de condiciones, reglas y plantillas, sin documentos) para cumplir obligaciones fiscales y atender reclamaciones (art. 6.1.c y 6.1.f RGPD).</li>
+        <li><strong>Medición.</strong> Contamos de forma anónima y agregada cuántas personas inician, encajan, pagan o reciben su pedido, y los errores. No usamos herramientas de analítica ni publicidad de terceros.</li>
+      </ul>
+      <h2>3. Cuánto tiempo</h2>
+      <div class="tabla-scroll"><table>
+        <thead><tr><th>Datos</th><th>Plazo</th></tr></thead>
+        <tbody>
+          <tr><td>Expediente sin pagar (respuestas, datos y documentos)</td><td>Se borra automáticamente a las 48 horas de la última modificación. Puedes borrarlo antes desde el formulario.</td></tr>
+          <tr><td>Expediente pagado: tus documentos y los documentos generados</td><td>30 días desde la entrega, para que puedas descargarlos. Después se borran automáticamente.</td></tr>
+          <tr><td>Datos para el recordatorio (email, referencia y compañía)</td><td>Hasta el envío del recordatorio, como máximo 45 días.</td></tr>
+          <tr><td>Registro mínimo del pedido</td><td>5 años.</td></tr>
+          <tr><td>Pedidos anteriores al 28/10/2026 (servicio generalista)</td><td>Se mantiene la referencia mínima anunciada entonces (referencia, fecha, categoría y email) hasta 24 meses.</td></tr>
+          <tr><td>Contadores anónimos</td><td>Hasta 400 días.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Stripe y Resend conservan sus propios registros del pago y del envío de emails según sus políticas.</p>
+      <h2>4. Proveedores (encargados del tratamiento)</h2>
+      <ul>
+        <li>Vercel Inc. — alojamiento de la web y de las funciones del servidor (EE. UU.).</li>
+        <li>Upstash Inc. — almacenamiento privado y temporal de expedientes y documentos.</li>
+        <li>Anthropic PBC — lectura automática de documentos (EE. UU.).</li>
+        <li>Stripe Payments Europe Ltd. — pago.</li>
+        <li>Resend Inc. — envío de emails (EE. UU.).</li>
+      </ul>
+      <p>Cuando un proveedor trata datos fuera del Espacio Económico Europeo, la transferencia se ampara en el Marco de Privacidad de Datos UE-EE. UU. si el proveedor está adherido o, en su defecto, en las cláusulas contractuales tipo de la Comisión Europea (art. 46 RGPD). No vendemos ni cedemos tus datos con fines comerciales. Tú decides si presentas la documentación a tu compañía o a la Oficina; nosotros no se la enviamos.</p>
+      <h2>5. Decisiones automatizadas</h2>
+      <p>La comprobación del paso 1 aplica reglas automáticas para decidir si podemos preparar tu caso. No produce efectos jurídicos sobre ti ni decide tu reclamación. Si no estás de acuerdo con el resultado, escríbenos y lo revisará una persona.</p>
+      <h2>6. Seguridad</h2>
+      <ul>
+        <li>Los documentos se guardan en almacenamiento privado, nunca en rutas públicas, y caducan solos.</li>
+        <li>El acceso a tu expediente exige una clave aleatoria que solo tiene tu navegador; las descargas usan enlaces de un solo uso.</li>
+        <li>El escrito completo no se envía al navegador antes del pago.</li>
+        <li>Los archivos se validan por su contenido y con límites de tamaño y páginas.</li>
+      </ul>
+      <h2>7. Tus derechos</h2>
+      <p>Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a href="mailto:hola@reclamoia.es">hola@reclamoia.es</a>. Si no te atendemos bien, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+      <h2>8. Cookies y almacenamiento en tu navegador</h2>
+      <p>No usamos cookies propias ni de terceros para analítica o publicidad. El formulario guarda tus respuestas y la clave de tu expediente en el almacenamiento de sesión del navegador, que se borra al cerrar la pestaña; es imprescindible para el servicio que pides. Stripe puede usar cookies en su propia página de pago.</p>
     </div>
   </main>
-
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <img src="logo-reclamoia.png" alt="ReclamoIA" style="height:34px; width:auto; filter:brightness(0) invert(1);">
-      </div>
-      <p class="footer-sub">Defiende tus derechos. Con inteligencia artificial.</p>
-      <div class="footer-links">
-        <a href="/legal.html">Aviso Legal</a>
-        <a href="/privacidad.html">Política de Privacidad</a>
-        <a href="/condiciones-venta.html">Condiciones de Venta</a>
-        <a href="/verificar.html">Verificar documento</a>
-        <a href="mailto:hola@reclamoia.es">Contacto</a>
-      </div>
-      <p class="footer-copy">© 2026 ReclamoIA — Jaime Porras Rodríguez. Todos los derechos reservados.</p>
+  <footer class="pie">
+    <div class="contenedor">
+      <p><strong data-marca>BajaClara</strong> es un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid, España. Contacto: <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a></p>
+      <nav class="enlaces" aria-label="Información legal">
+        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/condiciones-venta.html">Condiciones</a><a href="/#preguntas">Ayuda</a><a data-email href="mailto:hola@reclamoia.es">Contacto</a>
+      </nav>
+      <p>Preparamos documentación; no prestamos asesoramiento jurídico ni representamos ante la compañía o la Administración. No somos un organismo público.</p>
     </div>
   </footer>
-
-  <script>
-    window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
-      if (window.scrollY > 50) navbar.classList.add('scrolled');
-      else navbar.classList.remove('scrolled');
-    });
-  </script>
-  <script src="cookies.js"></script>
-  <script defer src="/_vercel/insights/script.js"></script>
-
 </body>
 </html>
