@@ -145,6 +145,13 @@ test('sugerencia de importe: separa penalizaciones y terminales', () => {
   assert.equal(s.importe, 30);
   assert.ok(s.revisar);
   assert.deepEqual(s.excluidos, ['Cuota terminal financiado']);
+  // Conceptos sin IVA y línea de IVA aparte: la cuota se propone con su parte de impuestos.
+  const conIva = sugerirImporteServicio({ importeTotal: 54.45, conceptos: [
+    { descripcion: 'Cuota Fibra 600Mb + fijo', importe: 30 },
+    { descripcion: 'Cuota terminal financiado 12/24', importe: 15 },
+    { descripcion: 'IVA 21%', importe: 9.45 }
+  ] });
+  assert.equal(conIva.importe, 36.3);
 });
 
 test('tipos de archivo por contenido y orientación EXIF', () => {

@@ -176,12 +176,16 @@ const NO_SERVICIO = /(permanencia|penaliz|terminal|dispositivo|m[oó]vil financ|
 
 // Sugiere qué parte de la factura corresponde al servicio dado de baja (cuotas y consumos).
 // Es solo una sugerencia: el cliente la confirma o corrige.
+const IMPUESTOS_Y_TOTALES = /\b(iva|igic|ipsi|impuestos?|base imponible|subtotal|total)\b/i;
+
 export function sugerirImporteServicio(factura) {
-  const conceptos = factura.conceptos.filter(c => c.importe != null);
+  const conceptos = factura.conceptos.filter(c => c.importe != null && !IMPUESTOS_Y_TOTALES.test(c.descripcion));
   const delServicio = conceptos.filter(c => !NO_SERVICIO.test(c.descripcion));
   const excluidos = conceptos.filter(c => NO_SERVICIO.test(c.descripcion));
   if (!excluidos.length) return { importe: factura.importeTotal, excluidos: [] };
-  // Los conceptos suelen venir sin IVA: si hay excluidos, el cliente debe revisar la cifra.
-  const suma = Math.round(delServicio.reduce((s, c) => s + c.importe, 0) * 100) / 100;
-  return { importe: suma || null, excluidos: excluidos.map(c => c.descripcion), revisar: true };
+  // Los conceptos suelen venir sin impuestos: se reparte el total con impuestos en proporción.
+  const sumaServicio = delServicio.reduce((s, c) => s + c.importe, 0);
+  const base = conceptos.reduce((s, c) => s + c.importe, 0);
+  const proporcional = factura.importeTotal && base > 0 && factura.importeTotal >= base ? sumaServicio * factura.importeTotal / base : sumaServicio;
+  return { importe: Math.round(proporcional * 100) / 100 || null, excluidos: excluidos.map(c => c.descripcion), revisar: true };
 }

@@ -88,7 +88,7 @@ export function construirPropuesta(exp) {
         fuente: fuente(doc, x.factura.pagina)
       });
       if (!x.factura.periodoDesde || !x.factura.periodoHasta) alertas.push(`No encontramos el periodo facturado en "${doc.nombre}". Búscalo en la factura (suele poner "periodo de facturación") y escríbelo.`);
-      if (sugerencia.excluidos.length) alertas.push(`"${doc.nombre}" incluye conceptos que no reclamamos (${sugerencia.excluidos.join(', ')}). Revisa que el importe del servicio solo incluya cuotas y consumos, con IVA.`);
+      if (sugerencia.excluidos.length) alertas.push(`"${doc.nombre}" incluye conceptos que no reclamamos (${sugerencia.excluidos.join(', ')}). Hemos calculado la parte del servicio con su IVA: compruébala con la factura.`);
       if (x.factura.fechaEmision && r.fechaSolicitud && x.factura.fechaEmision < r.fechaSolicitud) alertas.push(`"${doc.nombre}" se emitió antes de pedir la baja. Comprueba si de verdad es una factura posterior.`);
     }
   }
