@@ -56,12 +56,18 @@ npm test          # 22 pruebas: reglas, cálculo, extracción, flujo A y B, avis
 npm run dev       # http://localhost:5050 con memoria local y pasarela de pago simulada
 ```
 
+## Vista previa (28/10/2026)
+
+`https://reclamaia-git-especializacion-telefonia-jaimon33.vercel.app` (pide sesión de Vercel). Variables: Stripe de prueba solo en Preview; Stripe real, Resend y alertas solo en Production; Redis y Anthropic en ambos (la vista previa comparte base de datos con producción).
+
+Probado allí: comprobación A y B, subida, lectura con IA real (titular, DNI, cliente, línea, factura, periodo, terminal financiado separado), pago de prueba con tarjeta 4242 confirmado por consulta directa a Stripe, entrega y descarga de un solo uso; en B, la prueba completa previa al cobro con el formulario oficial y la vuelta desde Stripe a la misma dirección. El webhook no está configurado para la vista previa (está protegida); su firma y validaciones se prueban en local.
+
 ## Bloqueos antes de lanzar
 
-1. **Stripe en modo prueba en la vista previa.** Al subir la rama, Vercel crea una vista previa con las variables de "Preview". Si ahí están las claves reales, se cobraría de verdad. Hay que poner claves y webhook de prueba en Preview antes de subirla.
-2. **Prueba real de lectura con IA**: no hay clave de Anthropic en local; la lectura se ha probado con respuestas simuladas y el camino sin IA (datos a mano). Hay que probarla con facturas reales de varias compañías en la vista previa.
-3. **Envío de emails** con Resend: no probado en local (sin clave).
-4. **`CRON_SECRET`** en Vercel.
+1. **Probar la lectura con IA con facturas reales** de varias compañías (solo se ha probado con facturas de prueba).
+2. **Emails**: Resend no está en Preview; probar el email de entrega al lanzar o añadiendo la clave también en Preview (hay que volver a pegar el valor: editar una variable secreta en Vercel la deja en blanco).
+3. **`CRON_SECRET`** en Production.
+4. **Webhook de producción**: el actual apunta a `/api/webhook`; conviene añadir el evento `checkout.session.async_payment_succeeded`. Borrar `STRIPE_PRICE_*` y `PDFSHIFT_API_KEY` tras publicar.
 5. **Facturas**: el recibo de Stripe no es una factura. Hay que decidir cómo se emiten (facturas simplificadas) con un asesor fiscal.
 
 ## Validaciones profesionales necesarias
