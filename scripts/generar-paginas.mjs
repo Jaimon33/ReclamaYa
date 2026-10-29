@@ -88,7 +88,7 @@ pagina({
     h2('2. Qué datos tratamos y para qué'),
     ul([
       '<strong>Comprobación del caso (paso 1).</strong> Tus respuestas no incluyen datos identificativos. Si tu caso no encaja, no las guardamos. Si continúas, se guardan con tu expediente.',
-      '<strong>Expediente (pasos 2 y 3).</strong> Nombre, DNI o NIE, email, teléfono y domicilio si los das, datos del contrato y de la baja, y los documentos que subes (facturas, pruebas, reclamaciones). Los usamos solo para preparar la documentación que pides. Base: ejecución del contrato o aplicación de medidas precontractuales a tu petición (art. 6.1.b RGPD).',
+      '<strong>Expediente (pasos 2 y 3).</strong> Nombre, DNI, NIE o CIF, domicilio si lo das, el resumen de tu caso si lo escribes, datos del contrato y de la baja, los documentos que subes (facturas, pruebas, reclamaciones) y el email que indicas al pagar. Los usamos solo para preparar la documentación que pides. Base: ejecución del contrato o aplicación de medidas precontractuales a tu petición (art. 6.1.b RGPD).',
       '<strong>Lectura automática de documentos.</strong> Para proponerte los datos de tus facturas enviamos cada documento a la API de Anthropic, que actúa como encargado del tratamiento. Tratamos lo que devuelve como una propuesta que tú confirmas. El contenido de tus archivos no se usa para dar órdenes al sistema.',
       '<strong>Pago.</strong> Lo gestiona Stripe. No vemos ni guardamos los datos de tu tarjeta.',
       '<strong>Emails.</strong> Te enviamos el enlace de descarga y la confirmación del pedido. Si compras la reclamación a la compañía, te enviamos un único recordatorio a los 35 días con el siguiente paso; puedes pedirnos que no lo hagamos (interés legítimo, art. 6.1.f RGPD).',

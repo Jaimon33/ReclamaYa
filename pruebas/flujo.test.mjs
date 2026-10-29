@@ -97,7 +97,7 @@ function sesionPara(cred, producto, importe) {
   return {
     id: `cs_simulada_${cred.expediente}`, object: 'checkout.session', mode: 'payment', payment_status: 'paid',
     currency: 'eur', amount_total: importe, client_reference_id: cred.expediente,
-    metadata: { expediente: cred.expediente, producto }, payment_intent: 'pi_prueba'
+    metadata: { expediente: cred.expediente, producto }, payment_intent: 'pi_prueba', customer_details: { email: 'cliente@example.com' }
   };
 }
 
@@ -111,19 +111,16 @@ async function descargar(cuerpo, archivo) {
 const HOY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());
 const dias = (n) => { const d = new Date(`${HOY}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
-const respuestasA = {
-  tipoTitular: 'persona', operador: 'Vodafone', servicio: 'fibra', viaBaja: 'operador',
-  pruebaBaja: 'si', fechaSolicitud: '', fechaSolicitudEnDocs: true, reclamado: 'no'
-};
+const respuestasA = { tipoTitular: 'persona', operador: 'Vodafone', caso: 'primera' };
 
 const credA = {};
 const credB = {};
 
 test('comprobación sin datos personales y sin guardar nada', async () => {
-  const r = await api('expediente', { accion: 'evaluar', respuestas: { ...respuestasA, pruebaBaja: 'no' } });
+  const r = await api('expediente', { accion: 'evaluar', respuestas: { ...respuestasA, caso: '' } });
   assert.equal(r.estado, 200);
   assert.equal(r.datos.evaluacion.estado, 'incompleto');
-  const excl = await api('expediente', { accion: 'crear', respuestas: { ...respuestasA, viaBaja: 'portabilidad' } });
+  const excl = await api('expediente', { accion: 'crear', respuestas: { ...respuestasA, operador: '' } });
   assert.equal(excl.estado, 409);
   assert.equal(excl.datos.expediente, undefined);
 });
@@ -150,8 +147,8 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   assert.match(ex.datos.aviso, /no está disponible/);
 
   const datos = {
-    titular: { nombre: 'Lucía Martín Pérez', documento: '12345678A', email: 'lucia@example.com', localidad: 'Madrid' },
-    canalBaja: 'telefono', numeroCliente: 'C-998877', lineas: '910000000', fechas: {},
+    titular: { nombre: 'Lucía Martín Pérez', documento: '12345678A', localidad: 'Madrid' },
+    resumenCaso: 'Pedí la baja por teléfono y me siguen cobrando la fibra.', numeroCliente: 'C-998877', lineas: '910000000', fechas: {},
     facturas: [{ documento: docs[0].id, numero: 'FV-0001', fechaEmision: dias(-10), periodoDesde: dias(-40), periodoHasta: dias(-11), importeTotal: 36.3, importeServicio: 36.3 }]
   };
   const malo = await api('expediente', { accion: 'confirmar', ...credA, datos });
@@ -196,6 +193,7 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   const despues = await api('estado', credA, { guardar: false });
   assert.equal(despues.datos.estado, 'entregado');
   assert.deepEqual(despues.datos.archivos.map(a => a.codigo), ['reclamacion', 'guia', 'confirmacion']);
+  assert.equal(despues.datos.email, 'c•••@example.com', 'el email sale de la página de pago');
 
   const d = await descargar(credA, 'reclamacion');
   assert.equal(d.estado, 200);
@@ -211,7 +209,7 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
 });
 
 test('recorrido B: expediente para la Oficina con formulario oficial', async () => {
-  const respuestasB = { ...respuestasA, tipoTitular: 'empresa', fechaSolicitud: dias(-60), fechaSolicitudEnDocs: false, reclamado: 'si', fechaReclamacionEnDocs: true, respuesta: 'sin_respuesta' };
+  const respuestasB = { ...respuestasA, tipoTitular: 'empresa', caso: 'segunda' };
   const c = await api('expediente', { accion: 'crear', respuestas: respuestasB });
   assert.equal(c.estado, 201, JSON.stringify(c.datos));
   assert.equal(c.datos.vista.evaluacion.estado, 'B');
@@ -223,9 +221,9 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   const idFactura = f.datos.documento;
 
   const datos = {
-    fechas: { reclamacion: dias(-45) },
-    titular: { nombre: 'Telecomunicaciones Ejemplo SL', documento: 'B12345674', firmante: 'Pedro Gómez Ruiz', email: 'pedro@example.com', telefono: '600111222', domicilio: 'Calle Mayor 1, 2º A', cp: '28013', localidad: 'Madrid', provincia: 'Madrid' },
-    canalBaja: 'web', bajaReferencia: 'BAJA-123', canalReclamacion: 'telefono', reclamacionReferencia: 'REC-555', lineas: '600111222',
+    fechas: { solicitud: dias(-60), reclamacion: dias(-45) },
+    titular: { nombre: 'Telecomunicaciones Ejemplo SL', documento: 'B12345674', firmante: 'Pedro Gómez Ruiz', domicilio: 'Calle Mayor 1, 2º A', cp: '28013', localidad: 'Madrid', provincia: 'Madrid' },
+    canalBaja: 'web', bajaReferencia: 'BAJA-123', reclamacionReferencia: 'REC-555', lineas: '600111222',
     facturas: [{ documento: idFactura, numero: 'FV-0002', fechaEmision: dias(-50), periodoDesde: dias(-55), periodoHasta: dias(-26), importeTotal: 29.99, importeServicio: 29.99 }]
   };
   const ok = await api('expediente', { accion: 'confirmar', ...credB, datos });

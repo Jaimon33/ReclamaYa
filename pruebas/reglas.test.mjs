@@ -8,8 +8,8 @@ import { importe, limpiarExtraccion, sugerirImporteServicio } from '../api/_extr
 import { orientacionJpeg, detectarTipo } from '../api/_archivos.js';
 
 const base = {
-  tipoTitular: 'persona', operador: 'Vodafone', servicio: 'fibra', viaBaja: 'operador', pruebaBaja: 'si',
-  fechaSolicitud: '2026-09-01', reclamado: 'no', fechaPrimeraFactura: '2026-10-05'
+  tipoTitular: 'persona', operador: 'Vodafone', caso: 'primera',
+  fechaSolicitud: '2026-09-01', fechaPrimeraFactura: '2026-10-05'
 };
 
 test('fecha efectiva: dos días hábiles, saltando fin de semana y festivos nacionales', () => {
@@ -35,21 +35,22 @@ test('recorrido A: primera reclamación', () => {
 
 test('empresas: también pueden reclamar; en B se avisa de que solo valen microempresas', () => {
   assert.equal(evaluarCaso({ ...base, tipoTitular: 'empresa' }, '2026-10-20').estado, 'A');
-  const b = evaluarCaso({ ...base, tipoTitular: 'empresa', reclamado: 'si', fechaReclamacion: '2026-09-15', respuesta: 'sin_respuesta' }, '2026-10-28');
+  const b = evaluarCaso({ ...base, tipoTitular: 'empresa', caso: 'segunda', fechaReclamacion: '2026-09-15', respuesta: 'sin_respuesta' }, '2026-10-28');
   assert.equal(b.estado, 'B');
   assert.ok(b.avisos.some(a => a.includes('microempresa')));
 });
 
-test('fechas que el cliente no recuerda: el paso 1 sigue y la evaluación definitiva las exige', () => {
-  const r = { ...base, fechaSolicitud: '', fechaSolicitudEnDocs: true };
+test('paso 1 con solo tres respuestas: las fechas quedan pendientes y la evaluación definitiva las exige', () => {
+  const r = { tipoTitular: 'persona', operador: 'Vodafone', caso: 'primera' };
   const ev = evaluarCaso(r, '2026-10-20');
   assert.equal(ev.estado, 'A');
   assert.equal(ev.provisional, true);
   assert.deepEqual(ev.fechas.pendientes, ['fechaSolicitud']);
   assert.equal(evaluarCaso(r, '2026-10-20', { definitiva: true }).estado, 'incompleto');
-  const b = evaluarCaso({ ...base, reclamado: 'si', respuesta: 'sin_respuesta', fechaReclamacionEnDocs: true }, '2026-10-28');
+  const b = evaluarCaso({ ...r, caso: 'segunda' }, '2026-10-28');
   assert.equal(b.estado, 'B');
   assert.equal(b.provisional, true);
+  assert.equal(evaluarCaso({ tipoTitular: 'persona', operador: 'Vodafone' }, '2026-10-28').estado, 'incompleto');
 });
 
 test('aviso si ha pasado más de un mes desde la factura, pero sigue en A', () => {
@@ -59,41 +60,31 @@ test('aviso si ha pasado más de un mes desde la factura, pero sigue en A', () =
 });
 
 test('recorrido B: sin respuesta tras un mes y dentro de los tres meses', () => {
-  const ev = evaluarCaso({ ...base, reclamado: 'si', fechaReclamacion: '2026-09-15', respuesta: 'sin_respuesta' }, '2026-10-28');
+  const ev = evaluarCaso({ ...base, caso: 'segunda', fechaReclamacion: '2026-09-15', respuesta: 'sin_respuesta' }, '2026-10-28');
   assert.equal(ev.estado, 'B');
   assert.equal(ev.fechas.limiteOaut, '2027-01-15');
 });
 
 test('B no disponible aún: la compañía está dentro de su mes', () => {
-  const ev = evaluarCaso({ ...base, reclamado: 'si', fechaReclamacion: '2026-10-10', respuesta: 'sin_respuesta' }, '2026-10-28');
+  const ev = evaluarCaso({ ...base, caso: 'segunda', fechaReclamacion: '2026-10-10', respuesta: 'sin_respuesta' }, '2026-10-28');
   assert.equal(ev.estado, 'incompleto');
   assert.ok(ev.faltan.some(f => f.codigo === 'esperar_respuesta'));
 });
 
 test('B con respuesta insatisfactoria y plazo vencido queda excluido', () => {
-  const ev = evaluarCaso({ ...base, reclamado: 'si', fechaReclamacion: '2026-05-01', respuesta: 'insatisfactoria', fechaRespuesta: '2026-05-20' }, '2026-10-28');
+  const ev = evaluarCaso({ ...base, caso: 'segunda', fechaReclamacion: '2026-05-01', respuesta: 'insatisfactoria', fechaRespuesta: '2026-05-20' }, '2026-10-28');
   assert.equal(ev.estado, 'excluido');
   assert.ok(ev.excluyen.some(f => f.codigo === 'plazo_oaut_vencido'));
 });
 
-test('exclusiones: portabilidad', () => {
-  assert.equal(evaluarCaso({ ...base, viaBaja: 'portabilidad' }, '2026-10-20').estado, 'excluido');
-});
-
-test('incompleto sin prueba de baja, con explicación útil', () => {
-  const ev = evaluarCaso({ ...base, pruebaBaja: 'no' }, '2026-10-20');
-  assert.equal(ev.estado, 'incompleto');
-  assert.match(ev.faltan.map(f => f.mensaje).join(' '), /número de referencia/);
-});
-
 test('solucionado: no hace falta reclamar', () => {
-  const ev = evaluarCaso({ ...base, reclamado: 'si', fechaReclamacion: '2026-09-15', respuesta: 'solucionado' }, '2026-10-28');
+  const ev = evaluarCaso({ ...base, caso: 'segunda', fechaReclamacion: '2026-09-15', respuesta: 'solucionado' }, '2026-10-28');
   assert.equal(ev.estado, 'nada');
 });
 
 test('respuestas no válidas se descartan', () => {
   const ev = evaluarCaso({ ...base, servicio: '<script>', fechaSolicitud: '2026-02-30' }, '2026-10-20');
-  assert.equal(ev.estado, 'incompleto');
+  assert.equal(ev.provisional, true);
   assert.equal(ev.respuestas.servicio, '');
   assert.equal(ev.respuestas.fechaSolicitud, '');
 });

@@ -4,7 +4,7 @@
 // El dominio, las rutas y la identidad legal del prestador no dependen de la marca.
 
 export const MARCA = {
-  nombre: 'BajaClara',
+  nombre: 'LíneaClara',
   lema: 'Reclama los cobros después de tu baja de teléfono o fibra',
   dominio: 'reclamoia.es',
   emailContacto: 'hola@reclamoia.es',

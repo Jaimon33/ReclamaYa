@@ -78,6 +78,8 @@ export async function registrarPago(sesion) {
     return { exp, rechazo: motivo };
   }
   exp.estado = 'pagado';
+  // El email se pide en la página de pago de Stripe: allí se envía el enlace de descarga.
+  exp.datos.titular.email = (sesion.customer_details?.email || sesion.customer_email || exp.datos.titular.email || '').toLowerCase();
   exp.pago.pagadoEn = new Date().toISOString();
   exp.pago.pagoStripe = typeof sesion.payment_intent === 'string' ? sesion.payment_intent : sesion.payment_intent?.id || '';
   await guardarExpediente(exp);
@@ -127,6 +129,7 @@ async function enviarEmailEntrega(exp, archivos, token) {
   const r = clienteResend();
   // El enlace lleva a la misma dirección desde la que se pagó; el token no se escribe nunca en los registros.
   const enlace = `${exp.pago.origen || urlBase()}/exito.html#t=${token}`;
+  if (!exp.datos.titular.email) return false;
   if (!r) {
     console.log(`Email de entrega no enviado para ${exp.referencia}: falta RESEND_API_KEY en este entorno`);
     return false;

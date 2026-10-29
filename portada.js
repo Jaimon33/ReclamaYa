@@ -1,41 +1,6 @@
-// Portada: selector rápido, opiniones y cifras.
+// Portada: opiniones y cifras.
 import { OPINIONES, CIFRAS } from './config-publica.js';
 import { activarRevelado } from './sitio.js';
-
-const COMPANIAS = ['Movistar', 'Vodafone', 'Orange', 'Jazztel', 'Yoigo', 'MásMóvil', 'Simyo', 'Lowi', 'O2', 'Pepephone', 'Digi', 'Finetwork', 'Euskaltel', 'R', 'Telecable', 'Avatel', 'Adamo'];
-
-// ——— Selector rápido: el botón se adapta a lo que elige el usuario ———
-const selector = document.getElementById('selector');
-const lista = document.getElementById('selector-compania');
-COMPANIAS.forEach(c => lista.append(new Option(c, c)));
-lista.append(new Option('Otra compañía', 'Otro'));
-
-const RESPUESTAS = {
-  baja: { cubierto: true, texto: (c) => `Es justo lo que preparamos${c ? ` con ${c}` : ''}: reclamamos solo los días cobrados después de tu baja.` },
-  permanencia: { cubierto: false, texto: () => 'Las penalizaciones por permanencia todavía no las preparamos. Puedes reclamarlas gratis a la compañía y, si no responde, a la Oficina de Atención al Usuario de Telecomunicaciones.' },
-  dispositivo: { cubierto: false, texto: () => 'Los plazos de un móvil financiado todavía no los preparamos: suelen depender del contrato de financiación. Reclámalos a la compañía por escrito o pide ayuda en la oficina de consumo de tu ayuntamiento.' },
-  otro: { cubierto: false, texto: () => 'Por ahora solo preparamos reclamaciones por cobros posteriores a una baja. Si te cobran algo después de pedir la baja, elige la primera opción.' }
-};
-
-function actualizarSelector() {
-  const caso = new FormData(selector).get('caso');
-  const compania = lista.value;
-  const r = RESPUESTAS[caso];
-  const caja = document.getElementById('respuesta-selector');
-  const cta = document.getElementById('cta-selector');
-  document.getElementById('texto-selector').textContent = r.texto(compania === 'Otro' ? '' : compania);
-  caja.classList.toggle('no-cubierto', !r.cubierto);
-  if (r.cubierto) {
-    cta.href = `/reclamar.html${compania ? `?compania=${encodeURIComponent(compania)}` : ''}`;
-    cta.firstChild.textContent = compania && compania !== 'Otro' ? `Reclamar a ${compania} ` : 'Empieza tu reclamación ';
-    cta.classList.remove('secundario');
-  } else {
-    cta.href = 'https://usuariosteleco.digital.gob.es/reclamaciones/telefonia-e-internet';
-    cta.firstChild.textContent = 'Ver la vía oficial gratuita ';
-    cta.classList.add('secundario');
-  }
-}
-selector.addEventListener('change', actualizarSelector);
 
 // ——— Opiniones y cifras: solo con datos reales. En la vista previa se ven ejemplos marcados. ———
 const enProduccion = /(^|\.)reclamoia\.es$/.test(location.hostname);

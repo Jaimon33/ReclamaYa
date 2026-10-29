@@ -60,7 +60,7 @@ async function pagoSimulado(req, res, url) {
     id: exp.pago.sesion, object: 'checkout.session', mode: 'payment', payment_status: 'paid', status: 'complete',
     currency: 'eur', amount_total: Number(url.searchParams.get('importe') || exp.pago.importeCentimos),
     client_reference_id: exp.id, metadata: { expediente: exp.id, producto: exp.pago.producto, referencia: exp.referencia },
-    payment_intent: 'pi_simulado'
+    payment_intent: 'pi_simulado', customer_details: { email: 'cliente@example.com' }
   };
   const evento = { id: `evt_${Date.now()}`, object: 'event', type: 'checkout.session.completed', data: { object: sesion } };
   const cuerpo = JSON.stringify(evento);

@@ -30,9 +30,13 @@ export const SERVICIOS = {
   paquete: 'paquete de servicios (fibra, fijo y/o móvil)'
 };
 
+// Si no sabemos qué servicio era, el escrito habla de forma genérica.
+export const SERVICIO_GENERICO = 'telecomunicaciones contratado';
+
 // Traduce el canal que aparece en un documento ("llamada", "área de clientes"…) a las opciones del formulario.
 function canalDesdeTexto(texto) {
   const t = String(texto || '').toLowerCase();
+  if (/portab/.test(t)) return '';
   if (/tel[eé]f|llamad|call/.test(t)) return 'telefono';
   if (/web|app|[aá]rea|online|internet/.test(t)) return 'web';
   if (/mail|correo|carta|escrito|burofax/.test(t)) return 'escrito';
@@ -49,7 +53,7 @@ function normalizarNombre(s) {
 export function construirPropuesta(exp) {
   const r = exp.respuestas;
   const alertas = [];
-  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [], fechaSolicitud: [], fechaReclamacion: [], fechaRespuesta: [], canalBaja: [] };
+  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [], fechaSolicitud: [], fechaReclamacion: [], fechaRespuesta: [], canalBaja: [], canalReclamacion: [], servicio: [] };
   const facturas = [];
   const fuente = (doc, pagina) => ({ documento: doc.id, archivo: doc.nombre, pagina: pagina || 1 });
 
@@ -63,6 +67,8 @@ export function construirPropuesta(exp) {
     if (x.numeroCliente) candidatos.numeroCliente.push({ valor: x.numeroCliente, fuente: fuente(doc, x.factura.pagina) });
     x.lineas.forEach(l => candidatos.lineas.push({ valor: l, fuente: fuente(doc, x.factura.pagina) }));
     if (x.razonSocialOperador) candidatos.razonSocial.push({ valor: x.razonSocialOperador, fuente: fuente(doc, x.factura.pagina) });
+    if (x.servicio) candidatos.servicio.push({ valor: x.servicio, fuente: fuente(doc, x.factura.pagina) });
+    if (/portab/i.test(x.baja?.canal || '')) alertas.push(`"${doc.nombre}" indica que la baja se hizo por portabilidad a otra compañía. En ese caso, quién debe asumir esas facturas depende de lo que autorizaste a la nueva compañía: comprueba que pediste la baja directamente a ${nombreOperador(r)}.`);
 
     const operadorElegido = normalizarNombre(nombreOperador(r));
     const operadorDoc = normalizarNombre(`${x.operador} ${x.razonSocialOperador}`);
@@ -78,6 +84,8 @@ export function construirPropuesta(exp) {
     const canal = canalDesdeTexto(x.baja.canal);
     if (canal) candidatos.canalBaja.push({ valor: canal, fuente: fuente(doc, x.baja.pagina) });
     if (x.reclamacion.referencia) candidatos.reclamacionRef.push({ valor: x.reclamacion.referencia, fuente: fuente(doc, x.reclamacion.pagina) });
+    const canalRecl = canalDesdeTexto(x.reclamacion.canal);
+    if (canalRecl && doc.tipoDoc === 'reclamacion') candidatos.canalReclamacion.push({ valor: canalRecl, fuente: fuente(doc, x.reclamacion.pagina) });
     if (x.reclamacion.fecha && doc.tipoDoc === 'reclamacion') candidatos.fechaReclamacion.push({ valor: x.reclamacion.fecha, fuente: fuente(doc, x.reclamacion.pagina) });
     if (x.reclamacion.fecha && r.fechaReclamacion && x.reclamacion.fecha !== r.fechaReclamacion && doc.tipoDoc === 'reclamacion') {
       alertas.push(`"${doc.nombre}" indica que reclamaste el ${fechaLarga(x.reclamacion.fecha)}, pero indicaste el ${fechaLarga(r.fechaReclamacion)}. Revisa la fecha abajo.`);
@@ -130,6 +138,8 @@ export function construirPropuesta(exp) {
     reclamacionReferencia: elegir(candidatos.reclamacionRef),
     respuestaResumen: elegir(candidatos.respuestaResumen),
     canalBaja: elegir(candidatos.canalBaja),
+    canalReclamacion: elegir(candidatos.canalReclamacion),
+    servicio: elegir(candidatos.servicio),
     fechas: {
       solicitud: elegir(candidatos.fechaSolicitud),
       reclamacion: elegir(candidatos.fechaReclamacion),
@@ -188,7 +198,6 @@ export function limpiarDatos(entrada = {}, exp) {
       documento: txt(t.documento, 12).toUpperCase().replace(/[^0-9A-Z]/g, ''),
       firmante: txt(t.firmante, 100),
       email: txt(t.email, 120).toLowerCase(),
-      telefono: txt(t.telefono, 20),
       domicilio: txt(t.domicilio, 140),
       cp: txt(t.cp, 5),
       localidad: txt(t.localidad, 60),
@@ -197,6 +206,8 @@ export function limpiarDatos(entrada = {}, exp) {
     fechas: { solicitud: fecha(f.solicitud), deseada: fecha(f.deseada), reclamacion: fecha(f.reclamacion), respuesta: fecha(f.respuesta) },
     numeroCliente: txt(entrada.numeroCliente, 40),
     lineas: txt(entrada.lineas, 120),
+    servicio: Object.keys(SERVICIOS).includes(entrada.servicio) ? entrada.servicio : '',
+    resumenCaso: txt(entrada.resumenCaso, 600),
     razonSocialOperador: txt(entrada.razonSocialOperador, 100),
     canalBaja: Object.keys(CANALES).includes(entrada.canalBaja) ? entrada.canalBaja : '',
     bajaReferencia: txt(entrada.bajaReferencia, 40),
@@ -215,11 +226,33 @@ export function limpiarDatos(entrada = {}, exp) {
   };
 }
 
-// Las fechas confirmadas en el paso 2 sustituyen a las del paso 1 y la primera factura sale de los datos.
-export function respuestasDefinitivas(respuestas, datos) {
+// Lo que el cliente deja vacío se completa con lo leído de sus documentos.
+export function completarConPropuesta(datos, exp) {
+  const p = construirPropuesta(exp);
+  const leido = (x) => x?.valor || '';
+  const d = structuredClone(datos);
+  if (!d.titular.nombre) d.titular.nombre = leido(p.titular.nombre);
+  if (!d.titular.documento) d.titular.documento = leido(p.titular.documento).toUpperCase().replace(/[^0-9A-Z]/g, '');
+  for (const campo of ['solicitud', 'reclamacion', 'respuesta']) if (!d.fechas[campo]) d.fechas[campo] = leido(p.fechas[campo]);
+  for (const campo of ['numeroCliente', 'lineas', 'razonSocialOperador', 'canalBaja', 'bajaReferencia', 'canalReclamacion', 'reclamacionReferencia', 'respuestaResumen', 'servicio']) {
+    if (!d[campo]) d[campo] = leido(p[campo]);
+  }
+  if (!d.facturas.length) {
+    d.facturas = p.facturas.map(f => ({
+      documento: f.documento, numero: f.numero, fechaEmision: f.fechaEmision, periodoDesde: f.periodoDesde,
+      periodoHasta: f.periodoHasta, importeTotal: f.importeTotal, importeServicio: f.importeServicio
+    }));
+  }
+  return d;
+}
+
+// Las fechas de los documentos completan las respuestas del paso 1. En la segunda reclamación,
+// si hay respuesta de la compañía es que no la resolvió; si no la hay, es que no contestó.
+export function respuestasDefinitivas(respuestas, datos, hayRespuesta = Boolean(datos.fechas.respuesta)) {
   const emisiones = datos.facturas.map(f => f.fechaEmision).filter(Boolean).sort();
   return {
     ...respuestas,
+    respuesta: respuestas.reclamado === 'si' ? (hayRespuesta ? 'insatisfactoria' : 'sin_respuesta') : '',
     fechaSolicitud: datos.fechas.solicitud || respuestas.fechaSolicitud,
     fechaDeseada: datos.fechas.deseada,
     fechaReclamacion: datos.fechas.reclamacion || respuestas.fechaReclamacion,
@@ -232,20 +265,21 @@ export function respuestasDefinitivas(respuestas, datos) {
 export function validarDatos(datos, exp, fechaHoy = hoy()) {
   const errores = [];
   const avisos = [];
-  const r = respuestasDefinitivas(exp.respuestas, datos);
+  const tipos = new Set(exp.documentos.map(d => d.tipoDoc));
+  const r = respuestasDefinitivas(exp.respuestas, datos, Boolean(datos.fechas.respuesta) || tipos.has('respuesta_operador'));
   const evaluacion = evaluarCaso(r, fechaHoy, { definitiva: true });
   const esB = evaluacion.estado === 'B';
   const esEmpresa = r.tipoTitular === 'empresa';
   const t = datos.titular;
 
-  if (!r.fechaSolicitud) errores.push('Indica la fecha en que pediste la baja (si no aparece en tus documentos, búscala en tus emails o SMS).');
-  if (r.reclamado === 'si' && !r.fechaReclamacion) errores.push('Indica la fecha en que reclamaste a la compañía.');
-  if (r.respuesta === 'insatisfactoria' && !r.fechaRespuesta) errores.push('Indica la fecha en que te respondió la compañía.');
+  if (!r.fechaSolicitud) errores.push('No encontramos en tus documentos el día en que pediste la baja. Sube el email, SMS o carta que lo confirma, o escríbelo en "Revisa lo que hemos leído".');
+  if (r.reclamado === 'si' && !r.fechaReclamacion) errores.push('No encontramos el día en que reclamaste a la compañía. Sube tu reclamación o escríbelo en "Revisa lo que hemos leído".');
+  if (r.respuesta === 'insatisfactoria' && !r.fechaRespuesta) errores.push('Has subido la respuesta de la compañía, pero no encontramos su fecha. Escríbela en "Revisa lo que hemos leído".');
   if (!['A', 'B'].includes(evaluacion.estado)) {
     [...evaluacion.excluyen, ...evaluacion.faltan].filter(m => !/^fecha_(solicitud|reclamacion|respuesta)$/.test(m.codigo)).forEach(m => errores.push(m.mensaje));
     if (!errores.length) errores.push('Con estos datos tu caso no encaja. Revisa las fechas o vuelve al paso 1.');
   } else if (evaluacion.producto !== exp.evaluacion?.producto) {
-    errores.push('Con las fechas de tus documentos cambia el tipo de reclamación que corresponde. Vuelve al paso 1 y revisa tus respuestas.');
+    errores.push('Con las fechas de tus documentos cambia la reclamación que corresponde. Vuelve al paso 1 y elige la otra opción.');
   }
 
   if (esEmpresa) {
@@ -256,27 +290,21 @@ export function validarDatos(datos, exp, fechaHoy = hoy()) {
     if (t.nombre.split(' ').filter(Boolean).length < 2) errores.push('Escribe tu nombre y apellidos como titular del contrato.');
     if (!documentoValido(t.documento)) errores.push('El DNI o NIE no es válido. Revísalo (8 números y letra, o X/Y/Z, 7 números y letra).');
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t.email)) errores.push('Escribe un correo electrónico válido: ahí te enviaremos el enlace de descarga.');
-  if (t.telefono && !/^[+\d][\d\s]{8,17}$/.test(t.telefono)) errores.push('El teléfono de contacto no parece válido.');
   if (esB) {
-    if (!t.domicilio) errores.push('La Oficina exige un domicilio para notificaciones.');
+    if (!t.domicilio) errores.push('La Oficina exige una dirección para notificaciones: escríbela.');
     if (!/^\d{5}$/.test(t.cp)) errores.push('Escribe el código postal (5 números).');
     if (!t.localidad) errores.push('Escribe la localidad.');
     if (!t.provincia) errores.push('Escribe la provincia.');
   } else if (t.cp && !/^\d{5}$/.test(t.cp)) errores.push('El código postal debe tener 5 números.');
-  if (!datos.canalBaja) errores.push('Indica por dónde pediste la baja.');
 
-  const tipos = new Set(exp.documentos.map(d => d.tipoDoc));
-  if (!exp.documentos.length) errores.push('Añade al menos una factura posterior a la baja.');
-  if (!tipos.has('factura')) errores.push('Falta la factura posterior a la baja: súbela y márcala como "Factura posterior a la baja".');
+  if (!exp.documentos.length) errores.push('Añade tu última factura con cobros posteriores a la baja.');
+  if (!tipos.has('factura')) errores.push('Falta la factura con cobros posteriores a la baja: súbela (si ya la subiste, márcala como "Factura posterior a la baja").');
   if (!tipos.has('prueba_baja') && !datos.bajaReferencia) {
-    errores.push('Falta la prueba de la baja: sube el email, SMS, carta o captura (marcado como "Prueba de la solicitud de baja") o escribe su número de referencia.');
+    errores.push('Falta la prueba de la baja: sube el email, SMS, carta o captura que la confirma, o escribe su número de referencia en "Revisa lo que hemos leído".');
   }
   if (esB) {
-    if (!datos.canalReclamacion) errores.push('Indica por dónde reclamaste a la compañía.');
-    if (!tipos.has('reclamacion') && !datos.reclamacionReferencia) errores.push('Para la Oficina hace falta acreditar tu reclamación anterior: sube una copia o escribe su número de referencia. Si no tienes ninguna prueba, vuelve al paso 1 y marca que no has reclamado: prepararemos primero una reclamación por escrito.');
+    if (!tipos.has('reclamacion') && !datos.reclamacionReferencia) errores.push('Para la Oficina hace falta acreditar que ya reclamaste a la compañía: sube una copia o escribe su número de referencia. Si no tienes ninguna prueba, vuelve al paso 1 y elige "Primera reclamación".');
     if (r.respuesta === 'insatisfactoria' && !tipos.has('respuesta_operador')) avisos.push('Te recomendamos añadir la respuesta de la compañía: la Oficina pide copia de los documentos que respaldan tu reclamación.');
-    if (r.respuesta === 'insatisfactoria' && !datos.respuestaResumen) errores.push('Resume en una frase qué te respondió la compañía.');
   }
 
   if (!datos.facturas.length) errores.push('Confirma los datos de al menos una factura.');
@@ -328,7 +356,7 @@ export function construirResumen(exp, datos, calculo) {
   const ev = exp.evaluacion;
   return {
     operador: nombreOperador(r),
-    servicio: SERVICIOS[r.servicio],
+    servicio: SERVICIOS[datos.servicio || r.servicio] || '',
     titular: datos.titular.nombre,
     contrato: datos.numeroCliente,
     lineas: datos.lineas,

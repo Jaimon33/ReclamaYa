@@ -7,7 +7,7 @@ import {
   enviar, leerCuerpoJSON, ipCliente, dentroDeCupo, generarId, generarClave, resumen,
   expedienteAutorizado, guardarExpediente, credenciales, noAutorizado, claveExpediente
 } from './_seguridad.js';
-import { limpiarDatos, validarDatos, vistaPublica, construirResumen } from './_expediente.js';
+import { limpiarDatos, completarConPropuesta, validarDatos, vistaPublica, construirResumen } from './_expediente.js';
 import { registrar, EVENTOS } from './_metricas.js';
 import { anularPagoPendiente } from './_pago.js';
 
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
         if (!exp) return noAutorizado(res);
         if (exp.estado !== 'borrador') return enviar(res, 409, { error: 'Este expediente ya está pagado y no se puede modificar.' });
         await anularPagoPendiente(exp);
-        const datos = limpiarDatos(cuerpo.datos, exp);
+        const datos = completarConPropuesta(limpiarDatos(cuerpo.datos, exp), exp);
         const { errores, avisos, calculo, evaluacion, respuestas } = validarDatos(datos, exp);
         exp.datos = datos;
         if (errores.length) {

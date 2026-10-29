@@ -12,7 +12,7 @@ export function aplicarMarca(raiz = document) {
     el.textContent = PRESTADOR.email;
     if (el.tagName === 'A') el.href = `mailto:${PRESTADOR.email}`;
   });
-  document.title = document.title.replace(/BajaClara/g, MARCA.nombre);
+  document.title = document.title.replace(/BajaClara|LíneaClara/g, MARCA.nombre);
 }
 
 const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

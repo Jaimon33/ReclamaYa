@@ -27,8 +27,8 @@ async function marcarEjemplo(bytes) {
 
 const respuestas = {
   tipoTitular: 'persona', operador: 'Otro', operadorOtro: 'Operadora Ejemplo', servicio: 'fibra',
-  viaBaja: 'operador', pruebaBaja: 'si', fechaSolicitud: '2026-06-03', fechaDeseada: '',
-  reclamado: 'no', fechaPrimeraFactura: '2026-06-08'
+  fechaSolicitud: '2026-06-03', fechaDeseada: '',
+  caso: 'primera', fechaPrimeraFactura: '2026-06-08'
 };
 const evaluacion = evaluarCaso(respuestas, '2026-07-06');
 const facturaJunio = await pdfFicticio(['Factura n.º F-EJ-0601 · Emitida el 08/06/2026', 'Periodo: 01/06/2026 a 30/06/2026', 'Cuota fibra 600 Mb ........ 30,00 €', 'IVA 21 % .................. 6,30 €', 'Total ..................... 36,30 €']);

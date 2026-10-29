@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Comprueba tu caso — BajaClara</title>
-  <meta name="description" content="Comprueba gratis si puedes reclamar los cobros de tu teléfono o fibra posteriores a la baja.">
+  <title>Empieza tu reclamación — LíneaClara</title>
+  <meta name="description" content="Reclama los cobros de tu teléfono o fibra posteriores a la baja: sube tu factura y la prueba de la baja y te preparamos la reclamación.">
   <link rel="canonical" href="https://reclamoia.es/reclamar.html">
   <meta name="theme-color" content="#0E0B2B">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -20,7 +20,7 @@
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="cabecera">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>LíneaClara</span></a>
       <nav class="navegacion" aria-label="Principal"><a href="/#preguntas">Ayuda</a></nav>
     </div>
   </header>
@@ -30,8 +30,8 @@
     <div class="mancha violeta" style="width:420px;height:420px;bottom:-160px;left:-200px"></div>
     <div class="contenedor estrecho" style="padding-top:32px">
       <ol class="progreso" aria-label="Pasos">
-        <li id="prog-1" class="activo" aria-current="step">1. Comprueba tu caso</li>
-        <li id="prog-2">2. Añade tus documentos</li>
+        <li id="prog-1" class="activo" aria-current="step">1. Tu caso</li>
+        <li id="prog-2">2. Documentos y datos</li>
         <li id="prog-3">3. Revisa y paga</li>
       </ol>
 
@@ -39,15 +39,22 @@
 
       <!-- PASO 1 -->
       <section id="paso-1" class="paso-tarjeta" aria-labelledby="t-paso-1">
-        <h1 id="t-paso-1" tabindex="-1">Comprueba tu caso</h1>
-        <p class="ayuda">Unas pocas preguntas. Lo demás lo sacaremos de tus documentos. No te pedimos nombre, DNI ni email todavía.</p>
+        <h1 id="t-paso-1" tabindex="-1">Empieza tu reclamación</h1>
+        <p class="ayuda">Tres preguntas. Las fechas y los importes los sacamos de tus documentos.</p>
         <form id="form-caso" novalidate>
           <fieldset data-q="tipoTitular">
             <legend>¿Quién es el titular del contrato?</legend>
-            <p class="ayuda">Tiene que reclamar el titular, o alguien en nombre de su empresa.</p>
             <div class="opciones dos-col">
-              <label class="opcion"><input type="radio" name="tipoTitular" value="persona"> Yo (también si soy autónomo)</label>
-              <label class="opcion"><input type="radio" name="tipoTitular" value="empresa"> Una empresa</label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="persona"> <span>Yo, persona física <span class="ayuda">(también autónomos)</span></span></label>
+              <label class="opcion"><input type="radio" name="tipoTitular" value="empresa"> <span>Una empresa</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset data-q="caso" class="pregunta-oculta">
+            <legend>¿Qué reclamación necesitas?</legend>
+            <div class="opciones">
+              <label class="opcion opcion-caso"><input type="radio" name="caso" value="primera"> <span><strong>Primera reclamación: a tu compañía</strong><span class="ayuda">Todavía no has reclamado por estos cobros.</span></span></label>
+              <label class="opcion opcion-caso"><input type="radio" name="caso" value="segunda"> <span><strong>Segunda reclamación: ante la Oficina de Atención al Usuario de Telecomunicaciones</strong><span class="ayuda">Ya reclamaste a la compañía y no te contestó en un mes o no te dio la razón. Es el organismo oficial del Ministerio y su vía es gratuita.</span></span></label>
             </div>
           </fieldset>
 
@@ -62,70 +69,9 @@
             </div>
           </div>
 
-          <fieldset data-q="servicio" class="pregunta-oculta">
-            <legend>¿Qué diste de baja?</legend>
-            <div class="opciones dos-col">
-              <label class="opcion"><input type="radio" name="servicio" value="fibra"> Fibra o internet en casa</label>
-              <label class="opcion"><input type="radio" name="servicio" value="movil"> Línea móvil</label>
-              <label class="opcion"><input type="radio" name="servicio" value="fijo"> Teléfono fijo</label>
-              <label class="opcion"><input type="radio" name="servicio" value="paquete"> Un paquete (fibra, móvil…)</label>
-            </div>
-          </fieldset>
-
-          <fieldset data-q="viaBaja" class="pregunta-oculta">
-            <legend>¿Cómo pediste la baja?</legend>
-            <div class="opciones">
-              <label class="opcion"><input type="radio" name="viaBaja" value="operador"> Se la pedí a mi compañía (teléfono, web, email o tienda)</label>
-              <label class="opcion"><input type="radio" name="viaBaja" value="portabilidad"> Me cambié a otra compañía y ella tramitó el cambio</label>
-            </div>
-          </fieldset>
-
-          <fieldset data-q="pruebaBaja" class="pregunta-oculta">
-            <legend>¿Tienes alguna prueba de que la pediste?</legend>
-            <div class="opciones">
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="si"> Sí: número de referencia, email, SMS, carta o captura</label>
-              <label class="opcion"><input type="radio" name="pruebaBaja" value="no"> No tengo ninguna</label>
-            </div>
-          </fieldset>
-
-          <fieldset data-q="fechaSolicitud" class="pregunta-oculta">
-            <legend>¿Qué día pediste la baja?</legend>
-            <div class="campo"><label for="fechaSolicitud" class="oculto-visual">Fecha en que pediste la baja</label><input type="date" id="fechaSolicitud" name="fechaSolicitud"></div>
-            <label class="opcion"><input type="checkbox" id="fechaSolicitudEnDocs" data-en-docs="fechaSolicitud"> No la recuerdo: buscadla en mis documentos</label>
-          </fieldset>
-
-          <fieldset data-q="reclamado" class="pregunta-oculta">
-            <legend>¿Ya has reclamado a la compañía por estos cobros?</legend>
-            <div class="opciones dos-col">
-              <label class="opcion"><input type="radio" name="reclamado" value="no"> No, todavía no</label>
-              <label class="opcion"><input type="radio" name="reclamado" value="si"> Sí, ya reclamé</label>
-            </div>
-          </fieldset>
-
-          <div id="bloque-previa" class="pregunta-oculta">
-            <fieldset>
-              <legend>¿Qué te han contestado?</legend>
-              <div class="opciones">
-                <label class="opcion"><input type="radio" name="respuesta" value="sin_respuesta"> Nada, no han respondido</label>
-                <label class="opcion"><input type="radio" name="respuesta" value="insatisfactoria"> Respondieron, pero no me devuelven el dinero</label>
-                <label class="opcion"><input type="radio" name="respuesta" value="solucionado"> Ya me lo han devuelto</label>
-              </div>
-            </fieldset>
-            <fieldset id="campo-fecha-reclamacion">
-              <legend>¿Qué día reclamaste?</legend>
-              <div class="campo"><label for="fechaReclamacion" class="oculto-visual">Fecha de tu reclamación</label><input type="date" id="fechaReclamacion" name="fechaReclamacion"></div>
-              <label class="opcion"><input type="checkbox" id="fechaReclamacionEnDocs" data-en-docs="fechaReclamacion"> No la recuerdo: buscadla en mis documentos</label>
-            </fieldset>
-            <fieldset id="campo-fecha-respuesta" class="pregunta-oculta">
-              <legend>¿Qué día te respondieron?</legend>
-              <div class="campo"><label for="fechaRespuesta" class="oculto-visual">Fecha de la respuesta</label><input type="date" id="fechaRespuesta" name="fechaRespuesta"></div>
-              <label class="opcion"><input type="checkbox" id="fechaRespuestaEnDocs" data-en-docs="fechaRespuesta"> No la recuerdo: buscadla en mis documentos</label>
-            </fieldset>
-          </div>
-
           <div id="errores-paso-1" role="alert"></div>
           <div class="acciones pregunta-oculta" id="acciones-paso-1">
-            <button type="submit" class="boton ancho">Comprobar</button>
+            <button type="submit" class="boton ancho">Continuar</button>
           </div>
         </form>
 
@@ -134,79 +80,56 @@
 
       <!-- PASO 2 -->
       <section id="paso-2" class="paso-tarjeta" hidden aria-labelledby="t-paso-2">
-        <h1 id="t-paso-2" tabindex="-1">Añade tus documentos</h1>
-        <p class="ayuda" id="limites"></p>
-        <h2 class="rotulo">Lo que necesitamos</h2>
+        <h1 id="t-paso-2" tabindex="-1">Sube tus documentos</h1>
+        <p class="ayuda">Los leemos por ti: de ahí sacamos las fechas, las facturas y los importes.</p>
         <ul class="requisitos" id="requisitos"></ul>
 
         <div class="zona-subida" id="zona-subida">
-          <p style="margin:0">Sube tus facturas y pruebas, una a una o varias a la vez.</p>
-          <div class="botones">
-            <button type="button" class="boton" data-abrir="archivos">Elegir archivos</button>
-            <button type="button" class="boton secundario" data-abrir="foto">Hacer una foto</button>
-          </div>
+          <button type="button" class="boton" data-abrir="archivos">Elegir archivos</button>
           <input type="file" id="archivos" hidden multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
-          <input type="file" id="foto" hidden accept="image/jpeg,image/png" capture="environment">
-          <p class="ayuda" style="margin:0">Fotos: con buena luz, planas y que se vea la hoja entera.</p>
+          <p class="ayuda" style="margin:0" id="limites"></p>
         </div>
         <div id="mensajes-docs" aria-live="polite"></div>
         <ul class="lista-docs" id="lista-docs" aria-label="Documentos añadidos"></ul>
 
         <form id="form-datos" novalidate hidden>
-          <h2>Confirma tus datos</h2>
-          <p class="ayuda">Los hemos leído de tus documentos cuando ha sido posible. Revísalos y corrige lo que haga falta: no inventamos nada que no aparezca.</p>
+          <h2>Tus datos</h2>
+          <p class="ayuda">Los rellenamos con lo que aparece en tus documentos. Corrige lo que haga falta.</p>
           <div id="alertas-datos"></div>
 
-          <h3>Titular del contrato</h3>
-          <div class="campo"><label for="d-nombre" id="l-nombre">Nombre y apellidos</label><input type="text" id="d-nombre" autocomplete="name" maxlength="100"><span class="fuente" id="f-nombre"></span></div>
-          <div class="fila dos">
-            <div class="campo"><label for="d-documento" id="l-documento">DNI o NIE</label><input type="text" id="d-documento" maxlength="12" autocapitalize="characters" autocomplete="off"><span class="fuente" id="f-documento"></span></div>
-            <div class="campo"><label for="d-telefono">Teléfono de contacto <span class="ayuda">(opcional)</span></label><input type="tel" id="d-telefono" autocomplete="tel" maxlength="20" inputmode="tel"></div>
-          </div>
-          <div class="campo" id="campo-firmante" hidden><label for="d-firmante">Nombre y apellidos de quien firma en nombre de la empresa</label><input type="text" id="d-firmante" autocomplete="name" maxlength="100"></div>
-          <div class="campo"><label for="d-email">Email</label><input type="email" id="d-email" autocomplete="email" maxlength="120" inputmode="email"><p class="ayuda" style="margin:4px 0 0">Te enviaremos aquí el enlace de descarga y la confirmación del pedido.</p></div>
-          <div class="campo"><label for="d-domicilio">Domicilio <span class="ayuda" id="domicilio-opcional">(opcional; aparece en el escrito)</span></label><input type="text" id="d-domicilio" autocomplete="street-address" maxlength="140"></div>
-          <div class="fila tres">
+          <div class="campo"><label for="d-nombre" id="l-nombre">Nombre completo</label><input type="text" id="d-nombre" autocomplete="name" maxlength="100"><span class="fuente" id="f-nombre"></span></div>
+          <div class="campo"><label for="d-documento" id="l-documento">DNI o NIE</label><input type="text" id="d-documento" maxlength="12" autocapitalize="characters" autocomplete="off"><span class="fuente" id="f-documento"></span></div>
+          <div class="campo" id="campo-firmante" hidden><label for="d-firmante">Nombre de quien firma en nombre de la empresa</label><input type="text" id="d-firmante" autocomplete="name" maxlength="100"></div>
+          <div class="campo"><label for="d-domicilio">Dirección <span class="ayuda" id="domicilio-opcional">(opcional)</span></label><input type="text" id="d-domicilio" autocomplete="street-address" maxlength="140" placeholder="Calle, número, piso"></div>
+          <div class="fila tres direccion-detalle" id="direccion-detalle">
             <div class="campo"><label for="d-cp">Código postal</label><input type="text" id="d-cp" inputmode="numeric" maxlength="5" autocomplete="postal-code"></div>
             <div class="campo"><label for="d-localidad">Localidad</label><input type="text" id="d-localidad" maxlength="60" autocomplete="address-level2"></div>
             <div class="campo"><label for="d-provincia">Provincia</label><input type="text" id="d-provincia" maxlength="40" autocomplete="address-level1"></div>
           </div>
+          <div class="campo"><label for="d-resumen">Resume brevemente tu caso <span class="ayuda">(opcional)</span></label><textarea id="d-resumen" maxlength="600" rows="3" placeholder="Por ejemplo: pedí la baja por teléfono en junio y me siguen cobrando la cuota de la fibra."></textarea></div>
 
-          <h3>Fechas</h3>
-          <div class="fila dos">
-            <div class="campo"><label for="d-fecha-solicitud">Día en que pediste la baja</label><input type="date" id="d-fecha-solicitud"><span class="fuente" id="f-fecha-solicitud"></span></div>
-            <div class="campo"><label for="d-fecha-deseada">Fecha en que pediste que fuera efectiva <span class="ayuda">(solo si pediste una posterior)</span></label><input type="date" id="d-fecha-deseada"></div>
-          </div>
-          <div class="fila dos" id="fechas-previa" hidden>
-            <div class="campo"><label for="d-fecha-reclamacion">Día en que reclamaste a la compañía</label><input type="date" id="d-fecha-reclamacion"><span class="fuente" id="f-fecha-reclamacion"></span></div>
-            <div class="campo" id="campo-fecha-respuesta-datos"><label for="d-fecha-respuesta">Día en que te respondieron</label><input type="date" id="d-fecha-respuesta"><span class="fuente" id="f-fecha-respuesta"></span></div>
-          </div>
-
-          <h3>El contrato y la baja</h3>
-          <div class="fila dos">
-            <div class="campo"><label for="d-cliente">Nº de cliente o contrato <span class="ayuda">(si aparece)</span></label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
-            <div class="campo"><label for="d-lineas">Teléfono(s) o línea(s) dadas de baja</label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
-          </div>
-          <div class="fila dos">
-            <div class="campo"><label for="d-canal-baja">¿Por dónde pediste la baja?</label><span class="fuente" id="f-canal-baja"></span>
-              <select id="d-canal-baja"><option value="">Elige</option><option value="telefono">Por teléfono</option><option value="web">En la web o la app</option><option value="escrito">Por email o por escrito</option><option value="tienda">En una tienda</option><option value="otro">Otro</option></select></div>
-            <div class="campo"><label for="d-ref-baja">Nº de referencia de la baja <span class="ayuda">(obligatorio si no subes el justificante)</span></label><input type="text" id="d-ref-baja" maxlength="40"><span class="fuente" id="f-ref-baja"></span></div>
-          </div>
-
-          <div id="bloque-datos-previa" hidden>
-            <h3>Tu reclamación anterior</h3>
-            <div class="fila dos">
-              <div class="campo"><label for="d-canal-recl">¿Por dónde reclamaste?</label>
-                <select id="d-canal-recl"><option value="">Elige</option><option value="telefono">Por teléfono</option><option value="web">En la web o la app</option><option value="escrito">Por email o por escrito</option><option value="tienda">En una tienda</option><option value="otro">Otro</option></select></div>
-              <div class="campo"><label for="d-ref-recl">Nº de referencia de la reclamación</label><input type="text" id="d-ref-recl" maxlength="40"><span class="fuente" id="f-ref-recl"></span></div>
+          <details class="leido" id="leido">
+            <summary><span>Revisa lo que hemos leído de tus documentos</span><span class="ayuda" id="leido-resumen"></span></summary>
+            <div class="leido-cuerpo">
+              <div class="fila dos">
+                <div class="campo"><label for="d-fecha-solicitud">Día en que pediste la baja</label><input type="date" id="d-fecha-solicitud"><span class="fuente" id="f-fecha-solicitud"></span></div>
+                <div class="campo"><label for="d-ref-baja">Nº de referencia de la baja</label><input type="text" id="d-ref-baja" maxlength="40"><span class="fuente" id="f-ref-baja"></span></div>
+              </div>
+              <div class="fila dos" id="fechas-previa" hidden>
+                <div class="campo"><label for="d-fecha-reclamacion">Día en que reclamaste a la compañía</label><input type="date" id="d-fecha-reclamacion"><span class="fuente" id="f-fecha-reclamacion"></span></div>
+                <div class="campo"><label for="d-ref-recl">Nº de referencia de la reclamación</label><input type="text" id="d-ref-recl" maxlength="40"><span class="fuente" id="f-ref-recl"></span></div>
+              </div>
+              <div class="campo" id="campo-fecha-respuesta-datos" hidden><label for="d-fecha-respuesta">Día en que te respondió la compañía <span class="ayuda">(si te respondió)</span></label><input type="date" id="d-fecha-respuesta"><span class="fuente" id="f-fecha-respuesta"></span></div>
+              <div class="fila dos">
+                <div class="campo"><label for="d-cliente">Nº de cliente o contrato</label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
+                <div class="campo"><label for="d-lineas">Línea(s) dadas de baja</label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
+              </div>
+              <h3>Facturas</h3>
+              <p class="ayuda">Reclamamos solo los días posteriores a la baja. En "importe del servicio" va lo que te cobran por la línea dada de baja (cuotas y consumos, con IVA).</p>
+              <div id="facturas"></div>
+              <button type="button" class="boton discreto" id="anadir-factura">+ Añadir otra factura</button>
             </div>
-            <div class="campo" id="campo-respuesta-resumen" hidden><label for="d-respuesta">¿Qué te respondieron? <span class="ayuda">(en una frase)</span></label><textarea id="d-respuesta" maxlength="300"></textarea><span class="fuente" id="f-respuesta"></span></div>
-          </div>
-
-          <h3>Facturas cobradas después de la baja</h3>
-          <p class="ayuda">Para cada factura indica el periodo que cubre y cuánto corresponde al servicio dado de baja (cuotas y consumos, IVA incluido). Solo reclamaremos los días posteriores a la baja.</p>
-          <div id="facturas"></div>
-          <button type="button" class="boton discreto" id="anadir-factura">+ Añadir otra factura</button>
+          </details>
 
           <div id="errores-datos" role="alert"></div>
           <div class="acciones">
@@ -225,7 +148,7 @@
             <label class="casilla"><input type="checkbox" id="acepta-condiciones"> <span>He leído y acepto las <a href="/condiciones-venta.html" target="_blank" rel="noopener">condiciones de contratación</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
             <label class="casilla"><input type="checkbox" id="ejecucion-inmediata"> <span>Pido que preparéis los documentos de inmediato. Sé que, cuando estén preparados y a mi disposición, pierdo el derecho de desistimiento; mis derechos si tienen algún defecto se mantienen.</span></label>
           </div>
-          <p class="ayuda">Puedes reclamar gratis por tu cuenta por los canales oficiales. Pagas la preparación de la documentación. El pago lo procesa Stripe.</p>
+          <p class="ayuda">En la página de pago (Stripe) te pediremos el email al que enviarte los documentos. Puedes reclamar gratis por tu cuenta por los canales oficiales: lo que pagas es la preparación de la documentación.</p>
           <div id="errores-pago" role="alert"></div>
           <div class="acciones">
             <button type="submit" class="boton ancho" id="boton-pagar">Pagar</button>
@@ -233,7 +156,6 @@
         </form>
         <div class="acciones">
           <button type="button" class="boton discreto" data-ir="2">Corregir documentos o datos</button>
-          <button type="button" class="boton discreto" data-ir="1">Corregir respuestas</button>
           <button type="button" class="boton discreto" id="borrar-expediente">Borrar mis datos y empezar de nuevo</button>
         </div>
       </section>
@@ -242,7 +164,7 @@
 
   <footer class="pie">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>LíneaClara</span></a>
       <p>Un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid.</p>
       <nav class="enlaces" aria-label="Información legal">
         <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/privacidad.html#cookies">Cookies</a><a href="/condiciones-venta.html">Condiciones</a><a data-email href="mailto:hola@reclamoia.es">Contacto</a>

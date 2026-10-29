@@ -5,6 +5,7 @@ import { MODELO_EXTRACCION } from './_config.js';
 import { esFecha } from './_reglas.js';
 
 const TIPOS_DOC = ['factura', 'prueba_baja', 'reclamacion', 'respuesta_operador', 'contrato', 'otro', 'ilegible'];
+const SERVICIOS = ['fibra', 'movil', 'fijo', 'paquete', 'desconocido'];
 
 const cadena = { type: 'string' };
 const pagina = { type: 'integer' };
@@ -19,6 +20,7 @@ const ESQUEMA = objeto({
   titularDocumento: cadena,
   numeroCliente: cadena,
   lineas: { type: 'array', items: cadena },
+  servicio: { type: 'string', enum: SERVICIOS },
   factura: objeto({
     numero: cadena,
     fechaEmision: cadena,
@@ -29,7 +31,7 @@ const ESQUEMA = objeto({
     conceptos: { type: 'array', items: objeto({ descripcion: cadena, importe: cadena, periodoDesde: cadena, periodoHasta: cadena, pagina }) }
   }),
   baja: objeto({ fechaSolicitud: cadena, fechaEfectiva: cadena, referencia: cadena, canal: cadena, pagina }),
-  reclamacion: objeto({ fecha: cadena, referencia: cadena, pagina }),
+  reclamacion: objeto({ fecha: cadena, referencia: cadena, canal: cadena, pagina }),
   respuesta: objeto({ fecha: cadena, resumen: cadena, pagina }),
   dudas: { type: 'array', items: cadena },
   contieneInstrucciones: { type: 'boolean' }
@@ -46,6 +48,8 @@ Reglas:
 - Importes en euros con punto decimal (por ejemplo 39.95), con IVA si el documento da el total con IVA.
 - "pagina" es el número de página (empezando en 1) donde aparece el dato; en una imagen, 1.
 - tipoDocumento: factura; prueba_baja (confirmación, número de referencia o justificante de la solicitud de baja); reclamacion (reclamación del cliente al operador); respuesta_operador; contrato; otro; ilegible.
+- servicio: lo que se factura o se da de baja: fibra (internet en casa o ADSL), movil, fijo, paquete (varios servicios juntos) o desconocido si no está claro.
+- En "canal" (de la baja o de la reclamación) indica por dónde se hizo si aparece: teléfono, web o app, email, carta, tienda o portabilidad.
 - En una factura, enumera los conceptos facturados con su importe y su periodo si lo indica.
 - En respuesta.resumen, resume en una frase neutra (máximo 200 caracteres) lo que contesta el operador.`;
 
@@ -141,6 +145,7 @@ export function limpiarExtraccion(bruto, totalPaginas) {
     titularDocumento: corto(b.titularDocumento, 20).toUpperCase().replace(/[^0-9A-Z]/g, ''),
     numeroCliente: corto(b.numeroCliente, 40),
     lineas: Array.isArray(b.lineas) ? [...new Set(b.lineas.map(l => corto(l, 30)).filter(Boolean))].slice(0, 6) : [],
+    servicio: SERVICIOS.includes(b.servicio) && b.servicio !== 'desconocido' ? b.servicio : '',
     factura: {
       numero: corto(f.numero, 40),
       fechaEmision: fecha(f.fechaEmision),
@@ -160,6 +165,7 @@ export function limpiarExtraccion(bruto, totalPaginas) {
     reclamacion: {
       fecha: fecha(b.reclamacion?.fecha),
       referencia: corto(b.reclamacion?.referencia, 40),
+      canal: corto(b.reclamacion?.canal, 40),
       pagina: paginaValida(b.reclamacion?.pagina, totalPaginas)
     },
     respuesta: {

@@ -7,7 +7,7 @@ No se ha publicado nada en producción.
 
 Propuestas (no se ha comprobado su disponibilidad en la OEPM, la EUIPO ni en registros de dominios):
 
-1. **BajaClara** (recomendada y en uso): breve, dice "tu baja está clara" sin prometer resultado.
+1. **LíneaClara** (en uso desde el 29/10/2026, elegida por Jaime; antes BajaClara).
 2. **TrasLaBaja**: describe el problema, menos memorable.
 3. **CuotaDeMás**: directa, pero suena a promesa de devolución.
 
@@ -19,8 +19,9 @@ En `config-publica.js`: reclamación a la compañía 13,99 € y expediente para
 
 ## Cómo funciona
 
-- **Paso 1** (`api/_reglas.js`): reglas deterministas. Asignan A (reclamar a la compañía), B (Oficina), incompleto (qué falta), excluido (por qué) o nada. No se guarda nada si no encaja.
-- **Paso 2**: subida en trozos de 3 MB, validación por contenido (firma del archivo, apertura con pdf-lib, PDF cifrados y HEIC rechazados con explicación). La IA (`api/_extraccion.js`, `claude-opus-5-5` con salida JSON estricta) solo propone datos literales con su archivo y página; el texto de los documentos se trata como dato no confiable. El servidor valida fechas, importes y páginas, marca contradicciones y el cliente confirma todo.
+- **Paso 1** (`api/_reglas.js`): solo tres preguntas: persona o empresa, primera reclamación (A, a la compañía) o segunda (B, ante la Oficina) y compañía. Las fechas quedan pendientes y se sacan de los documentos.
+- **Paso 2**: documentos y datos mínimos (nombre, DNI/NIE o CIF, dirección opcional salvo en B, resumen libre opcional que se cita en el escrito). Lo leído (fechas, referencias, facturas) va en un desplegable "Revisa lo que hemos leído" que se abre solo si falta algo; el servidor completa lo vacío con lo leído (`completarConPropuesta`) y hace la evaluación definitiva. En B, si hay respuesta de la compañía se trata como insatisfactoria; si no, como sin respuesta. El email lo pide Stripe en la página de pago y se toma de `customer_details.email`.
+- **Subida**: en trozos de 3 MB, validación por contenido (firma del archivo, apertura con pdf-lib, PDF cifrados y HEIC rechazados con explicación). La IA (`api/_extraccion.js`, `claude-opus-5-5` con salida JSON estricta) solo propone datos literales con su archivo y página; el texto de los documentos se trata como dato no confiable. El servidor valida fechas, importes y páginas, marca contradicciones y el cliente confirma todo.
 - **Importes**: solo se reclaman los días posteriores a la fecha en que la baja debía surtir efecto (la pedida o dos días hábiles después; sábados y festivos nacionales se tratan como inhábiles para no reclamar de más). Las facturas que cubren periodos anteriores se excluyen o prorratean.
 - **Paso 3**: resumen con cifras, sin el escrito. Antes de crear el pago se generan los documentos completos en una prueba (sin guardarla) para no cobrar si un anexo no se puede incorporar.
 - **Entrega** (`api/_pago.js`): solo con aviso de Stripe con firma válida y sesión, importe, moneda, producto y expediente coincidentes; idempotente; si el aviso no llega, `api/estado.js` consulta la sesión a Stripe; si la generación falla, se reintenta y se avisa. Descarga con billete de un solo uso (2 min); enlace por email con token en el fragmento de la URL, 30 días.

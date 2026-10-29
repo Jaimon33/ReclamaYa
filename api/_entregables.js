@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { Maquetador, anadirAnexos, guardar, rellenarFormularioOaut, textoSeguro } from './_pdf.js';
 import { MARCA, PRESTADOR, PRODUCTOS, formatearPrecio, VERSION_PLANTILLAS } from './_config.js';
 import { FUENTES, VERSION_REGLAS, fechaLarga, fechaCorta, euros, nombreOperador, sumarMeses, hoy } from './_reglas.js';
-import { TIPOS_DOCUMENTO, CANALES, SERVICIOS } from './_expediente.js';
+import { TIPOS_DOCUMENTO, CANALES, SERVICIOS, SERVICIO_GENERICO } from './_expediente.js';
 import { seccionesCondiciones, VERSION_CONDICIONES } from './_condiciones.js';
 
 const FORMULARIO_OAUT = new URL('./_recursos/formulario-oaut.pdf', import.meta.url);
@@ -37,7 +37,7 @@ function contexto(exp) {
     t: d.titular,
     calculo: exp.calculo,
     fechaHoy: exp.fechaDocumento || hoy(),
-    servicio: SERVICIOS[r.servicio],
+    servicio: SERVICIOS[d.servicio || r.servicio] || SERVICIO_GENERICO,
     lineas: d.lineas,
     empresa: r.tipoTitular === 'empresa',
     etiquetaDoc: r.tipoTitular === 'empresa' ? 'CIF' : 'DNI/NIE',
@@ -58,7 +58,8 @@ function hechoBaja(c) {
   const deseada = r.fechaDeseada && r.fechaDeseada === ev.fechas.efectiva ? `, indicando que fuera efectiva el ${fechaLarga(r.fechaDeseada)}` : '';
   const prueba = c.anexoDe('prueba_baja');
   const acredita = prueba.length ? ` Lo acredito con el ${listaAnexos(prueba)}.` : '';
-  return `El ${fechaLarga(r.fechaSolicitud)} solicité la baja del servicio de ${servicio}${lineas}, a través de ${CANALES[d.canalBaja]}${ref}${deseada}.${acredita}`;
+  const canal = CANALES[d.canalBaja] ? `, a través de ${CANALES[d.canalBaja]}` : '';
+  return `El ${fechaLarga(r.fechaSolicitud)} solicité la baja del servicio de ${servicio}${lineas}${canal}${ref}${deseada}.${acredita}`;
 }
 
 function hechoEfectiva(c) {
@@ -139,6 +140,7 @@ async function documentoEscritoA(exp, anexos) {
   m.texto('3. Pese a ello, se me han facturado cantidades correspondientes a periodos posteriores a esa fecha:');
   tablaImportes(m, c);
   m.texto(`4. El importe facturado por periodos posteriores a la baja asciende a ${euros(calculo.total)}.`);
+  if (d.resumenCaso) m.texto(`5. Añado, en mis palabras: «${d.resumenCaso}»`);
 
   m.titulo('Fundamentos', { tam: 11 });
   m.texto(`El artículo 7 del Real Decreto 899/2009, de 22 de mayo, por el que se aprueba la carta de derechos del usuario de los servicios de comunicaciones electrónicas, establece: «${FUENTES.rd899_art7.cita}»`);
@@ -230,7 +232,6 @@ async function formularioB(exp) {
     localidad: t.localidad,
     cp: t.cp,
     provincia: t.provincia,
-    telefono: t.telefono,
     operador: c.d.razonSocialOperador ? `${c.operador} (${c.d.razonSocialOperador})` : c.operador,
     lineas: c.lineas,
     ...textos
@@ -249,13 +250,14 @@ async function escribirExplicacionB(m, exp) {
   m.texto(`2. ${hechoEfectiva(c)}`);
   m.texto('3. El operador me ha facturado cantidades por periodos posteriores a esa fecha, según la relación de importes siguiente.');
   const recl = c.anexoDe('reclamacion');
-  m.texto(`4. El ${fechaLarga(r.fechaReclamacion)} reclamé al operador a través de ${CANALES[d.canalReclamacion]}${d.reclamacionReferencia ? `, con número de referencia ${d.reclamacionReferencia}` : ''}${recl.length ? ` (${listaAnexos(recl)})` : ''}.`);
+  m.texto(`4. El ${fechaLarga(r.fechaReclamacion)} reclamé al operador${CANALES[d.canalReclamacion] ? ` a través de ${CANALES[d.canalReclamacion]}` : ''}${d.reclamacionReferencia ? `, con número de referencia ${d.reclamacionReferencia}` : ''}${recl.length ? ` (${listaAnexos(recl)})` : ''}.`);
   if (r.respuesta === 'sin_respuesta') {
     m.texto(`5. No he recibido respuesta en el plazo de un mes, que terminó el ${fechaLarga(sumarMeses(r.fechaReclamacion, 1))}.`);
   } else {
     const resp = c.anexoDe('respuesta_operador');
     m.texto(`5. El ${fechaLarga(r.fechaRespuesta)} el operador respondió${d.respuestaResumen ? ` lo siguiente: ${d.respuestaResumen.replace(/\.$/, '')}` : ''}${resp.length ? ` (${listaAnexos(resp)})` : ''}. Esa respuesta no anula los cargos ni devuelve lo cobrado.`);
   }
+  if (d.resumenCaso) m.texto(`Añado, en mis palabras: «${d.resumenCaso}»`);
   m.texto(`6. Presento esta reclamación dentro del plazo de tres meses del artículo 4.3 de la Orden ITC/1030/2007, que termina el ${fechaLarga(ev.fechas.limiteOaut)}.`);
   m.titulo('Fundamentos', { tam: 11 });
   m.texto(`Artículo 7 del Real Decreto 899/2009: «${FUENTES.rd899_art7.cita}»`);

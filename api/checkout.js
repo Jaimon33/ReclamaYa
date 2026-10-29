@@ -68,7 +68,6 @@ export default async function handler(req, res) {
             product_data: { name: producto.nombre, description: `Preparación documental · ref. ${exp.referencia}` }
           }
         }],
-        customer_email: exp.datos.titular.email,
         client_reference_id: exp.id,
         metadata: { expediente: exp.id, producto: producto.codigo, referencia: exp.referencia },
         payment_intent_data: { metadata: { expediente: exp.id, producto: producto.codigo, referencia: exp.referencia } },
