@@ -4,7 +4,7 @@
 // El dominio, las rutas y la identidad legal del prestador no dependen de la marca.
 
 export const MARCA = {
-  nombre: 'LíneaClara',
+  nombre: 'Línea Clara',
   lema: 'Reclama los cobros después de tu baja de teléfono o fibra',
   dominio: 'reclamoia.es',
   emailContacto: 'hola@reclamoia.es',
@@ -25,13 +25,13 @@ export const PRESTADOR = {
   web: 'reclamoia.es'
 };
 
-// Precios en céntimos de euro, IVA incluido. Son precios iniciales de prueba.
+// Precios en céntimos de euro, IVA incluido. Las dos reclamaciones cuestan lo mismo.
 export const PRODUCTOS = {
   operador: {
     codigo: 'operador',
     recorrido: 'A',
     nombre: 'Reclamación a tu compañía',
-    precioCentimos: 1399,
+    precioCentimos: 1999,
     entrega: [
       'Escrito de reclamación personalizado dirigido a tu compañía',
       'Índice de documentos y tus archivos como anexos numerados, en un solo PDF',
@@ -42,7 +42,7 @@ export const PRODUCTOS = {
     codigo: 'oaut',
     recorrido: 'B',
     nombre: 'Expediente para la Oficina de Atención al Usuario de Telecomunicaciones',
-    precioCentimos: 2990,
+    precioCentimos: 1999,
     entrega: [
       'Formulario oficial de reclamación cumplimentado con tus datos',
       'Explicación del caso y relación de importes reclamados',

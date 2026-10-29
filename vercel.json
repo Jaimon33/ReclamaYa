@@ -5,6 +5,7 @@
     "api/webhook.js": { "maxDuration": 60, "includeFiles": "api/_recursos/**" },
     "api/estado.js": { "maxDuration": 60, "includeFiles": "api/_recursos/**" },
     "api/documentos.js": { "maxDuration": 30 },
+    "api/expediente.js": { "maxDuration": 30, "includeFiles": "api/_recursos/**" },
     "api/seguimiento-cron.js": { "maxDuration": 60 }
   },
   "crons": [

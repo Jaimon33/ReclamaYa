@@ -122,11 +122,18 @@ function cabeceraRemitente(m, c) {
 
 // ——— Recorrido A: escrito al operador ———
 
-async function documentoEscritoA(exp, anexos) {
+// El escrito lleva la cabecera de la marca, pero sin marca de agua: es el documento que presenta el cliente.
+function crearEscrito(pdf = null) {
+  return Maquetador.crear(pdf, { marca: true, nombreMarca: MARCA.nombre, agua: false });
+}
+
+async function documentoEscritoA(exp, anexos, { vistaPrevia = false } = {}) {
   const c = contexto(exp);
   const { d, t, calculo } = c;
-  const m = await Maquetador.crear();
+  const m = await crearEscrito();
   m.nuevaPagina();
+  m.cabecera('Reclamación por cobros posteriores a la baja', `Dirigida a ${c.operador} · referencia ${exp.referencia}`);
+  m.datosClave([['Titular', t.nombre], ['Compañía', c.operador], ['Importe reclamado', euros(calculo.total)]]);
   cabeceraRemitente(m, c);
   m.texto('A la atención del Servicio de Atención al Cliente', { despues: 0 });
   m.texto(d.razonSocialOperador ? `${c.operador} (${d.razonSocialOperador})` : c.operador, { fuente: 'negrita', despues: 14 });
@@ -141,6 +148,10 @@ async function documentoEscritoA(exp, anexos) {
   m.texto(`2. ${hechoEfectiva(c)}`);
   m.texto('3. Pese a ello, se me han facturado cantidades correspondientes a periodos posteriores a esa fecha:');
   tablaImportes(m, c);
+  if (vistaPrevia) {
+    m.velarResto('El resto se desbloquea al pagar', 'Fundamentos legales con la norma citada, lo que pides a la compañía, el espacio para tu firma, el índice de documentos y tus archivos como anexos numerados.');
+    return guardar(m.doc, 'Vista previa');
+  }
   m.texto(`4. El importe facturado por periodos posteriores a la baja asciende a ${euros(calculo.total)}.`);
   if (d.resumenCaso) m.texto(`5. Añado, en mis palabras: «${d.resumenCaso}»`);
 
@@ -260,17 +271,21 @@ async function formularioB(exp) {
   });
 }
 
-async function escribirExplicacionB(m, exp) {
+async function escribirExplicacionB(m, exp, { vistaPrevia = false } = {}) {
   const c = contexto(exp);
   const { r, d, t, ev, calculo } = c;
   m.nuevaPagina();
-  m.texto('Anexo al formulario de reclamación', { tam: 9, despues: 2 });
-  m.titulo(`Escrito explicativo · ${OAUT.nombre}`, { tam: 14 });
+  m.cabecera('Escrito explicativo de la reclamación', `Anexo al formulario oficial · ${OAUT.nombre} · ref. ${exp.referencia}`);
+  m.datosClave([['Reclamante', t.nombre], ['Compañía', c.operador], ['Importe reclamado', euros(calculo.total)]]);
   m.texto(`Reclamante: ${t.nombre}, ${c.etiquetaDoc} ${t.documento}${c.empresa ? `, representada por ${t.firmante}` : ''}. Operador reclamado: ${c.operador}${d.razonSocialOperador ? ` (${d.razonSocialOperador})` : ''}.${d.numeroCliente ? ` Cliente o contrato nº ${d.numeroCliente}.` : ''}${c.lineas ? ` Línea(s): ${c.lineas}.` : ''}`);
   m.titulo('Hechos', { tam: 11 });
   m.texto(`1. ${hechoBaja(c)}`);
   m.texto(`2. ${hechoEfectiva(c)}`);
   m.texto('3. El operador me ha facturado cantidades por periodos posteriores a esa fecha, según la relación de importes siguiente.');
+  if (vistaPrevia) {
+    m.velarResto('El resto se desbloquea al pagar', 'Tu reclamación previa a la compañía, los fundamentos legales, tus pretensiones, la relación de importes, el formulario oficial cumplimentado y tus documentos como anexos numerados.');
+    return;
+  }
   const recl = c.anexoDe('reclamacion');
   m.texto(`4. El ${fechaLarga(r.fechaReclamacion)} reclamé al operador${CANALES[d.canalReclamacion] ? ` a través de ${CANALES[d.canalReclamacion]}` : ''}${d.reclamacionReferencia ? `, con número de referencia ${d.reclamacionReferencia}` : ''}${recl.length ? ` (${listaAnexos(recl)})` : ''}.`);
   if (r.respuesta === 'sin_respuesta') {
@@ -287,6 +302,7 @@ async function escribirExplicacionB(m, exp) {
   m.titulo('Pretensiones', { tam: 11 });
   m.texto(`1. Que se declare improcedente el cobro de las cantidades facturadas por periodos posteriores al ${fechaLarga(ev.fechas.efectiva)}, se anulen esos cargos y se ordene al operador la devolución de ${euros(calculo.total)}.`);
   m.texto(`2. Que se confirme la baja del servicio con efectos del ${fechaLarga(ev.fechas.efectiva)}.`);
+  m.asegurar(130); // que el título no quede solo al pie de la página
   m.titulo('Relación de importes reclamados', { tam: 11 });
   tablaImportes(m, c);
   m.texto(`En ${t.localidad}, a ______ de ____________ de ______`, { despues: 26 });
@@ -299,16 +315,24 @@ async function escribirExplicacionB(m, exp) {
 
 async function documentoExpedienteB(exp, anexos) {
   const doc = await formularioB(exp);
-  const m = await Maquetador.crear(doc);
+  const m = await crearEscrito(doc);
   await escribirExplicacionB(m, exp);
   await anadirAnexos(m, anexos);
   return guardar(m.doc, `Reclamación ante la ${OAUT.nombre}`);
 }
 
 async function documentoExplicacionB(exp) {
-  const m = await Maquetador.crear();
+  const m = await crearEscrito();
   await escribirExplicacionB(m, exp);
   return guardar(m.doc, 'Escrito explicativo');
+}
+
+// Primera página del escrito, con el resto tapado, para enseñarla antes de pagar.
+export async function documentoVistaPrevia(exp) {
+  if (exp.evaluacion.producto === 'operador') return documentoEscritoA(exp, [], { vistaPrevia: true });
+  const m = await crearEscrito();
+  await escribirExplicacionB(m, exp, { vistaPrevia: true });
+  return guardar(m.doc, 'Vista previa');
 }
 
 async function documentoGuiaB(exp) {

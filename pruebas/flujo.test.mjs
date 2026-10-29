@@ -108,6 +108,17 @@ async function descargar(cuerpo, archivo) {
   return { estado: r.status, bytes: Buffer.from(await r.arrayBuffer()), url: datos.url };
 }
 
+// Texto visible de un PDF generado con pdf-lib (cadenas de los flujos de contenido).
+function textoPdf(bytes) {
+  const latin = bytes.toString('latin1');
+  let flujos = '';
+  for (const m of latin.matchAll(/stream\r?\n/g)) {
+    const ini = m.index + m[0].length;
+    try { flujos += zlib.inflateSync(bytes.subarray(ini, latin.indexOf('endstream', ini))).toString('latin1'); } catch { /* no comprimido */ }
+  }
+  return [...flujos.matchAll(/<([0-9A-Fa-f]+)> Tj/g)].map(x => Buffer.from(x[1], 'hex').toString('latin1')).join(' ');
+}
+
 const HOY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date());
 const dias = (n) => { const d = new Date(`${HOY}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
@@ -160,6 +171,15 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   assert.equal(ok.estado, 200, JSON.stringify(ok.datos));
   assert.ok(ok.datos.vista.resumen.total > 0);
 
+  // Vista previa: la primera página, sin fundamentos ni petición.
+  const vp = await api('expediente', { accion: 'vista-previa', ...credA }, { guardar: false });
+  assert.equal(vp.estado, 200);
+  const textoVista = textoPdf(Buffer.from(vp.datos.pdf, 'base64'));
+  fs.writeFileSync(path.join(SALIDA, 'A-vista-previa.pdf'), Buffer.from(vp.datos.pdf, 'base64'));
+  assert.match(textoVista, /Hechos/);
+  assert.match(textoVista, /desbloquea al pagar/);
+  for (const oculto of ['Solicito', 'se abstendr', '26.2', 'Firma:']) assert.ok(!textoVista.includes(oculto), `la vista previa no debe incluir "${oculto}"`);
+
   const sinAceptar = await api('checkout', { ...credA });
   assert.equal(sinAceptar.estado, 400);
   const sinEmail = await api('checkout', { ...credA, aceptaCondiciones: true, ejecucionInmediata: true });
@@ -180,16 +200,16 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   }
 
   // Firma manipulada, importe incorrecto y sesión ajena: no se entrega.
-  assert.equal((await avisoStripe(sesionPara(credA, 'operador', 1399), 'evt_x', 'whsec_otro')).estado, 400);
+  assert.equal((await avisoStripe(sesionPara(credA, 'operador', 1999), 'evt_x', 'whsec_otro')).estado, 400);
   assert.equal((await avisoStripe(sesionPara(credA, 'operador', 100))).estado, 200);
-  assert.equal((await avisoStripe({ ...sesionPara(credA, 'operador', 1399), id: 'cs_otra' })).estado, 200);
+  assert.equal((await avisoStripe({ ...sesionPara(credA, 'operador', 1999), id: 'cs_otra' })).estado, 200);
   assert.equal((await api('estado', credA)).datos.estado, 'esperando_pago');
 
-  const primero = await avisoStripe(sesionPara(credA, 'operador', 1399), 'evt_pago_a');
+  const primero = await avisoStripe(sesionPara(credA, 'operador', 1999), 'evt_pago_a');
   assert.equal(primero.estado, 200, JSON.stringify(primero.datos));
-  const repetidoAviso = await avisoStripe(sesionPara(credA, 'operador', 1399), 'evt_pago_a');
+  const repetidoAviso = await avisoStripe(sesionPara(credA, 'operador', 1999), 'evt_pago_a');
   assert.equal(repetidoAviso.datos.repetido, true);
-  const tardio = await avisoStripe(sesionPara(credA, 'operador', 1399), 'evt_pago_a_bis');
+  const tardio = await avisoStripe(sesionPara(credA, 'operador', 1999), 'evt_pago_a_bis');
   assert.equal(tardio.estado, 200);
 
   const despues = await api('estado', credA, { guardar: false });
@@ -230,6 +250,12 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   };
   const ok = await api('expediente', { accion: 'confirmar', ...credB, datos });
   assert.equal(ok.estado, 200, JSON.stringify(ok.datos));
+  const vpB = await api('expediente', { accion: 'vista-previa', ...credB }, { guardar: false });
+  assert.equal(vpB.estado, 200);
+  const textoVistaB = textoPdf(Buffer.from(vpB.datos.pdf, 'base64'));
+  fs.writeFileSync(path.join(SALIDA, 'B-vista-previa.pdf'), Buffer.from(vpB.datos.pdf, 'base64'));
+  assert.match(textoVistaB, /Escrito explicativo/);
+  assert.ok(!textoVistaB.includes('Pretensiones'), 'la vista previa de B no debe incluir las pretensiones');
   const pago = await api('checkout', { ...credB, email: 'pedro@example.com', aceptaCondiciones: true, ejecucionInmediata: true });
   assert.equal(pago.estado, 200, JSON.stringify(pago.datos));
 
@@ -239,7 +265,7 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
 
   assert.equal((await avisoStripe(sesionPara(credB, 'oaut', 1399))).estado, 200); // importe del otro producto
   assert.equal((await api('estado', credB)).datos.estado, 'esperando_pago');
-  assert.equal((await avisoStripe(sesionPara(credB, 'oaut', 2990), 'evt_pago_b')).estado, 200);
+  assert.equal((await avisoStripe(sesionPara(credB, 'oaut', 1999), 'evt_pago_b')).estado, 200);
 
   const e = await api('estado', credB, { guardar: false });
   assert.equal(e.datos.estado, 'entregado');

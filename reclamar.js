@@ -525,6 +525,55 @@ $('#form-datos').addEventListener('submit', async (e) => {
 
 // ——— Paso 3: resumen y pago ———
 
+// ——— Vista previa del escrito: solo la primera página, con el resto tapado ———
+
+const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174';
+let pdfjsCargado = null;
+function cargarPdfJs() {
+  pdfjsCargado ||= new Promise((ok, mal) => {
+    const s = document.createElement('script');
+    s.src = `${PDFJS}/pdf.min.js`;
+    s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS}/pdf.worker.min.js`; ok(window.pdfjsLib); };
+    s.onerror = mal;
+    document.head.append(s);
+  });
+  return pdfjsCargado;
+}
+
+function abrirVisor(lienzo, papel) {
+  const cerrar = () => { papel.prepend(lienzo); visor.remove(); document.removeEventListener('keydown', alTeclear); papel.focus(); };
+  const alTeclear = (e) => { if (e.key === 'Escape') cerrar(); };
+  const boton = el('button', { type: 'button', class: 'visor-cerrar', onclick: cerrar, texto: 'Cerrar' });
+  const visor = el('div', { class: 'visor', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Vista previa de tu escrito' }, boton, el('div', { class: 'visor-hoja' }, lienzo));
+  visor.addEventListener('click', (e) => { if (e.target === visor) cerrar(); });
+  document.addEventListener('keydown', alTeclear);
+  document.body.append(visor);
+  boton.focus();
+}
+
+async function pintarVistaPrevia(contenedor) {
+  contenedor.replaceChildren(el('p', { class: 'ayuda' }, el('span', { class: 'cargando', 'aria-hidden': 'true' }), ' Preparando la vista previa…'));
+  try {
+    const [r, pdfjsLib] = await Promise.all([api('expediente', { accion: 'vista-previa' }), cargarPdfJs()]);
+    if (r.estado !== 200 || !r.datos.pdf) throw new Error();
+    const bytes = Uint8Array.from(atob(r.datos.pdf), c => c.charCodeAt(0));
+    const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+    const pagina = await pdf.getPage(1);
+    const ancho = contenedor.clientWidth || 320;
+    // Se dibuja con resolución de sobra para poder ampliarla y leerla en el móvil.
+    const escala = Math.max(ancho * (window.devicePixelRatio || 1), 1200) / pagina.getViewport({ scale: 1 }).width;
+    const vp = pagina.getViewport({ scale: escala });
+    const lienzo = el('canvas', { width: Math.floor(vp.width), height: Math.floor(vp.height), role: 'img', 'aria-label': 'Primera página de tu escrito; el resto se entrega al pagar' });
+    await pagina.render({ canvasContext: lienzo.getContext('2d'), viewport: vp }).promise;
+    const papel = el('button', { type: 'button', class: 'papel', 'aria-label': 'Ampliar la vista previa' }, lienzo, el('span', { class: 'ampliar', texto: 'Toca para ampliar' }));
+    papel.addEventListener('click', () => abrirVisor(lienzo, papel));
+    contenedor.replaceChildren(papel);
+  } catch {
+    contenedor.replaceChildren(el('p', { class: 'ayuda', texto: 'No hemos podido mostrar la vista previa ahora mismo. Puedes seguir: el escrito se prepara con los datos de este resumen.' }));
+  }
+}
+
+
 function pintarResumen() {
   const caja = $('#resumen');
   caja.replaceChildren();
@@ -535,6 +584,7 @@ function pintarResumen() {
   const previa = s.reclamacionPrevia
     ? `${fecha(s.reclamacionPrevia.fecha)} · ${s.reclamacionPrevia.respuesta === 'sin_respuesta' ? 'sin respuesta' : `respuesta del ${fecha(s.reclamacionPrevia.fechaRespuesta)} sin solución`}`
     : '';
+  const vistaPrevia = el('div', { class: 'vista-previa' });
   const detalle = (f) => f.tipo === 'parcial' ? ` · ${f.diasReclamables} de ${f.totalDias} días` : f.tipo === 'fuera' ? ' · anterior a la baja' : '';
   caja.append(
     el('div', { class: 'resumen-total' },
@@ -545,6 +595,8 @@ function pintarResumen() {
       fila('Contrato', s.contrato), fila('Línea(s)', s.lineas),
       fila('Pediste la baja', fecha(s.fechaSolicitud)), fila('Debía ser efectiva', fecha(s.fechaEfectiva)),
       fila('Reclamación previa', previa), fila('Plazo para la Oficina', s.limiteOaut ? `hasta el ${fecha(s.limiteOaut)}` : '')),
+    el('h3', { texto: 'Así empieza tu escrito' }),
+    vistaPrevia,
     el('h3', { texto: 'Facturas' }),
     el('ul', { class: 'facturas-resumen' }, s.facturas.map(f => el('li', {},
       el('span', {}, el('strong', { texto: f.numero || 'Factura' }), el('span', { class: 'ayuda', texto: `${fecha(f.periodoDesde)} – ${fecha(f.periodoHasta)}${detalle(f)}` })),
@@ -557,6 +609,7 @@ function pintarResumen() {
       el('span', { class: 'precio-resumen', texto: formatearPrecio(p.precioCentimos) }))
   );
   $('#boton-pagar').textContent = `Pagar ${formatearPrecio(p.precioCentimos)}`;
+  pintarVistaPrevia(vistaPrevia);
   if (!$('#d-email').value && vista.datos?.titular?.email) $('#d-email').value = vista.datos.titular.email;
 }
 

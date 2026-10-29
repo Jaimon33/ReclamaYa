@@ -3,7 +3,16 @@
 import { MARCA, PRODUCTOS, PRESTADOR, formatearPrecio } from './config-publica.js';
 
 export function aplicarMarca(raiz = document) {
-  raiz.querySelectorAll('[data-marca]').forEach(el => { el.textContent = MARCA.nombre; });
+  // En el logotipo, la última palabra de la marca va en el color de acento ("Línea Clara").
+  raiz.querySelectorAll('[data-marca]').forEach(el => {
+    const partes = MARCA.nombre.split(' ');
+    if (el.closest('.marca') && partes.length > 1) {
+      const acento = document.createElement('span');
+      acento.className = 'marca-acento';
+      acento.textContent = partes.pop();
+      el.replaceChildren(`${partes.join(' ')} `, acento);
+    } else el.textContent = MARCA.nombre;
+  });
   raiz.querySelectorAll('[data-precio]').forEach(el => {
     const p = PRODUCTOS[el.dataset.precio];
     if (p) el.textContent = formatearPrecio(p.precioCentimos);
@@ -12,7 +21,7 @@ export function aplicarMarca(raiz = document) {
     el.textContent = PRESTADOR.email;
     if (el.tagName === 'A') el.href = `mailto:${PRESTADOR.email}`;
   });
-  document.title = document.title.replace(/BajaClara|LíneaClara/g, MARCA.nombre);
+  document.title = document.title.replace(/BajaClara|LíneaClara|Línea Clara/g, MARCA.nombre);
 }
 
 const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

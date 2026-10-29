@@ -7,7 +7,7 @@ No se ha publicado nada en producción.
 
 Propuestas (no se ha comprobado su disponibilidad en la OEPM, la EUIPO ni en registros de dominios):
 
-1. **LíneaClara** (en uso desde el 29/10/2026, elegida por Jaime; antes BajaClara).
+1. **Línea Clara** (en uso desde el 29/10/2026, elegida por Jaime; antes BajaClara). Logo: dos bocadillos con la L y la C (diseño de Jaime) redibujados con la paleta violeta y lima.
 2. **TrasLaBaja**: describe el problema, menos memorable.
 3. **CuotaDeMás**: directa, pero suena a promesa de devolución.
 
@@ -15,7 +15,7 @@ La marca se cambia en `config-publica.js` (`MARCA`). El símbolo (`marca/simbolo
 
 ## Precios y límites
 
-En `config-publica.js`: reclamación a la compañía 13,99 € y expediente para la Oficina 29,90 € (IVA incluido; hipótesis comerciales). El servidor cobra el importe de ahí con `price_data` de Stripe (ya no usa `STRIPE_PRICE_*`). Límites: 10 archivos, 10 MB por archivo, 30 MB y 80 páginas en total, 40 páginas por PDF.
+En `config-publica.js`: 19,99 € tanto la reclamación a la compañía como el expediente para la Oficina (IVA incluido; hipótesis comerciales). El servidor cobra el importe de ahí con `price_data` de Stripe (ya no usa `STRIPE_PRICE_*`). Límites: 10 archivos, 10 MB por archivo, 30 MB y 80 páginas en total, 40 páginas por PDF.
 
 ## Cómo funciona
 

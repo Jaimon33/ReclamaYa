@@ -237,7 +237,7 @@ pagina({
       'Si no responde o no lo soluciona, tienes tres meses para acudir a la Oficina de Atención al Usuario de Telecomunicaciones del Ministerio, de forma gratuita.',
       'Ojo: una factura emitida después de la baja puede cobrar días anteriores. Solo es indebido lo que corresponde a después de la fecha efectiva.'
     ]),
-    p(`Puedes hacerlo por tu cuenta. Si prefieres que preparemos la documentación (escrito, cálculo, anexos y guía), cuesta ${formatearPrecio(PRODUCTOS.operador.precioCentimos)} la reclamación a la compañía y ${formatearPrecio(PRODUCTOS.oaut.precioCentimos)} el expediente para la Oficina.`),
+    p(`Puedes hacerlo por tu cuenta. Si prefieres que preparemos la documentación (escrito, cálculo, anexos y guía), cuesta ${formatearPrecio(PRODUCTOS.operador.precioCentimos)}, tanto la reclamación a la compañía como el expediente para la Oficina.`),
     cta
   ].join('\n')
 });

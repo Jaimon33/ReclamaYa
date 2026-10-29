@@ -34,7 +34,7 @@ export function textoSeguro(valor) {
 // Dos estilos: "marca" (guías, confirmación y factura: cabecera oscura con el logo y marca de agua)
 // y "sobrio" (escritos que se presentan a la compañía o a la Oficina: solo acentos de color).
 export class Maquetador {
-  static async crear(pdf = null, { marca = false, nombreMarca = '' } = {}) {
+  static async crear(pdf = null, { marca = false, nombreMarca = '', agua = marca } = {}) {
     const doc = pdf || await PDFDocument.create();
     const m = new Maquetador();
     m.doc = doc;
@@ -42,6 +42,7 @@ export class Maquetador {
     m.negrita = await doc.embedFont(StandardFonts.HelveticaBold);
     m.cursiva = await doc.embedFont(StandardFonts.HelveticaOblique);
     m.marca = marca;
+    m.agua = agua;
     m.nombreMarca = textoSeguro(nombreMarca);
     m.simbolo = marca ? await doc.embedPng(fs.readFileSync(SIMBOLO)) : null;
     m.paginasPropias = [];
@@ -54,7 +55,7 @@ export class Maquetador {
     this.paginasPropias.push(this.pagina);
     const [ancho, alto] = A4;
     if (this.marca) {
-      this.marcaDeAgua(this.pagina);
+      if (this.agua) this.marcaDeAgua(this.pagina);
       this.pagina.drawRectangle({ x: 0, y: alto - 10, width: ancho, height: 10, color: COLORES.noche });
       this.pagina.drawRectangle({ x: 0, y: alto - 12, width: ancho * 0.3, height: 2, color: COLORES.lima });
     } else {
@@ -86,7 +87,12 @@ export class Maquetador {
     p.drawRectangle({ x: 0, y: alto - altoBanda, width: ancho, height: altoBanda, color: COLORES.noche });
     p.drawCircle({ x: ancho - 40, y: alto - 10, size: 150, color: COLORES.violeta, opacity: 0.35 });
     p.drawImage(this.simbolo, { x: MARGEN, y: alto - 64, width: 30, height: 30 });
-    p.drawText(this.nombreMarca, { x: MARGEN + 40, y: alto - 56, size: 15, font: this.negrita, color: COLORES.blanco });
+    // Logotipo: la última palabra de la marca en lima ("Línea Clara").
+    const palabras = this.nombreMarca.split(' ');
+    const acento = palabras.length > 1 ? palabras.pop() : '';
+    const inicio = palabras.join(' ') + (acento ? ' ' : '');
+    p.drawText(inicio, { x: MARGEN + 40, y: alto - 56, size: 15, font: this.negrita, color: COLORES.blanco });
+    if (acento) p.drawText(acento, { x: MARGEN + 40 + this.negrita.widthOfTextAtSize(inicio, 15), y: alto - 56, size: 15, font: this.negrita, color: COLORES.lima });
     const lineas = this.partir(titulo, this.negrita, 20, this.ancho - 40);
     let y = alto - 96;
     for (const l of lineas.slice(0, 2)) {
@@ -170,6 +176,29 @@ export class Maquetador {
     this.texto(url, { tam: 8, color: GRIS, despues: 8 });
   }
 
+  // Tapa el resto de la página con un degradado y un aviso: se usa en la vista previa antes de pagar.
+  velarResto(titulo, texto) {
+    const p = this.pagina;
+    const [ancho] = A4;
+    const arriba = this.y + 30;
+    const pasos = 14;
+    for (let i = 0; i < pasos; i++) {
+      const y = arriba - (i + 1) * 6;
+      p.drawRectangle({ x: 0, y, width: ancho, height: 6, color: COLORES.blanco, opacity: (i + 1) / pasos });
+    }
+    p.drawRectangle({ x: 0, y: 0, width: ancho, height: arriba - pasos * 6, color: COLORES.blanco });
+    const alto = 92;
+    const y0 = Math.max(80, arriba - pasos * 6 - alto - 30);
+    p.drawRectangle({ x: MARGEN, y: y0, width: this.ancho, height: alto, color: COLORES.noche });
+    p.drawRectangle({ x: MARGEN, y: y0, width: 4, height: alto, color: COLORES.lima });
+    p.drawText(textoSeguro(titulo), { x: MARGEN + 20, y: y0 + alto - 30, size: 13, font: this.negrita, color: COLORES.lima });
+    this.partir(texto, this.normal, 9.5, this.ancho - 40).slice(0, 3).forEach((l, i) => {
+      p.drawText(l, { x: MARGEN + 20, y: y0 + alto - 50 - i * 13, size: 9.5, font: this.normal, color: COLORES.blanco });
+    });
+    const sello = 'VISTA PREVIA';
+    p.drawText(sello, { x: 120, y: 300, size: 70, font: this.negrita, color: COLORES.violeta, opacity: 0.07, rotate: degrees(35) });
+  }
+
   // Recuadro lavanda con datos clave en columnas: [[etiqueta, valor], ...].
   datosClave(pares) {
     const alto = 46;
@@ -180,7 +209,12 @@ export class Maquetador {
     pares.forEach(([etiqueta, valor], i) => {
       const x = MARGEN + 14 + i * ancho;
       this.pagina.drawText(textoSeguro(etiqueta).toUpperCase(), { x, y: this.y - 17, size: 7, font: this.negrita, color: GRIS });
-      this.pagina.drawText(this.partir(valor, this.negrita, 11.5, ancho - 18)[0] || '', { x, y: this.y - 34, size: 11.5, font: this.negrita, color: COLORES.noche });
+      // El valor se reduce hasta caber; si aun así no cabe, se recorta con puntos suspensivos.
+      let tam = 11.5;
+      let v = textoSeguro(valor);
+      while (tam > 8 && this.negrita.widthOfTextAtSize(v, tam) > ancho - 18) tam -= 0.5;
+      while (v.length > 3 && this.negrita.widthOfTextAtSize(v, tam) > ancho - 18) v = v.slice(0, -2).trimEnd() + '…';
+      this.pagina.drawText(v, { x, y: this.y - 34, size: tam, font: this.negrita, color: COLORES.noche });
     });
     this.y -= alto + 14;
   }

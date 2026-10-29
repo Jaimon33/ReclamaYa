@@ -10,6 +10,7 @@ import {
 import { limpiarDatos, completarConPropuesta, validarDatos, vistaPublica, construirResumen } from './_expediente.js';
 import { registrar, EVENTOS } from './_metricas.js';
 import { anularPagoPendiente } from './_pago.js';
+import { documentoVistaPrevia } from './_entregables.js';
 
 function referencia() {
   const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -113,6 +114,16 @@ export default async function handler(req, res) {
         await guardarExpediente(exp);
         await registrar('documentos_completos', evaluacion.producto);
         return enviar(res, 200, { vista: vistaPublica(exp) });
+      }
+
+      case 'vista-previa': {
+        // Solo la primera página del escrito, con el resto tapado: el documento completo se entrega al pagar.
+        const { id, clave } = credenciales(req, cuerpo);
+        const exp = await expedienteAutorizado(id, clave);
+        if (!exp) return noAutorizado(res);
+        if (!exp.resumen || !exp.calculo) return enviar(res, 409, { error: 'Revisa tus datos antes de ver la vista previa.' });
+        const pdf = await documentoVistaPrevia(exp);
+        return enviar(res, 200, { pdf: pdf.toString('base64') });
       }
 
       case 'borrar': {
