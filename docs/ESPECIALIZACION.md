@@ -102,3 +102,7 @@ Implementar no equivale a certificar cumplimiento. Antes de lanzar conviene que 
 ## Pendientes nuevos
 
 - `RESEND_API_KEY` no está en Preview: en la vista previa no llegan emails (ni documentos ni factura). Para probarlo, Jaime debe añadirla también al entorno Preview en Vercel.
+
+## Datos legales de las compañías
+
+`api/_companias.js` (`EMPRESAS`): razón social, CIF y domicilio social de la sociedad que presta cada marca, sacados de sus avisos legales o condiciones generales el 29/10/2026. El escrito y el formulario de la Oficina usan estos datos y no lo que lea la IA. Si una marca tiene varias sociedades (Movistar: Telefónica de España para fijo y fibra, Telefónica Móviles España para móvil), se elige por el CIF de la factura. Pepephone: sin domicilio confirmado. Avatel y compañías "Otra": se usa lo que figure en la factura.

@@ -16,6 +16,7 @@ const ESQUEMA = objeto({
   legible: { type: 'boolean' },
   operador: cadena,
   razonSocialOperador: cadena,
+  cifOperador: cadena,
   titularNombre: cadena,
   titularDocumento: cadena,
   numeroCliente: cadena,
@@ -48,6 +49,7 @@ Reglas:
 - Importes en euros con punto decimal (por ejemplo 39.95), con IVA si el documento da el total con IVA.
 - "pagina" es el número de página (empezando en 1) donde aparece el dato; en una imagen, 1.
 - tipoDocumento: factura; prueba_baja (confirmación, número de referencia o justificante de la solicitud de baja); reclamacion (reclamación del cliente al operador); respuesta_operador; contrato; otro; ilegible.
+- cifOperador: el CIF o NIF de la compañía que emite la factura (no el del cliente).
 - servicio: lo que se factura o se da de baja: fibra (internet en casa o ADSL), movil, fijo, paquete (varios servicios juntos) o desconocido si no está claro.
 - En "canal" (de la baja o de la reclamación) indica por dónde se hizo si aparece: teléfono, web o app, email, carta, tienda o portabilidad.
 - En una factura, enumera los conceptos facturados con su importe y su periodo si lo indica.
@@ -155,6 +157,7 @@ export function limpiarExtraccion(bruto, totalPaginas) {
     legible: b.legible !== false,
     operador: corto(b.operador, 60),
     razonSocialOperador: corto(b.razonSocialOperador, 100),
+    cifOperador: corto(b.cifOperador, 12).toUpperCase().replace(/[^0-9A-Z]/g, ''),
     titularNombre: corto(b.titularNombre, 100),
     titularDocumento: corto(b.titularDocumento, 20).toUpperCase().replace(/[^0-9A-Z]/g, ''),
     numeroCliente: corto(b.numeroCliente, 40),

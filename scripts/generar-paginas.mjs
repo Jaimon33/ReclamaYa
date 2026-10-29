@@ -17,9 +17,9 @@ function pagina({ archivo, titulo, descripcion, canonica = true, indexar = true,
   <title>${esc(titulo)} — ${esc(MARCA.nombre)}</title>
   <meta name="description" content="${esc(descripcion)}">
 ${canonica ? `  <link rel="canonical" href="https://${MARCA.dominio}/${archivo === 'index.html' ? '' : archivo}">\n` : ''}${indexar ? '' : '  <meta name="robots" content="noindex">\n'}  <meta name="theme-color" content="#0E0B2B">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon.ico" sizes="32x32">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon.svg?v=lc2" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico?v=lc2" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=lc2">
   <link rel="preload" href="/fuentes/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fuentes/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/estilos.css">

@@ -176,9 +176,10 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   assert.equal(vp.estado, 200);
   const textoVista = textoPdf(Buffer.from(vp.datos.pdf, 'base64'));
   fs.writeFileSync(path.join(SALIDA, 'A-vista-previa.pdf'), Buffer.from(vp.datos.pdf, 'base64'));
-  assert.match(textoVista, /Hechos/);
+  assert.match(textoVista, /Asunto/);
+  assert.match(textoVista, /Telefónica|Vodafone España, S.A.U./);
   assert.match(textoVista, /desbloquea al pagar/);
-  for (const oculto of ['Solicito', 'se abstendr', '26.2', 'Firma:']) assert.ok(!textoVista.includes(oculto), `la vista previa no debe incluir "${oculto}"`);
+  for (const oculto of ['Hechos', 'Solicito', 'se abstendr', '26.2', 'Firma:']) assert.ok(!textoVista.includes(oculto), `la vista previa no debe incluir "${oculto}"`);
 
   const sinAceptar = await api('checkout', { ...credA });
   assert.equal(sinAceptar.estado, 400);
@@ -255,6 +256,7 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   const textoVistaB = textoPdf(Buffer.from(vpB.datos.pdf, 'base64'));
   fs.writeFileSync(path.join(SALIDA, 'B-vista-previa.pdf'), Buffer.from(vpB.datos.pdf, 'base64'));
   assert.match(textoVistaB, /Escrito explicativo/);
+  assert.ok(!textoVistaB.includes('Hechos'), 'la vista previa de B no debe incluir los hechos');
   assert.ok(!textoVistaB.includes('Pretensiones'), 'la vista previa de B no debe incluir las pretensiones');
   const pago = await api('checkout', { ...credB, email: 'pedro@example.com', aceptaCondiciones: true, ejecucionInmediata: true });
   assert.equal(pago.estado, 200, JSON.stringify(pago.datos));

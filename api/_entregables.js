@@ -41,6 +41,7 @@ function contexto(exp) {
     fechaHoy: exp.fechaDocumento || hoy(),
     servicio: SERVICIOS[d.servicio || r.servicio] || SERVICIO_GENERICO,
     lineas: d.lineas,
+    empresaOp: d.empresaOperador || (d.razonSocialOperador ? { razonSocial: d.razonSocialOperador } : null),
     empresa: r.tipoTitular === 'empresa',
     etiquetaDoc: r.tipoTitular === 'empresa' ? 'CIF' : 'DNI/NIE',
     anexoDe: (tipoDoc) => exp.documentos.map((doc, i) => ({ doc, n: i + 1 })).filter(x => x.doc.tipoDoc === tipoDoc).map(x => x.n),
@@ -105,6 +106,21 @@ function indiceDocumental(m, exp) {
   ], exp.documentos.map((doc, i) => [String(i + 1), TIPOS_DOCUMENTO[doc.tipoDoc], doc.nombre, String(doc.paginas)]));
 }
 
+// "Movistar (Telefónica de España, S.A.U., CIF A82018474)"
+function operadorConEmpresa(c) {
+  const e = c.empresaOp;
+  if (!e?.razonSocial) return c.operador;
+  return `${c.operador} (${e.razonSocial}${e.cif ? `, CIF ${e.cif}` : ''})`;
+}
+
+function destinatario(m, c) {
+  const e = c.empresaOp;
+  m.texto(e?.razonSocial || c.operador, { fuente: 'negrita', despues: 0 });
+  if (e?.razonSocial) m.texto([`Marca: ${c.operador}`, e.cif && `CIF ${e.cif}`].filter(Boolean).join(' · '), { despues: 0 });
+  if (e?.domicilio) m.texto(e.domicilio, { despues: 0 });
+  m.espacio(14);
+}
+
 function firma(m, c, despues) {
   m.texto(c.empresa ? c.t.firmante : c.t.nombre, { fuente: 'negrita', despues: c.empresa ? 0 : despues });
   if (c.empresa) m.texto(`En nombre y representación de ${c.t.nombre}`, { despues });
@@ -136,22 +152,22 @@ async function documentoEscritoA(exp, anexos, { vistaPrevia = false } = {}) {
   m.datosClave([['Titular', t.nombre], ['Compañía', c.operador], ['Importe reclamado', euros(calculo.total)]]);
   cabeceraRemitente(m, c);
   m.texto('A la atención del Servicio de Atención al Cliente', { despues: 0 });
-  m.texto(d.razonSocialOperador ? `${c.operador} (${d.razonSocialOperador})` : c.operador, { fuente: 'negrita', despues: 14 });
+  destinatario(m, c);
   m.texto(`${t.localidad ? `En ${t.localidad}, a ` : ''}${fechaLarga(c.fechaHoy)}`, { alinear: 'derecha', despues: 12 });
   const ref = [d.numeroCliente && `Cliente o contrato nº ${d.numeroCliente}`, c.lineas && `Línea(s): ${c.lineas}`].filter(Boolean).join(' · ');
   m.texto(`Asunto: Reclamación por cobros posteriores a la baja del servicio${ref ? ` · ${ref}` : ''}`, { fuente: 'negrita', despues: 12 });
 
   m.texto(`${c.empresa ? `${t.firmante}, en nombre y representación de ${t.nombre}, con CIF ${t.documento},` : `${t.nombre}, con DNI/NIE ${t.documento},`} titular del contrato${d.numeroCliente ? ` nº ${d.numeroCliente}` : ''} con ${c.operador}, presento esta reclamación por los cobros realizados después de la baja del servicio.`);
+  if (vistaPrevia) {
+    m.velarResto('El resto se desbloquea al pagar', 'Los hechos con tus fechas, el cálculo de lo cobrado de más factura a factura, la norma que te da la razón, lo que pides a la compañía y tus documentos como anexos numerados.');
+    return guardar(m.doc, 'Vista previa');
+  }
 
   m.titulo('Hechos', { tam: 11 });
   m.texto(`1. ${hechoBaja(c)}`);
   m.texto(`2. ${hechoEfectiva(c)}`);
   m.texto('3. Pese a ello, se me han facturado cantidades correspondientes a periodos posteriores a esa fecha:');
   tablaImportes(m, c);
-  if (vistaPrevia) {
-    m.velarResto('El resto se desbloquea al pagar', 'Fundamentos legales con la norma citada, lo que pides a la compañía, el espacio para tu firma, el índice de documentos y tus archivos como anexos numerados.');
-    return guardar(m.doc, 'Vista previa');
-  }
   m.texto(`4. El importe facturado por periodos posteriores a la baja asciende a ${euros(calculo.total)}.`);
   if (d.resumenCaso) m.texto(`5. Añado, en mis palabras: «${d.resumenCaso}»`);
 
@@ -265,7 +281,7 @@ async function formularioB(exp) {
     localidad: t.localidad,
     cp: t.cp,
     provincia: t.provincia,
-    operador: c.d.razonSocialOperador ? `${c.operador} (${c.d.razonSocialOperador})` : c.operador,
+    operador: operadorConEmpresa(c),
     lineas: c.lineas,
     ...textos
   });
@@ -277,15 +293,15 @@ async function escribirExplicacionB(m, exp, { vistaPrevia = false } = {}) {
   m.nuevaPagina();
   m.cabecera('Escrito explicativo de la reclamación', `Anexo al formulario oficial · ${OAUT.nombre} · ref. ${exp.referencia}`);
   m.datosClave([['Reclamante', t.nombre], ['Compañía', c.operador], ['Importe reclamado', euros(calculo.total)]]);
-  m.texto(`Reclamante: ${t.nombre}, ${c.etiquetaDoc} ${t.documento}${c.empresa ? `, representada por ${t.firmante}` : ''}. Operador reclamado: ${c.operador}${d.razonSocialOperador ? ` (${d.razonSocialOperador})` : ''}.${d.numeroCliente ? ` Cliente o contrato nº ${d.numeroCliente}.` : ''}${c.lineas ? ` Línea(s): ${c.lineas}.` : ''}`);
+  m.texto(`Reclamante: ${t.nombre}, ${c.etiquetaDoc} ${t.documento}${c.empresa ? `, representada por ${t.firmante}` : ''}. Operador reclamado: ${operadorConEmpresa(c)}.${c.empresaOp?.domicilio ? ` Domicilio social: ${c.empresaOp.domicilio}.` : ''}${d.numeroCliente ? ` Cliente o contrato nº ${d.numeroCliente}.` : ''}${c.lineas ? ` Línea(s): ${c.lineas}.` : ''}`);
+  if (vistaPrevia) {
+    m.velarResto('El resto se desbloquea al pagar', 'Los hechos con tus fechas, tu reclamación previa, la norma aplicable, tus pretensiones, la relación de importes, el formulario oficial cumplimentado y tus documentos como anexos.');
+    return;
+  }
   m.titulo('Hechos', { tam: 11 });
   m.texto(`1. ${hechoBaja(c)}`);
   m.texto(`2. ${hechoEfectiva(c)}`);
   m.texto('3. El operador me ha facturado cantidades por periodos posteriores a esa fecha, según la relación de importes siguiente.');
-  if (vistaPrevia) {
-    m.velarResto('El resto se desbloquea al pagar', 'Tu reclamación previa a la compañía, los fundamentos legales, tus pretensiones, la relación de importes, el formulario oficial cumplimentado y tus documentos como anexos numerados.');
-    return;
-  }
   const recl = c.anexoDe('reclamacion');
   m.texto(`4. El ${fechaLarga(r.fechaReclamacion)} reclamé al operador${CANALES[d.canalReclamacion] ? ` a través de ${CANALES[d.canalReclamacion]}` : ''}${d.reclamacionReferencia ? `, con número de referencia ${d.reclamacionReferencia}` : ''}${recl.length ? ` (${listaAnexos(recl)})` : ''}.`);
   if (r.respuesta === 'sin_respuesta') {

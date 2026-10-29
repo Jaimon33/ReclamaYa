@@ -5,6 +5,7 @@ import {
   calcularImportes, validarFactura, evaluarCaso, esFecha, hoy, nombreOperador, fechaLarga, fechaCorta, euros
 } from './_reglas.js';
 import { sugerirImporteServicio } from './_extraccion.js';
+import { empresaOperador } from './_companias.js';
 
 export const TIPOS_DOCUMENTO = {
   factura: 'Factura posterior a la baja',
@@ -53,7 +54,7 @@ function normalizarNombre(s) {
 export function construirPropuesta(exp) {
   const r = exp.respuestas;
   const alertas = [];
-  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [], fechaSolicitud: [], fechaReclamacion: [], fechaRespuesta: [], canalBaja: [], canalReclamacion: [], servicio: [] };
+  const candidatos = { nombre: [], documento: [], numeroCliente: [], lineas: [], razonSocial: [], cifOperador: [], bajaRef: [], reclamacionRef: [], respuestaResumen: [], fechaSolicitud: [], fechaReclamacion: [], fechaRespuesta: [], canalBaja: [], canalReclamacion: [], servicio: [] };
   const facturas = [];
   const fuente = (doc, pagina) => ({ documento: doc.id, archivo: doc.nombre, pagina: pagina || 1 });
 
@@ -67,6 +68,7 @@ export function construirPropuesta(exp) {
     if (x.numeroCliente) candidatos.numeroCliente.push({ valor: x.numeroCliente, fuente: fuente(doc, x.factura.pagina) });
     x.lineas.forEach(l => candidatos.lineas.push({ valor: l, fuente: fuente(doc, x.factura.pagina) }));
     if (x.razonSocialOperador) candidatos.razonSocial.push({ valor: x.razonSocialOperador, fuente: fuente(doc, x.factura.pagina) });
+    if (x.cifOperador) candidatos.cifOperador.push({ valor: x.cifOperador, fuente: fuente(doc, x.factura.pagina) });
     if (x.servicio) candidatos.servicio.push({ valor: x.servicio, fuente: fuente(doc, x.factura.pagina) });
     if (/portab/i.test(x.baja?.canal || '')) alertas.push(`"${doc.nombre}" indica que la baja se hizo por portabilidad a otra compañía. En ese caso, quién debe asumir esas facturas depende de lo que autorizaste a la nueva compañía: comprueba que pediste la baja directamente a ${nombreOperador(r)}.`);
 
@@ -134,6 +136,7 @@ export function construirPropuesta(exp) {
     numeroCliente: elegir(candidatos.numeroCliente),
     lineas: { valor: [...new Set(candidatos.lineas.map(l => l.valor))].join(', '), fuentes: candidatos.lineas.map(l => l.fuente) },
     razonSocialOperador: elegir(candidatos.razonSocial),
+    cifOperador: elegir(candidatos.cifOperador),
     bajaReferencia: elegir(candidatos.bajaRef),
     reclamacionReferencia: elegir(candidatos.reclamacionRef),
     respuestaResumen: elegir(candidatos.respuestaResumen),
@@ -237,6 +240,9 @@ export function completarConPropuesta(datos, exp) {
   for (const campo of ['numeroCliente', 'lineas', 'razonSocialOperador', 'canalBaja', 'bajaReferencia', 'canalReclamacion', 'reclamacionReferencia', 'respuestaResumen', 'servicio']) {
     if (!d[campo]) d[campo] = leido(p[campo]);
   }
+  // Sociedad a la que se reclama: la de nuestra lista oficial (por CIF de la factura) o, si no la tenemos, la de la factura.
+  d.empresaOperador = empresaOperador(exp.respuestas.operador, { cifFactura: leido(p.cifOperador), razonFactura: d.razonSocialOperador, servicio: d.servicio });
+  if (d.empresaOperador) d.razonSocialOperador = d.empresaOperador.razonSocial;
   if (!d.facturas.length) {
     d.facturas = p.facturas.map(f => ({
       documento: f.documento, numero: f.numero, fechaEmision: f.fechaEmision, periodoDesde: f.periodoDesde,
