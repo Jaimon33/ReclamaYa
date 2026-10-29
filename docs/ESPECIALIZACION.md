@@ -88,3 +88,17 @@ Implementar no equivale a certificar cumplimiento. Antes de lanzar conviene que 
 - Fotos HEIC no se aceptan (el iPhone las convierte a JPG al elegirlas desde la fototeca).
 - Bajas por portabilidad, permanencias, dispositivos, equipos, morosos, suplantación, daños, juicios y empresas quedan fuera.
 - Los canales de reclamación de cada compañía no se han verificado: la guía pide usar uno que deje constancia.
+
+## Facturas (29/10/2026)
+
+- Numeración correlativa por año: `LC 001-26`, `LC 002-26`… (`api/_facturas.js`). El número se asigna una sola vez, al confirmarse el pago, con `INCR` en Redis (`facturas:contador:LC:2026`). Fuera de producción la serie es `PRUEBA` para no gastar números reales.
+- Factura completa si el cliente ha dado su dirección; si no, factura simplificada (permitida hasta 400 € por el art. 4 del RD 1619/2012) con su nombre y NIF. IVA 21 % incluido en el precio. **Pendiente de revisar con un gestor**: tipo de IVA, uso de una sola serie para completas y simplificadas y llevanza del libro registro.
+- Registro: `factura:{número}` y lista `facturas:registro:{serie}:{año}`, 6 años. Cada factura se envía en PDF al cliente (con los documentos) y una copia a `ALERTAS_EMAIL` o `hola@reclamoia.es`.
+
+## Enlaces de reclamación por compañía
+
+`api/_companias.js`: página oficial de reclamaciones de cada compañía (y email o teléfono cuando la propia compañía los publica), comprobadas el 29/10/2026. La guía de presentación los incluye como enlace pulsable. Si una compañía cambia su web, se actualiza ahí.
+
+## Pendientes nuevos
+
+- `RESEND_API_KEY` no está en Preview: en la vista previa no llegan emails (ni documentos ni factura). Para probarlo, Jaime debe añadirla también al entorno Preview en Vercel.

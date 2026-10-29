@@ -56,14 +56,15 @@ function pintarEntrega(d) {
   $('#titulo').textContent = 'Tus documentos están listos';
   $('#estado').replaceChildren(el('div', { class: 'mensaje ok' },
     el('p', { texto: `Pago confirmado. Referencia ${d.referencia}.` }),
-    el('p', { texto: d.emailEnviado ? `También te los hemos enviado a ${d.email}, con un enlace válido 30 días.` : 'Descárgalos ahora: el enlace por email puede tardar unos minutos.' })));
+    el('p', { texto: d.emailEnviado ? `También te los hemos enviado a ${d.email}, con un enlace válido 30 días.` : d.emailEnviado === false ? 'No hemos podido enviarte el email ahora mismo: descárgalos desde aquí y guárdalos. Si quieres que te los reenviemos, escríbenos.' : 'Descárgalos ahora: el email puede tardar unos minutos.' })));
   const descripcion = {
     reclamacion: 'Reclamación a la compañía, con índice y anexos (para presentar)',
     expediente: 'Expediente completo: formulario oficial, escrito explicativo y anexos',
     formulario: 'Formulario oficial rellenado (por separado)',
     explicacion: 'Escrito explicativo y relación de importes (por separado)',
     guia: 'Guía de presentación (para ti)',
-    confirmacion: 'Confirmación del pedido y condiciones'
+    confirmacion: 'Confirmación del pedido y condiciones',
+    factura: 'Factura'
   };
   const boton = (a, texto) => el('li', {}, el('button', { type: 'button', class: a.principal ? 'boton' : 'boton secundario', onclick: (e) => descargar(e.currentTarget, a.codigo) },
     el('span', { texto }), el('span', { texto: megas(a.bytes) })));

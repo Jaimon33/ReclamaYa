@@ -162,7 +162,9 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
 
   const sinAceptar = await api('checkout', { ...credA });
   assert.equal(sinAceptar.estado, 400);
-  const pago = await api('checkout', { ...credA, aceptaCondiciones: true, ejecucionInmediata: true });
+  const sinEmail = await api('checkout', { ...credA, aceptaCondiciones: true, ejecucionInmediata: true });
+  assert.equal(sinEmail.estado, 400, 'sin email no se abre el pago');
+  const pago = await api('checkout', { ...credA, email: 'lucia@example.com', aceptaCondiciones: true, ejecucionInmediata: true });
   assert.equal(pago.estado, 200, JSON.stringify(pago.datos));
   assert.match(pago.datos.url, /__dev\/pagar/);
 
@@ -192,8 +194,8 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
 
   const despues = await api('estado', credA, { guardar: false });
   assert.equal(despues.datos.estado, 'entregado');
-  assert.deepEqual(despues.datos.archivos.map(a => a.codigo), ['reclamacion', 'guia', 'confirmacion']);
-  assert.equal(despues.datos.email, 'c•••@example.com', 'el email sale de la página de pago');
+  assert.deepEqual(despues.datos.archivos.map(a => a.codigo), ['reclamacion', 'guia', 'confirmacion', 'factura']);
+  assert.equal(despues.datos.email, 'l•••@example.com', 'se usa el email escrito antes de pagar');
 
   const d = await descargar(credA, 'reclamacion');
   assert.equal(d.estado, 200);
@@ -203,7 +205,7 @@ test('recorrido A completo: documentos, confirmación, pago y entrega', async ()
   // Escrito (1-2 págs.) + separador + 2 págs. de factura + separador + imagen.
   assert.ok(pdf.getPageCount() >= 6, `páginas: ${pdf.getPageCount()}`);
   assert.equal((await fetch(`${URL_BASE}${d.url}`)).status, 410, 'el billete es de un solo uso');
-  for (const a of ['guia', 'confirmacion']) fs.writeFileSync(path.join(SALIDA, `A-${a}.pdf`), (await descargar(credA, a)).bytes);
+  for (const a of ['guia', 'confirmacion', 'factura']) fs.writeFileSync(path.join(SALIDA, `A-${a}.pdf`), (await descargar(credA, a)).bytes);
 
   assert.equal((await api('expediente', { accion: 'confirmar', ...credA, datos }, { guardar: false })).estado, 409);
 });
@@ -228,7 +230,7 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
   };
   const ok = await api('expediente', { accion: 'confirmar', ...credB, datos });
   assert.equal(ok.estado, 200, JSON.stringify(ok.datos));
-  const pago = await api('checkout', { ...credB, aceptaCondiciones: true, ejecucionInmediata: true });
+  const pago = await api('checkout', { ...credB, email: 'pedro@example.com', aceptaCondiciones: true, ejecucionInmediata: true });
   assert.equal(pago.estado, 200, JSON.stringify(pago.datos));
 
   // Las credenciales de B no sirven para A ni al revés.
@@ -241,7 +243,7 @@ test('recorrido B: expediente para la Oficina con formulario oficial', async () 
 
   const e = await api('estado', credB, { guardar: false });
   assert.equal(e.datos.estado, 'entregado');
-  assert.deepEqual(e.datos.archivos.map(a => a.codigo), ['expediente', 'formulario', 'explicacion', 'guia', 'confirmacion']);
+  assert.deepEqual(e.datos.archivos.map(a => a.codigo), ['expediente', 'formulario', 'explicacion', 'guia', 'confirmacion', 'factura']);
   assert.equal(e.datos.anexos.length, 3);
 
   const exp = await descargar(credB, 'expediente');

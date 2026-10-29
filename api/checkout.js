@@ -18,9 +18,13 @@ export default async function handler(req, res) {
     if (!exp) return noAutorizado(res);
     if (exp.estado !== 'borrador') return enviar(res, 409, { error: 'Este expediente ya está pagado.', estado: exp.estado });
     if (cuerpo.aceptaCondiciones !== true || cuerpo.ejecucionInmediata !== true) {
-      return enviar(res, 400, { error: 'Para continuar tienes que aceptar las condiciones y pedir que preparemos los documentos de inmediato.' });
+      return enviar(res, 400, { error: 'Para continuar tienes que aceptar las condiciones.' });
     }
     if (!exp.datos || !exp.resumen) return enviar(res, 409, { error: 'Revisa y confirma tus datos antes de pagar.' });
+    // Sin email no podemos enviar los documentos ni la factura: se pide antes de abrir el pago.
+    const email = String(cuerpo.email || '').trim().toLowerCase().slice(0, 120);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return enviar(res, 400, { error: 'Escribe un email válido: ahí te enviaremos los documentos y la factura.' });
+    exp.datos.titular.email = email;
 
     const { errores, evaluacion } = validarDatos(exp.datos, exp);
     if (errores.length) return enviar(res, 422, { errores });
@@ -68,6 +72,7 @@ export default async function handler(req, res) {
             product_data: { name: producto.nombre, description: `Preparación documental · ref. ${exp.referencia}` }
           }
         }],
+        customer_email: email,
         client_reference_id: exp.id,
         metadata: { expediente: exp.id, producto: producto.codigo, referencia: exp.referencia },
         payment_intent_data: { metadata: { expediente: exp.id, producto: producto.codigo, referencia: exp.referencia } },

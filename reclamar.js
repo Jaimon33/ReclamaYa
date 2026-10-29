@@ -531,51 +531,48 @@ function pintarResumen() {
   const s = vista?.resumen;
   if (!s) return;
   const p = vista.producto;
-  const fila = (t, v) => (v ? [el('dt', { texto: t }), el('dd', { texto: v })] : []);
+  const fila = (t, v) => (v ? el('div', { class: 'dato' }, el('dt', { texto: t }), el('dd', { texto: v })) : null);
   const previa = s.reclamacionPrevia
     ? `${fecha(s.reclamacionPrevia.fecha)} · ${s.reclamacionPrevia.respuesta === 'sin_respuesta' ? 'sin respuesta' : `respuesta del ${fecha(s.reclamacionPrevia.fechaRespuesta)} sin solución`}`
     : '';
+  const detalle = (f) => f.tipo === 'parcial' ? ` · ${f.diasReclamables} de ${f.totalDias} días` : f.tipo === 'fuera' ? ' · anterior a la baja' : '';
   caja.append(
-    el('div', { class: 'tarjeta resumen' },
-      el('h2', { texto: 'Tu caso' }),
-      el('dl', {},
-        fila('Compañía', s.operador), fila('Servicio', s.servicio), fila('Titular', s.titular),
-        fila('Contrato', s.contrato), fila('Línea(s)', s.lineas),
-        fila('Pediste la baja', fecha(s.fechaSolicitud)), fila('Debía ser efectiva', fecha(s.fechaEfectiva)),
-        fila('Reclamación previa', previa), fila('Plazo para la Oficina', s.limiteOaut ? `hasta el ${fecha(s.limiteOaut)}` : '')),
-      el('h3', { style: 'margin-top:18px', texto: 'Importes que se reclaman' }),
-      el('div', { class: 'tabla-scroll' }, el('table', {},
-        el('thead', {}, el('tr', {}, el('th', { texto: 'Factura' }), el('th', { texto: 'Periodo' }), el('th', { class: 'num', texto: 'Se reclama' }))),
-        el('tbody', {}, s.facturas.map(f => el('tr', {},
-          el('td', { texto: f.numero || '—' }),
-          el('td', { texto: `${fecha(f.periodoDesde)} – ${fecha(f.periodoHasta)}${f.tipo === 'parcial' ? ` (${f.diasReclamables} de ${f.totalDias} días)` : f.tipo === 'fuera' ? ' (anterior a la baja)' : ''}` }),
-          el('td', { class: 'num', texto: euros(f.reclamado) })))),
-        el('tfoot', {}, el('tr', {}, el('td', { colspan: '2', class: 'total', texto: 'Total' }), el('td', { class: 'num total', texto: euros(s.total) }))))),
-      el('h3', { style: 'margin-top:18px', texto: 'Documentos que irán como anexos' }),
-      el('ol', {}, s.documentos.map(d => el('li', { texto: `${d.tipoDoc}: ${d.nombre} (${d.paginas} ${d.paginas === 1 ? 'pág.' : 'págs.'})` })))
-    ),
-    s.avisos?.length ? el('div', { class: 'mensaje aviso', style: 'margin-top:16px' }, el('ul', {}, s.avisos.map(a => el('li', { texto: a })))) : null,
-    el('div', { class: 'tarjeta', style: 'margin-top:16px' },
-      el('h2', { texto: p.nombre }),
-      el('p', { class: 'precio' }, formatearPrecio(p.precioCentimos), ' ', el('small', { texto: 'IVA incluido, pago único' })),
-      el('ul', { class: 'lista-si' }, p.entrega.map(t => el('li', { texto: t }))),
-      el('p', { class: 'ayuda', texto: 'El escrito completo se prepara después del pago. Lo descargas al momento y te llega por email.' }))
+    el('div', { class: 'resumen-total' },
+      el('span', { texto: 'Se reclama' }), el('strong', { texto: euros(s.total) }),
+      el('span', { class: 'ayuda', texto: `a ${s.operador}` })),
+    el('dl', { class: 'datos-resumen' },
+      fila('Titular', s.titular), fila('Compañía', s.operador), fila('Servicio', s.servicio),
+      fila('Contrato', s.contrato), fila('Línea(s)', s.lineas),
+      fila('Pediste la baja', fecha(s.fechaSolicitud)), fila('Debía ser efectiva', fecha(s.fechaEfectiva)),
+      fila('Reclamación previa', previa), fila('Plazo para la Oficina', s.limiteOaut ? `hasta el ${fecha(s.limiteOaut)}` : '')),
+    el('h3', { texto: 'Facturas' }),
+    el('ul', { class: 'facturas-resumen' }, s.facturas.map(f => el('li', {},
+      el('span', {}, el('strong', { texto: f.numero || 'Factura' }), el('span', { class: 'ayuda', texto: `${fecha(f.periodoDesde)} – ${fecha(f.periodoHasta)}${detalle(f)}` })),
+      el('span', { class: 'importe', texto: euros(f.reclamado) })))),
+    el('h3', { texto: 'Anexos' }),
+    el('ol', { class: 'anexos-resumen' }, s.documentos.map(d => el('li', { texto: `${d.tipoDoc} (${d.paginas} ${d.paginas === 1 ? 'pág.' : 'págs.'})` }))),
+    s.avisos?.length ? el('div', { class: 'mensaje aviso' }, el('ul', {}, s.avisos.map(a => el('li', { texto: a })))) : null,
+    el('div', { class: 'producto-resumen' },
+      el('div', {}, el('strong', { texto: p.nombre }), el('span', { class: 'ayuda', texto: 'IVA incluido, pago único' })),
+      el('span', { class: 'precio-resumen', texto: formatearPrecio(p.precioCentimos) }))
   );
   $('#boton-pagar').textContent = `Pagar ${formatearPrecio(p.precioCentimos)}`;
+  if (!$('#d-email').value && vista.datos?.titular?.email) $('#d-email').value = vista.datos.titular.email;
 }
 
 $('#form-pago').addEventListener('submit', async (e) => {
   e.preventDefault();
   const errores = [];
-  if (!$('#acepta-condiciones').checked) errores.push('Acepta las condiciones de contratación.');
-  if (!$('#ejecucion-inmediata').checked) errores.push('Marca que quieres que preparemos los documentos de inmediato.');
+  const email = $('#d-email').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errores.push('Escribe tu email: ahí te enviaremos los documentos y la factura.');
+  if (!$('#acepta-condiciones').checked) errores.push('Acepta las condiciones para continuar.');
   if (errores.length) return mostrarMensaje($('#errores-pago'), 'error', 'Antes de pagar:', errores);
   const boton = $('#boton-pagar');
   boton.disabled = true;
   boton.textContent = 'Preparando el pago…';
   mostrarMensaje($('#errores-pago'), '', '');
   try {
-    const r = await api('checkout', { aceptaCondiciones: true, ejecucionInmediata: true });
+    const r = await api('checkout', { email, aceptaCondiciones: true, ejecucionInmediata: true });
     if (r.estado === 200 && r.datos.url) { window.location.href = r.datos.url; return; }
     if (r.datos.estado && r.datos.estado !== 'borrador') { window.location.href = `/exito.html?e=${encodeURIComponent(cred.expediente)}`; return; }
     mostrarMensaje($('#errores-pago'), 'error', r.datos.error || 'No hemos podido abrir el pago.', r.datos.errores || []);

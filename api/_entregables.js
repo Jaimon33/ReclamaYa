@@ -1,6 +1,8 @@
 // Generación de los documentos que recibe el cliente, a partir de plantillas y de datos confirmados.
 import fs from 'node:fs';
-import { Maquetador, anadirAnexos, guardar, rellenarFormularioOaut, textoSeguro } from './_pdf.js';
+import { Maquetador, anadirAnexos, guardar, rellenarFormularioOaut, textoSeguro, COLORES } from './_pdf.js';
+import { canalReclamacion, COMPROBADO_COMPANIAS } from './_companias.js';
+import { IVA } from './_facturas.js';
 import { MARCA, PRESTADOR, PRODUCTOS, formatearPrecio, VERSION_PLANTILLAS } from './_config.js';
 import { FUENTES, VERSION_REGLAS, fechaLarga, fechaCorta, euros, nombreOperador, sumarMeses, hoy } from './_reglas.js';
 import { TIPOS_DOCUMENTO, CANALES, SERVICIOS, SERVICIO_GENERICO } from './_expediente.js';
@@ -87,7 +89,7 @@ function tablaImportes(m, c) {
     { titulo: 'Importe del servicio', ancho: 0.16, alinear: 'derecha' },
     { titulo: 'Reclamado', ancho: 0.15, alinear: 'derecha' },
     { titulo: 'Anexo', ancho: 0.11, alinear: 'derecha' }
-  ], filas);
+  ], filas, { total: true });
   for (const l of c.calculo.lineas.filter(x => x.tipo === 'parcial')) {
     m.texto(`La factura ${l.numero || ''} abarca del ${fechaLarga(l.periodoDesde)} al ${fechaLarga(l.periodoHasta)}: solo se reclama la parte proporcional a los ${l.diasReclamables} días posteriores a la baja (${l.diasReclamables} de ${l.totalDias} días sobre ${euros(l.importeServicio)}).`.replace('  ', ' '), { tam: 9 });
   }
@@ -161,44 +163,64 @@ async function documentoEscritoA(exp, anexos) {
   return guardar(m.doc, `Reclamación a ${c.operador}`);
 }
 
+function crearConMarca(pdf = null) {
+  return Maquetador.crear(pdf, { marca: true, nombreMarca: MARCA.nombre });
+}
+
+// Pasos de una guía: cada paso es [título, [párrafo | (m) => {...}]].
+function pintarPasos(m, pasos) {
+  for (const [titulo, partes] of pasos) {
+    m.titulo(titulo, { tam: 12, despues: 4 });
+    for (const p of partes) typeof p === 'function' ? p(m) : m.texto(p);
+    m.espacio(4);
+  }
+}
+
 async function documentoGuiaA(exp) {
   const c = contexto(exp);
-  const m = await Maquetador.crear();
+  const canal = canalReclamacion(c.r.operador);
+  const m = await crearConMarca();
   m.nuevaPagina();
-  m.texto(`${MARCA.nombre} · Guía de presentación`, { tam: 9, fuente: 'negrita', color: undefined, despues: 4 });
-  m.titulo('Cómo presentar tu reclamación al operador', { tam: 16 });
-  m.texto(`Referencia: ${exp.referencia} · Operador: ${c.operador} · Importe reclamado: ${euros(c.calculo.total)}`, { tam: 9 });
-  m.separador();
-  const pasos = [
-    ['1. Revisa el documento', [
+  m.cabecera('Cómo presentar tu reclamación', `Guía de presentación · referencia ${exp.referencia}`);
+  m.datosClave([
+    ['Compañía', c.operador],
+    ['Importe reclamado', euros(c.calculo.total)],
+    ...(c.ev.fechas.limiteReclamarOperador ? [['Preséntala antes del', fechaCorta(c.ev.fechas.limiteReclamarOperador)]] : [['Respuesta en', '1 mes']])
+  ]);
+  const presentar = canal
+    ? [
+        `Entra en la página oficial de reclamaciones de ${c.operador} y presenta la reclamación adjuntando el PDF completo:`,
+        (mm) => mm.enlace(`Ir a la página de reclamaciones de ${c.operador}`, canal.url),
+        ...(canal.nota ? [canal.nota] : []),
+        ...(canal.email ? [`También puedes enviarla por email a ${canal.email}, con el PDF adjunto.`] : []),
+        ...(canal.telefono ? [`Si llamas al ${canal.telefono}, pide que te den el número de referencia de tu reclamación y un justificante: están obligados a dártelo (artículo 26.2 del Real Decreto 899/2009).`] : []),
+        `Usa siempre un canal que deje constancia de la fecha y del contenido. Si la web no te deja adjuntar el PDF, puedes enviarlo por burofax con certificación de contenido (tiene coste).`
+      ]
+    : [
+        `Busca en la web oficial de ${c.operador} el apartado de reclamaciones o atención al cliente y usa un canal que te permita adjuntar el PDF y te dé un justificante: formulario de reclamación del área de cliente, correo electrónico de atención al cliente o burofax con certificación de contenido (tiene coste).`,
+        'Si reclamas por teléfono, pide el número de referencia y un documento que acredite la presentación y el contenido de tu reclamación: la compañía está obligada a dártelo (artículo 26.2 del Real Decreto 899/2009).'
+      ];
+  pintarPasos(m, [
+    ['1. Revisa y firma', [
       'Abre el PDF de la reclamación y comprueba tus datos, las fechas y los importes. Si ves un error, escríbenos antes de presentarlo y lo corregimos sin coste.',
       'Fírmalo: a mano (imprímelo, fírmalo y escanéalo o fotografíalo) o con tu firma electrónica si la tienes.'
     ]],
-    ['2. Preséntalo por un canal que deje constancia', [
-      `Busca en la web oficial de ${c.operador} el apartado de reclamaciones o atención al cliente. Usa un canal que te permita adjuntar el PDF y te dé un justificante: formulario de reclamación del área de cliente, correo electrónico de atención al cliente o burofax con certificación de contenido (este último tiene coste).`,
-      'No hemos comprobado qué canales tiene habilitados cada operador: elige el que te dé constancia de la fecha y del contenido.',
-      'Si reclamas por teléfono, pide el número de referencia y un documento que acredite la presentación y el contenido de tu reclamación: el operador está obligado a dártelo (artículo 26.2 del Real Decreto 899/2009).'
-    ]],
+    [`2. Preséntala a ${c.operador}`, presentar],
     ['3. Guarda las pruebas', [
-      'Guarda el justificante de envío, la fecha y el número de referencia de la reclamación, y cualquier respuesta del operador.'
+      'Guarda el justificante de envío, la fecha y el número de referencia de la reclamación, y cualquier respuesta de la compañía.'
     ]],
-    ['4. Plazos', [
-      'El operador tiene un mes para responder desde que recibe tu reclamación.',
-      `Si no responde en ese mes o no lo resuelve, tienes tres meses para acudir a la ${OAUT.nombre}, que es gratuita. Por ejemplo, si presentas la reclamación hoy, el mes de respuesta terminaría el ${fechaLarga(sumarMeses(c.fechaHoy, 1))}.`,
-      ...(c.ev.fechas.limiteReclamarOperador ? [`Para conservar esa opción, presenta la reclamación al operador antes del ${fechaLarga(c.ev.fechas.limiteReclamarOperador)} (un mes desde que recibiste la factura).`] : []),
-      'Si llegas a ese punto, podemos preparar el expediente para la Oficina con el formulario oficial cumplimentado.'
+    ['4. Si no te contestan o no te dan la razón', [
+      `La compañía tiene un mes para responder. Si presentas la reclamación hoy, ese mes terminaría el ${fechaLarga(sumarMeses(c.fechaHoy, 1))}.`,
+      `Si no responde o no lo resuelve, tienes tres meses para acudir gratis a la ${OAUT.nombre}. Podemos prepararte ese expediente con el formulario oficial cumplimentado.`,
+      ...(c.ev.fechas.limiteReclamarOperador ? [`Para conservar esa opción, presenta la reclamación antes del ${fechaLarga(c.ev.fechas.limiteReclamarOperador)} (un mes desde que recibiste la factura).`] : [])
     ]],
     ['Recuerda', [
-      'Reclamar al operador y a la Oficina es gratuito. Lo que has pagado es la preparación de la documentación.',
-      'No podemos garantizar el resultado: depende del operador y de tus pruebas. Este documento no es asesoramiento jurídico personalizado.'
+      'Reclamar a la compañía y a la Oficina es gratuito. Lo que has pagado es la preparación de la documentación.',
+      'No podemos garantizar el resultado: depende de la compañía y de tus pruebas. Este documento no es asesoramiento jurídico personalizado.'
     ]]
-  ];
-  for (const [titulo, parrafos] of pasos) {
-    m.titulo(titulo, { tam: 11.5, despues: 4 });
-    parrafos.forEach(p => m.texto(p));
-  }
+  ]);
   m.separador();
-  m.texto(`Reglas aplicadas (versión ${VERSION_REGLAS}): ${FUENTES.rd899_art7.norma}, ${FUENTES.rd899_art7.articulo.toLowerCase()} y art. 26.2; Orden ITC/1030/2007, art. 4. Comprobadas en fuentes oficiales el ${fechaLarga(FUENTES.rd899_art7.comprobado)}.`, { tam: 8 });
+  m.texto(`Reglas aplicadas (versión ${VERSION_REGLAS}): ${FUENTES.rd899_art7.norma}, ${FUENTES.rd899_art7.articulo.toLowerCase()} y art. 26.2; Orden ITC/1030/2007, art. 4. Comprobadas en fuentes oficiales el ${fechaLarga(FUENTES.rd899_art7.comprobado)}.${canal ? ` Página de reclamaciones de ${c.operador} comprobada el ${fechaLarga(COMPROBADO_COMPANIAS)}.` : ''}`, { tam: 8, color: COLORES.gris });
   m.numerar(`Guía de presentación · ref. ${exp.referencia}`);
   return guardar(m.doc, 'Guía de presentación');
 }
@@ -291,48 +313,49 @@ async function documentoExplicacionB(exp) {
 
 async function documentoGuiaB(exp) {
   const c = contexto(exp);
-  const m = await Maquetador.crear();
+  const m = await crearConMarca();
   m.nuevaPagina();
-  m.texto(`${MARCA.nombre} · Guía de presentación`, { tam: 9, fuente: 'negrita', despues: 4 });
-  m.titulo(`Cómo presentar tu reclamación ante la ${OAUT.nombre}`, { tam: 15 });
-  m.texto(`Referencia: ${exp.referencia} · Operador: ${c.operador} · Importe reclamado: ${euros(c.calculo.total)}`, { tam: 9 });
-  m.texto(`Fecha límite para presentarla: ${fechaLarga(c.ev.fechas.limiteOaut)}.`, { fuente: 'negrita' });
-  m.separador();
-  const pasos = [
+  m.cabecera(`Cómo presentar tu reclamación ante la Oficina`, `${OAUT.nombre} · referencia ${exp.referencia}`);
+  m.datosClave([
+    ['Compañía', c.operador],
+    ['Importe reclamado', euros(c.calculo.total)],
+    ['Preséntala antes del', fechaCorta(c.ev.fechas.limiteOaut)]
+  ]);
+  pintarPasos(m, [
     ['1. Revisa y firma', [
       'Comprueba tus datos en el formulario oficial (páginas 1 y 2 del expediente) y en el escrito explicativo.',
       'En la página 2 del formulario: escribe la fecha, firma y marca la casilla en la que declaras que las copias coinciden con los originales. Firma también el escrito explicativo.',
       ...(c.empresa
-        ? ['Como el titular es una empresa, la Oficina solo la admite si es una microempresa (menos de 10 trabajadores). Añade la declaración responsable de microempresa, firmada: https://usuariosteleco.digital.gob.es/content/dam/usuarios-teleco/documents/microempresa.pdf', 'Hemos puesto como representante a la persona que firma; añade su NIF en el apartado 2 del formulario.']
+        ? ['Como el titular es una empresa, la Oficina solo la admite si es una microempresa (menos de 10 trabajadores). Añade la declaración responsable de microempresa, firmada:',
+          (mm) => mm.enlace('Descargar la declaración responsable de microempresa', 'https://usuariosteleco.digital.gob.es/content/dam/usuarios-teleco/documents/microempresa.pdf'),
+          'Hemos puesto como representante a la persona que firma; añade su NIF en el apartado 2 del formulario.']
         : ['Los apartados del representante quedan en blanco: solo se rellenan si presenta otra persona en tu nombre, con el modelo de autorización de la Oficina.'])
     ]],
-    ['2a. Presentación por internet', [
-      `Con certificado digital o DNI electrónico: formulario de reclamaciones de la Oficina, ${OAUT.sedeNueva}`,
-      `Con Cl@ve: a través del Registro Electrónico General, ${OAUT.registroGeneral}, dirigido a la ${OAUT.nombre}.`,
-      'Adjunta el formulario firmado (o rellena el formulario web con los mismos datos), el escrito explicativo y los anexos. Te los damos también por separado para que puedas subirlos uno a uno.',
-      'No hemos podido comprobar el tamaño máximo de archivo que admite la sede. Si rechaza alguno, súbelo por separado o usa la presentación en papel.'
+    ['2. Preséntala por internet', [
+      'Con certificado digital o DNI electrónico, en el formulario de reclamaciones de la Oficina:',
+      (mm) => mm.enlace('Abrir el formulario de reclamaciones de la Oficina', OAUT.sedeNueva),
+      `Con Cl@ve, a través del Registro Electrónico General, dirigido a la ${OAUT.nombre}:`,
+      (mm) => mm.enlace('Abrir el Registro Electrónico General', OAUT.registroGeneral),
+      'Adjunta el formulario firmado (o rellena el formulario web con los mismos datos), el escrito explicativo y los anexos. Te los damos también por separado para que puedas subirlos uno a uno. Si la sede rechaza algún archivo por tamaño, súbelo por separado o usa el papel.'
     ]],
-    ['2b. Presentación en papel', [
+    ['O en papel', [
       'Imprime el expediente completo (formulario, escrito explicativo y anexos), firma donde corresponde y no grapes los documentos.',
       `Envíalo por correo postal a: ${OAUT.direccion.join(', ')}.`,
-      'También puedes entregarlo en cualquier oficina de registro de la Administración General del Estado, de tu comunidad autónoma o de tu ayuntamiento (artículo 16 de la Ley 39/2015), o en una oficina de Correos. Pide y guarda el justificante.'
+      'También puedes entregarlo en cualquier oficina de registro de la Administración (del Estado, de tu comunidad autónoma o de tu ayuntamiento, artículo 16 de la Ley 39/2015) o en Correos. Pide y guarda el justificante.'
     ]],
     ['3. Qué pasa después', [
-      'La Oficina da traslado al operador, que tiene 15 días para aportar su versión; después puedes presentar alegaciones en 15 días.',
+      'La Oficina da traslado a la compañía, que tiene 15 días para aportar su versión; después puedes presentar alegaciones en 15 días.',
       'El plazo máximo para resolver es de seis meses. La resolución agota la vía administrativa: cabe recurso potestativo de reposición en un mes o recurso contencioso-administrativo en dos meses.',
-      `Información oficial: ${OAUT.informacion} · Teléfonos: ${OAUT.telefonos}.`
+      `Teléfonos de información de la Oficina: ${OAUT.telefonos}.`,
+      (mm) => mm.enlace('Información oficial de la Oficina', OAUT.informacion)
     ]],
     ['Recuerda', [
       'La reclamación ante la Oficina es gratuita. Lo que has pagado es la preparación de la documentación.',
       'No podemos garantizar que la Oficina la admita ni que la resuelva a tu favor. Este documento no es asesoramiento jurídico personalizado.'
     ]]
-  ];
-  for (const [titulo, parrafos] of pasos) {
-    m.titulo(titulo, { tam: 11.5, despues: 4 });
-    parrafos.forEach(p => m.texto(p));
-  }
+  ]);
   m.separador();
-  m.texto(`Información de presentación comprobada en las páginas oficiales de la Oficina el ${fechaLarga(OAUT.comprobado)}. Formulario oficial descargado de usuariosteleco.digital.gob.es en esa fecha; su texto conserva referencias a la Ley 9/2014 y a un ministerio anterior, tal como lo publica la Oficina. Reglas: versión ${VERSION_REGLAS}.`, { tam: 8 });
+  m.texto(`Información de presentación comprobada en las páginas oficiales de la Oficina el ${fechaLarga(OAUT.comprobado)}. Formulario oficial descargado de usuariosteleco.digital.gob.es en esa fecha; su texto conserva referencias a la Ley 9/2014 y a un ministerio anterior, tal como lo publica la Oficina. Reglas: versión ${VERSION_REGLAS}.`, { tam: 8, color: COLORES.gris });
   m.numerar(`Guía de presentación · ref. ${exp.referencia}`);
   return guardar(m.doc, 'Guía de presentación ante la Oficina');
 }
@@ -341,17 +364,18 @@ async function documentoGuiaB(exp) {
 
 export async function documentoConfirmacion(exp) {
   const producto = PRODUCTOS[exp.pago.producto];
-  const m = await Maquetador.crear();
+  const m = await crearConMarca();
   m.nuevaPagina();
-  m.titulo('Confirmación del pedido', { tam: 16 });
-  m.texto(`${MARCA.nombre} · ${PRESTADOR.titular} · NIF ${PRESTADOR.nif} · ${PRESTADOR.domicilio} · ${PRESTADOR.email}`, { tam: 9 });
-  m.separador();
-  m.texto(`Referencia del pedido: ${exp.referencia}`);
-  m.texto(`Fecha del pago: ${fechaLarga(exp.pago.pagadoEn.slice(0, 10))}`);
-  m.texto(`Servicio: ${producto.nombre}`);
-  m.texto(`Precio: ${formatearPrecio(exp.pago.importeCentimos)} (IVA incluido)`);
+  m.cabecera('Confirmación del pedido', `${PRESTADOR.titular} · NIF ${PRESTADOR.nif} · ${PRESTADOR.domicilio} · ${PRESTADOR.email}`);
+  m.datosClave([
+    ['Referencia', exp.referencia],
+    ['Fecha del pago', fechaCorta(exp.pago.pagadoEn.slice(0, 10))],
+    ['Precio (IVA incl.)', formatearPrecio(exp.pago.importeCentimos)]
+  ]);
+  m.texto(`Servicio: ${producto.nombre}`, { fuente: 'negrita' });
   m.texto(`Incluye: ${producto.entrega.join('; ')}.`);
-  m.texto(`Solicitaste expresamente que empezáramos a preparar los documentos de inmediato y reconociste que, una vez completamente preparados y a tu disposición, pierdes el derecho de desistimiento (aceptado el ${fechaLarga(exp.aceptacion.fecha.slice(0, 10))}). Tus derechos si el servicio tiene defectos no se ven afectados.`);
+  if (exp.factura) m.texto(`Factura: ${exp.factura.numero}, que se adjunta por separado.`);
+  m.texto(`Pediste que preparáramos los documentos de inmediato y reconociste que, una vez preparados y a tu disposición, pierdes el derecho de desistimiento (aceptado el ${fechaLarga(exp.aceptacion.fecha.slice(0, 10))}). Tus derechos si el servicio tiene defectos no se ven afectados.`);
   m.separador();
   m.titulo(`Condiciones de contratación (versión ${VERSION_CONDICIONES})`, { tam: 12 });
   for (const s of seccionesCondiciones()) {
@@ -360,6 +384,39 @@ export async function documentoConfirmacion(exp) {
   }
   m.numerar(`Confirmación del pedido ${exp.referencia}`);
   return guardar(m.doc, 'Confirmación del pedido');
+}
+
+// ——— Factura ———
+
+export async function documentoFactura(exp) {
+  const f = exp.factura;
+  const producto = PRODUCTOS[f.producto];
+  const completa = Boolean(f.cliente.domicilio);
+  const m = await crearConMarca();
+  m.nuevaPagina();
+  m.cabecera(completa ? 'Factura' : 'Factura simplificada', `Nº ${f.numero} · fecha de expedición ${fechaCorta(f.fecha)}`);
+  m.datosClave([['Número', f.numero], ['Fecha', fechaCorta(f.fecha)], ['Total', formatearPrecio(f.importes.total)]]);
+  m.titulo('Emisor', { tam: 10.5, despues: 2 });
+  m.texto(`${PRESTADOR.titular} · NIF ${PRESTADOR.nif}`, { despues: 0 });
+  m.texto(`${PRESTADOR.domicilio} · ${PRESTADOR.email}`, { despues: 10 });
+  m.titulo('Cliente', { tam: 10.5, despues: 2 });
+  m.texto(`${f.cliente.nombre} · ${/^[A-Z]/.test(f.cliente.documento) && !/^[XYZ]/.test(f.cliente.documento) ? 'CIF' : 'NIF'} ${f.cliente.documento}`, { despues: 0 });
+  if (completa) m.texto(f.cliente.domicilio, { despues: 0 });
+  m.espacio(12);
+  const euro = (cent) => formatearPrecio(cent);
+  m.tabla([
+    { titulo: 'Concepto', ancho: 0.52 },
+    { titulo: 'Base imponible', ancho: 0.17, alinear: 'derecha' },
+    { titulo: `IVA ${IVA} %`, ancho: 0.13, alinear: 'derecha' },
+    { titulo: 'Total', ancho: 0.18, alinear: 'derecha' }
+  ], [
+    [`${producto.nombre}: preparación de la documentación (ref. ${f.referencia})`, euro(f.importes.base), euro(f.importes.cuota), euro(f.importes.total)],
+    ['Total factura', euro(f.importes.base), euro(f.importes.cuota), euro(f.importes.total)]
+  ], { total: true });
+  m.texto(`Fecha de la operación: ${fechaLarga(f.fecha)}. Pagado con tarjeta a través de Stripe.`, { tam: 9, color: COLORES.gris });
+  if (f.serie !== 'LC') m.texto('Documento de prueba generado en un entorno de pruebas: no es una factura válida.', { tam: 9, fuente: 'negrita' });
+  m.numerar(`Factura ${f.numero}`);
+  return guardar(m.doc, `Factura ${f.numero}`);
 }
 
 // Genera todos los archivos del pedido. Devuelve [{ codigo, nombre, bytes }].
@@ -377,6 +434,7 @@ export async function generarEntregables(exp, anexos) {
     archivos.push({ codigo: 'guia', nombre: `Guia-de-presentacion-${ref}.pdf`, bytes: await documentoGuiaB(exp) });
   }
   archivos.push({ codigo: 'confirmacion', nombre: `Confirmacion-del-pedido-${ref}.pdf`, bytes: await documentoConfirmacion(exp) });
+  if (exp.factura) archivos.push({ codigo: 'factura', nombre: `Factura-${nombreArchivo(exp.factura.numero)}.pdf`, bytes: await documentoFactura(exp) });
   return archivos;
 }
 

@@ -110,7 +110,7 @@ export function construirPropuesta(exp) {
         revisar: Boolean(sugerencia.revisar) || !x.factura.periodoDesde || !x.factura.periodoHasta || sugerencia.importe == null,
         fuente: fuente(doc, x.factura.pagina)
       });
-      if (!x.factura.periodoDesde || !x.factura.periodoHasta) alertas.push(`No encontramos el periodo facturado en "${doc.nombre}". Búscalo en la factura (suele poner "periodo de facturación") y escríbelo.`);
+      if (!x.factura.periodoDesde || !x.factura.periodoHasta) alertas.push(`No hemos encontrado las fechas que cubre "${doc.nombre}". Suelen ser dos fechas junto al número de factura (por ejemplo "01/09 - 30/09"): escríbelas en la factura, abajo.`);
       if (sugerencia.excluidos.length) alertas.push(`"${doc.nombre}" incluye conceptos que no reclamamos (${sugerencia.excluidos.join(', ')}). Hemos calculado la parte del servicio con su IVA: compruébala con la factura.`);
       if (x.factura.fechaEmision && r.fechaSolicitud && x.factura.fechaEmision < r.fechaSolicitud) alertas.push(`"${doc.nombre}" se emitió antes de pedir la baja. Comprueba si de verdad es una factura posterior.`);
     }

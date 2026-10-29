@@ -1,12 +1,21 @@
 // Maquetación de PDF con pdf-lib, sin servicios externos: el texto del cliente no sale del servidor.
-import { PDFDocument, StandardFonts, rgb, degrees, PDFName } from 'pdf-lib';
+import fs from 'node:fs';
+import { PDFDocument, StandardFonts, rgb, degrees, PDFName, PDFString } from 'pdf-lib';
 import { orientacionJpeg } from './_archivos.js';
 
 export const A4 = [595.28, 841.89];
 const MARGEN = 56;
-const TINTA = rgb(0.09, 0.13, 0.16);
-const GRIS = rgb(0.42, 0.45, 0.48);
-const LINEA = rgb(0.82, 0.84, 0.86);
+const color = (hex) => rgb(parseInt(hex.slice(1, 3), 16) / 255, parseInt(hex.slice(3, 5), 16) / 255, parseInt(hex.slice(5, 7), 16) / 255);
+// Paleta de la web: noche, violeta y lima, con lavanda para fondos suaves.
+export const COLORES = {
+  noche: color('#0E0B2B'), violeta: color('#5B2EFF'), violetaOscuro: color('#4320D9'), lima: color('#C6F432'),
+  limaSuave: color('#F1FBD3'), lavanda: color('#F6F4FF'), lavanda2: color('#ECE7FF'), tinta: color('#14112E'),
+  gris: color('#5E5A7A'), linea: color('#DCD5FF'), blanco: rgb(1, 1, 1)
+};
+const TINTA = COLORES.tinta;
+const GRIS = COLORES.gris;
+const LINEA = COLORES.linea;
+const SIMBOLO = new URL('./_recursos/simbolo.png', import.meta.url);
 
 // Caracteres que admiten las fuentes estándar de PDF (WinAnsi). El resto se sustituye.
 const PERMITIDOS = new Set('€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ');
@@ -22,14 +31,19 @@ export function textoSeguro(valor) {
   }).join('');
 }
 
+// Dos estilos: "marca" (guías, confirmación y factura: cabecera oscura con el logo y marca de agua)
+// y "sobrio" (escritos que se presentan a la compañía o a la Oficina: solo acentos de color).
 export class Maquetador {
-  static async crear(pdf = null) {
+  static async crear(pdf = null, { marca = false, nombreMarca = '' } = {}) {
     const doc = pdf || await PDFDocument.create();
     const m = new Maquetador();
     m.doc = doc;
     m.normal = await doc.embedFont(StandardFonts.Helvetica);
     m.negrita = await doc.embedFont(StandardFonts.HelveticaBold);
     m.cursiva = await doc.embedFont(StandardFonts.HelveticaOblique);
+    m.marca = marca;
+    m.nombreMarca = textoSeguro(nombreMarca);
+    m.simbolo = marca ? await doc.embedPng(fs.readFileSync(SIMBOLO)) : null;
     m.paginasPropias = [];
     m.pagina = null;
     return m;
@@ -38,8 +52,50 @@ export class Maquetador {
   nuevaPagina() {
     this.pagina = this.doc.addPage(A4);
     this.paginasPropias.push(this.pagina);
-    this.y = A4[1] - MARGEN;
+    const [ancho, alto] = A4;
+    if (this.marca) {
+      this.marcaDeAgua(this.pagina);
+      this.pagina.drawRectangle({ x: 0, y: alto - 10, width: ancho, height: 10, color: COLORES.noche });
+      this.pagina.drawRectangle({ x: 0, y: alto - 12, width: ancho * 0.3, height: 2, color: COLORES.lima });
+    } else {
+      this.pagina.drawRectangle({ x: 0, y: alto - 4, width: ancho, height: 4, color: COLORES.violeta });
+    }
+    this.y = alto - MARGEN;
     return this.pagina;
+  }
+
+  marcaDeAgua(p) {
+    const texto = this.nombreMarca;
+    if (!texto) return;
+    const tam = 92;
+    const w = this.negrita.widthOfTextAtSize(texto, tam);
+    const ang = 35 * Math.PI / 180;
+    const [ancho, alto] = A4;
+    p.drawText(texto, {
+      x: ancho / 2 - (w / 2) * Math.cos(ang) + (tam / 3) * Math.sin(ang),
+      y: alto / 2 - (w / 2) * Math.sin(ang) - (tam / 3) * Math.cos(ang),
+      size: tam, font: this.negrita, color: COLORES.violeta, opacity: 0.045, rotate: degrees(35)
+    });
+  }
+
+  // Cabecera de la primera página en el estilo "marca": banda noche con el logo, título y subtítulo.
+  cabecera(titulo, subtitulo = '') {
+    const p = this.pagina;
+    const [ancho, alto] = A4;
+    const altoBanda = subtitulo ? 150 : 132;
+    p.drawRectangle({ x: 0, y: alto - altoBanda, width: ancho, height: altoBanda, color: COLORES.noche });
+    p.drawCircle({ x: ancho - 40, y: alto - 10, size: 150, color: COLORES.violeta, opacity: 0.35 });
+    p.drawImage(this.simbolo, { x: MARGEN, y: alto - 64, width: 30, height: 30 });
+    p.drawText(this.nombreMarca, { x: MARGEN + 40, y: alto - 56, size: 15, font: this.negrita, color: COLORES.blanco });
+    const lineas = this.partir(titulo, this.negrita, 20, this.ancho - 40);
+    let y = alto - 96;
+    for (const l of lineas.slice(0, 2)) {
+      p.drawText(l, { x: MARGEN, y, size: 20, font: this.negrita, color: COLORES.blanco });
+      y -= 24;
+    }
+    p.drawRectangle({ x: MARGEN, y: y + 14, width: 48, height: 3, color: COLORES.lima });
+    if (subtitulo) p.drawText(this.partir(subtitulo, this.normal, 9.5, this.ancho)[0], { x: MARGEN, y: y - 2, size: 9.5, font: this.normal, color: COLORES.linea });
+    this.y = alto - altoBanda - 26;
   }
 
   get ancho() {
@@ -94,13 +150,45 @@ export class Maquetador {
 
   titulo(contenido, { tam = 14, despues = 8 } = {}) {
     this.asegurar(tam * 3);
-    this.texto(contenido, { tam, fuente: 'negrita', despues });
+    this.texto(contenido, { tam, fuente: 'negrita', color: COLORES.violetaOscuro, despues });
+  }
+
+  // Enlace pulsable en el PDF; debajo se imprime la dirección para quien lo lea en papel.
+  enlace(etiqueta, url, { tam = 10.5 } = {}) {
+    const texto = this.partir(etiqueta, this.negrita, tam, this.ancho - 14)[0];
+    this.asegurar(tam * 3.2);
+    const y = this.y - tam;
+    const w = this.negrita.widthOfTextAtSize(texto, tam);
+    this.pagina.drawText(texto, { x: MARGEN, y, size: tam, font: this.negrita, color: COLORES.violeta });
+    this.pagina.drawLine({ start: { x: MARGEN, y: y - 2 }, end: { x: MARGEN + w, y: y - 2 }, thickness: 0.7, color: COLORES.violeta });
+    const anotacion = this.doc.context.register(this.doc.context.obj({
+      Type: 'Annot', Subtype: 'Link', Rect: [MARGEN - 2, y - 4, MARGEN + w + 2, y + tam + 2], Border: [0, 0, 0],
+      A: { Type: 'Action', S: 'URI', URI: PDFString.of(url) }
+    }));
+    this.pagina.node.addAnnot(anotacion);
+    this.y -= tam * 1.5;
+    this.texto(url, { tam: 8, color: GRIS, despues: 8 });
+  }
+
+  // Recuadro lavanda con datos clave en columnas: [[etiqueta, valor], ...].
+  datosClave(pares) {
+    const alto = 46;
+    this.asegurar(alto + 12);
+    const ancho = this.ancho / pares.length;
+    this.pagina.drawRectangle({ x: MARGEN, y: this.y - alto, width: this.ancho, height: alto, color: COLORES.lavanda2 });
+    this.pagina.drawRectangle({ x: MARGEN, y: this.y - alto, width: 3, height: alto, color: COLORES.violeta });
+    pares.forEach(([etiqueta, valor], i) => {
+      const x = MARGEN + 14 + i * ancho;
+      this.pagina.drawText(textoSeguro(etiqueta).toUpperCase(), { x, y: this.y - 17, size: 7, font: this.negrita, color: GRIS });
+      this.pagina.drawText(this.partir(valor, this.negrita, 11.5, ancho - 18)[0] || '', { x, y: this.y - 34, size: 11.5, font: this.negrita, color: COLORES.noche });
+    });
+    this.y -= alto + 14;
   }
 
   separador(espacio = 8) {
     this.asegurar(espacio * 2);
     this.y -= espacio;
-    this.pagina.drawLine({ start: { x: MARGEN, y: this.y }, end: { x: MARGEN + this.ancho, y: this.y }, thickness: 0.6, color: LINEA });
+    this.pagina.drawLine({ start: { x: MARGEN, y: this.y }, end: { x: MARGEN + this.ancho, y: this.y }, thickness: 0.8, color: LINEA });
     this.y -= espacio;
   }
 
@@ -108,28 +196,31 @@ export class Maquetador {
     this.y -= alto;
   }
 
-  // Tabla sencilla: columnas = [{ titulo, ancho (fracción), alinear }]
-  tabla(columnas, filas, { tam = 9 } = {}) {
+  // Tabla sencilla: columnas = [{ titulo, ancho (fracción), alinear }]. Con `total`, la última fila se resalta.
+  tabla(columnas, filas, { tam = 9, total = false } = {}) {
     const anchos = columnas.map(c => c.ancho * this.ancho);
-    const dibujarFila = (celdas, fuente, fondo) => {
+    const dibujarFila = (celdas, fuente, fondo, colorTexto = TINTA) => {
       const partidas = celdas.map((c, i) => this.partir(String(c ?? ''), fuente, tam, anchos[i] - 8));
-      const altoFila = Math.max(...partidas.map(p => p.length)) * tam * 1.35 + 8;
+      const altoFila = Math.max(...partidas.map(p => p.length)) * tam * 1.35 + 9;
       this.asegurar(altoFila);
       if (fondo) this.pagina.drawRectangle({ x: MARGEN, y: this.y - altoFila, width: this.ancho, height: altoFila, color: fondo });
       let x = MARGEN;
       partidas.forEach((lineas, i) => {
         lineas.forEach((linea, j) => {
           const w = fuente.widthOfTextAtSize(linea, tam);
-          const xi = columnas[i].alinear === 'derecha' ? x + anchos[i] - 4 - w : x + 4;
-          this.pagina.drawText(linea, { x: xi, y: this.y - 4 - tam - j * tam * 1.35, size: tam, font: fuente, color: TINTA });
+          const xi = columnas[i].alinear === 'derecha' ? x + anchos[i] - 5 - w : x + 5;
+          this.pagina.drawText(linea, { x: xi, y: this.y - 5 - tam - j * tam * 1.35, size: tam, font: fuente, color: colorTexto });
         });
         x += anchos[i];
       });
       this.y -= altoFila;
-      this.pagina.drawLine({ start: { x: MARGEN, y: this.y }, end: { x: MARGEN + this.ancho, y: this.y }, thickness: 0.4, color: LINEA });
+      this.pagina.drawLine({ start: { x: MARGEN, y: this.y }, end: { x: MARGEN + this.ancho, y: this.y }, thickness: 0.5, color: LINEA });
     };
-    dibujarFila(columnas.map(c => c.titulo), this.negrita, rgb(0.94, 0.96, 0.95));
-    filas.forEach(f => dibujarFila(f, this.normal));
+    dibujarFila(columnas.map(c => c.titulo), this.negrita, COLORES.lavanda2, COLORES.noche);
+    filas.forEach((f, i) => {
+      const esTotal = total && i === filas.length - 1;
+      dibujarFila(f, esTotal ? this.negrita : this.normal, esTotal ? COLORES.limaSuave : null);
+    });
     this.y -= 8;
   }
 
@@ -138,7 +229,12 @@ export class Maquetador {
     const total = this.paginasPropias.length;
     this.paginasPropias.forEach((p, i) => {
       const texto = textoSeguro(`${etiqueta} · página ${i + 1} de ${total}`);
+      p.drawLine({ start: { x: MARGEN, y: 40 }, end: { x: MARGEN + 24, y: 40 }, thickness: 2, color: this.marca ? COLORES.lima : COLORES.violeta });
       p.drawText(texto, { x: MARGEN, y: 28, size: 7.5, font: this.normal, color: GRIS });
+      if (this.marca) {
+        const w = this.negrita.widthOfTextAtSize(this.nombreMarca, 7.5);
+        p.drawText(this.nombreMarca, { x: A4[0] - MARGEN - w, y: 28, size: 7.5, font: this.negrita, color: COLORES.violeta });
+      }
     });
   }
 }
@@ -146,14 +242,16 @@ export class Maquetador {
 function paginaSeparadora(m, numero, anexo) {
   const p = m.doc.addPage(A4);
   const { width, height } = p.getSize();
+  p.drawRectangle({ x: 0, y: height - 4, width, height: 4, color: COLORES.violeta });
   const centrar = (t, fuente, tam, y, color = TINTA) => {
     const s = textoSeguro(t);
     p.drawText(s, { x: (width - fuente.widthOfTextAtSize(s, tam)) / 2, y, size: tam, font: fuente, color });
   };
-  centrar(`ANEXO ${numero}`, m.negrita, 28, height / 2 + 20);
+  centrar(`ANEXO ${numero}`, m.negrita, 30, height / 2 + 24, COLORES.violetaOscuro);
+  p.drawRectangle({ x: width / 2 - 24, y: height / 2 + 10, width: 48, height: 3, color: COLORES.lima });
   const nombre = m.partir(anexo.nombre, m.normal, 11, width - 160)[0] || '';
-  centrar(nombre, m.normal, 11, height / 2 - 10, GRIS);
-  centrar(`${anexo.descripcion} · ${anexo.paginas} ${anexo.paginas === 1 ? 'página' : 'páginas'}`, m.normal, 10, height / 2 - 28, GRIS);
+  centrar(nombre, m.normal, 11, height / 2 - 14, TINTA);
+  centrar(`${anexo.descripcion} · ${anexo.paginas} ${anexo.paginas === 1 ? 'página' : 'páginas'}`, m.normal, 10, height / 2 - 32, GRIS);
 }
 
 async function anadirImagen(m, numero, anexo) {

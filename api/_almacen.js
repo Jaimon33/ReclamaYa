@@ -44,6 +44,12 @@ function comandoMemoria([orden, ...args]) {
       memoria.set(clave, { valor: String(valor), caduca: e?.caduca ?? null });
       return valor;
     }
+    case 'RPUSH': {
+      const e = memoriaVigente(clave) || { valor: '[]', caduca: null };
+      const lista = [...JSON.parse(e.valor), ...args.slice(1)];
+      memoria.set(clave, { valor: JSON.stringify(lista), caduca: e.caduca });
+      return lista.length;
+    }
     case 'GETDEL': {
       const v = memoriaVigente(clave)?.valor ?? null;
       memoria.delete(clave);

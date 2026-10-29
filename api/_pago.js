@@ -5,6 +5,7 @@ import { PRODUCTOS, MONEDA, MARCA, PRESTADOR, RETENCION, urlBase, formatearPreci
 import { comando, guardarJSON, guardarBinario, leerBinario, prolongarBinario, bloquear, desbloquear } from './_almacen.js';
 import { leerExpediente, guardarExpediente, generarClave, resumen, credenciales, expedienteAutorizado } from './_seguridad.js';
 import { generarEntregables, prepararAnexos } from './_entregables.js';
+import { asignarFactura } from './_facturas.js';
 import { registrar } from './_metricas.js';
 import { nombreOperador, euros, fechaLarga } from './_reglas.js';
 
@@ -78,8 +79,8 @@ export async function registrarPago(sesion) {
     return { exp, rechazo: motivo };
   }
   exp.estado = 'pagado';
-  // El email se pide en la página de pago de Stripe: allí se envía el enlace de descarga.
-  exp.datos.titular.email = (sesion.customer_details?.email || sesion.customer_email || exp.datos.titular.email || '').toLowerCase();
+  // El email lo escribe el cliente antes de pagar; el de Stripe solo sirve de respaldo.
+  exp.datos.titular.email = (exp.datos.titular.email || sesion.customer_details?.email || sesion.customer_email || '').toLowerCase();
   exp.pago.pagadoEn = new Date().toISOString();
   exp.pago.pagoStripe = typeof sesion.payment_intent === 'string' ? sesion.payment_intent : sesion.payment_intent?.id || '';
   await guardarExpediente(exp);
@@ -155,6 +156,22 @@ async function enviarEmailEntrega(exp, archivos, token) {
   return true;
 }
 
+// Copia de cada factura emitida al titular del negocio, para su contabilidad.
+async function enviarCopiaFactura(exp, archivo) {
+  const r = clienteResend();
+  if (!r || !archivo) return;
+  try {
+    const f = exp.factura;
+    await r.emails.send({
+      from: REMITENTE, to: EMAIL_ALERTAS, subject: `Factura emitida ${f.numero}`,
+      text: [`Factura ${f.numero} del ${fechaLarga(f.fecha)}`, `Cliente: ${f.cliente.nombre} (${f.cliente.documento})`, `Total: ${formatearPrecio(f.importes.total)} (base ${formatearPrecio(f.importes.base)}, IVA ${formatearPrecio(f.importes.cuota)})`, `Pedido: ${exp.referencia}`].join('\n'),
+      attachments: [{ filename: archivo.nombre, content: archivo.bytes.toString('base64'), type: 'application/pdf' }]
+    });
+  } catch (e) {
+    console.error('No se pudo enviar la copia de la factura:', e.message);
+  }
+}
+
 // Genera, guarda y envía los documentos. Se puede llamar varias veces: si ya están, no repite.
 export async function entregar(id) {
   if (!(await bloquear(`entrega:${id}`, 110))) return { enCurso: true };
@@ -170,6 +187,11 @@ export async function entregar(id) {
         if (!b) throw new Error(`No se encuentra el archivo ${doc.nombre}`);
         if (resumen(b) !== doc.sha256) throw new Error(`El archivo ${doc.nombre} no coincide con el subido`);
         binarios.push(b);
+      }
+      // La factura se numera una sola vez y se guarda antes de generar nada, por si hay reintentos.
+      if (!exp.factura) {
+        await asignarFactura(exp);
+        await guardarExpediente(exp);
       }
       const archivos = await generarEntregables(exp, prepararAnexos(exp, binarios));
       for (const a of archivos) await guardarBinario(`ent:${exp.id}:${a.codigo}`, a.bytes, RETENCION.entregables);
@@ -191,6 +213,7 @@ export async function entregar(id) {
         await enviarAlerta(`Email de entrega no enviado — ${exp.referencia}`, [`Motivo: ${e.message}`, 'Los documentos están generados y el cliente puede descargarlos desde la página de confirmación.']);
       }
       await guardarExpediente(exp);
+      await enviarCopiaFactura(exp, archivos.find(a => a.codigo === 'factura'));
       if (exp.pago.producto === 'operador') {
         // Recordatorio único a los 35 días; los documentos se habrán borrado, así que se guarda lo mínimo.
         await guardarJSON(`seguimiento:${exp.id}`, {

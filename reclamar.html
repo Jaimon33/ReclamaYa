@@ -80,6 +80,7 @@
 
       <!-- PASO 2 -->
       <section id="paso-2" class="paso-tarjeta" hidden aria-labelledby="t-paso-2">
+        <button type="button" class="volver" data-ir="1"><span aria-hidden="true">←</span> Volver a tu caso</button>
         <h1 id="t-paso-2" tabindex="-1">Sube tus documentos</h1>
         <p class="ayuda">Los leemos por ti: de ahí sacamos las fechas, las facturas y los importes.</p>
         <ul class="requisitos" id="requisitos"></ul>
@@ -121,8 +122,8 @@
               </div>
               <div class="campo" id="campo-fecha-respuesta-datos" hidden><label for="d-fecha-respuesta">Día en que te respondió la compañía <span class="ayuda">(si te respondió)</span></label><input type="date" id="d-fecha-respuesta"><span class="fuente" id="f-fecha-respuesta"></span></div>
               <div class="fila dos">
-                <div class="campo"><label for="d-cliente">Nº de cliente o contrato</label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
-                <div class="campo"><label for="d-lineas">Línea(s) dadas de baja</label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
+                <div class="campo"><label for="d-cliente">Nº de cliente o contrato <span class="ayuda">(opcional)</span></label><input type="text" id="d-cliente" maxlength="40"><span class="fuente" id="f-cliente"></span></div>
+                <div class="campo"><label for="d-lineas">Línea(s) dadas de baja <span class="ayuda">(opcional)</span></label><input type="text" id="d-lineas" maxlength="120" inputmode="tel"><span class="fuente" id="f-lineas"></span></div>
               </div>
               <h3>Facturas</h3>
               <p class="ayuda">Reclamamos solo los días posteriores a la baja. En "importe del servicio" va lo que te cobran por la línea dada de baja (cuotas y consumos, con IVA).</p>
@@ -141,21 +142,19 @@
 
       <!-- PASO 3 -->
       <section id="paso-3" class="paso-tarjeta" hidden aria-labelledby="t-paso-3">
+        <button type="button" class="volver" data-ir="2"><span aria-hidden="true">←</span> Volver a documentos y datos</button>
         <h1 id="t-paso-3" tabindex="-1">Revisa y paga</h1>
         <div id="resumen"></div>
         <form id="form-pago" novalidate>
-          <div class="tarjeta" style="margin:16px 0">
-            <label class="casilla"><input type="checkbox" id="acepta-condiciones"> <span>He leído y acepto las <a href="/condiciones-venta.html" target="_blank" rel="noopener">condiciones de contratación</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
-            <label class="casilla"><input type="checkbox" id="ejecucion-inmediata"> <span>Pido que preparéis los documentos de inmediato. Sé que, cuando estén preparados y a mi disposición, pierdo el derecho de desistimiento; mis derechos si tienen algún defecto se mantienen.</span></label>
-          </div>
-          <p class="ayuda">En la página de pago (Stripe) te pediremos el email al que enviarte los documentos. Puedes reclamar gratis por tu cuenta por los canales oficiales: lo que pagas es la preparación de la documentación.</p>
+          <div class="campo" style="margin-top:18px"><label for="d-email">Tu email</label><input type="email" id="d-email" autocomplete="email" maxlength="120" inputmode="email" required><p class="ayuda" style="margin:4px 0 0">Te enviaremos aquí los documentos y la factura.</p></div>
+          <label class="casilla"><input type="checkbox" id="acepta-condiciones"> <span>Acepto las <a href="/condiciones-venta.html" target="_blank" rel="noopener">condiciones</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>, y quiero los documentos al momento: una vez entregados, no podré desistir del pedido.</span></label>
+          <p class="ayuda">Reclamar es gratis por los canales oficiales: lo que pagas es la preparación de la documentación. Pago seguro con Stripe.</p>
           <div id="errores-pago" role="alert"></div>
           <div class="acciones">
             <button type="submit" class="boton ancho" id="boton-pagar">Pagar</button>
           </div>
         </form>
         <div class="acciones">
-          <button type="button" class="boton discreto" data-ir="2">Corregir documentos o datos</button>
           <button type="button" class="boton discreto" id="borrar-expediente">Borrar mis datos y empezar de nuevo</button>
         </div>
       </section>
