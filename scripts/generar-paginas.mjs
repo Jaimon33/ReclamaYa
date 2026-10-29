@@ -16,10 +16,12 @@ function pagina({ archivo, titulo, descripcion, canonica = true, indexar = true,
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(titulo)} — ${esc(MARCA.nombre)}</title>
   <meta name="description" content="${esc(descripcion)}">
-${canonica ? `  <link rel="canonical" href="https://${MARCA.dominio}/${archivo === 'index.html' ? '' : archivo}">\n` : ''}${indexar ? '' : '  <meta name="robots" content="noindex">\n'}  <meta name="theme-color" content="#0b5d57">
+${canonica ? `  <link rel="canonical" href="https://${MARCA.dominio}/${archivo === 'index.html' ? '' : archivo}">\n` : ''}${indexar ? '' : '  <meta name="robots" content="noindex">\n'}  <meta name="theme-color" content="#0E0B2B">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fuentes/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/estilos.css">
   <script type="module" src="/sitio.js"></script>
 ${scripts}</head>
@@ -27,22 +29,27 @@ ${scripts}</head>
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="cabecera">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>${esc(MARCA.nombre)}</span></a>
-      <nav class="navegacion" aria-label="Principal"><a href="/#precios">Precios</a><a href="/#preguntas">Ayuda</a></nav>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>${esc(MARCA.nombre)}</span></a>
+      <nav class="navegacion" aria-label="Principal"><a href="/#precio">Precio</a><a href="/#preguntas">Ayuda</a></nav>
     </div>
   </header>
-  <main id="contenido" class="legal">
-    <div class="contenedor estrecho">
+  <main id="contenido" class="pagina-clara legal">
+    <div class="mancha violeta" style="width:520px;height:520px;top:-200px;right:-200px"></div>
+    <div class="mancha violeta" style="width:420px;height:420px;bottom:-160px;left:-200px"></div>
+    <div class="contenedor estrecho" style="padding-top:32px">
+      <div class="paso-tarjeta">
 ${cuerpo}
+      </div>
     </div>
   </main>
   <footer class="pie">
     <div class="contenedor">
-      <p><strong data-marca>${esc(MARCA.nombre)}</strong> es un servicio de ${esc(PRESTADOR.web)} prestado por ${esc(PRESTADOR.titular)}, NIF ${esc(PRESTADOR.nif)}, ${esc(PRESTADOR.domicilio)}. Contacto: <a data-email href="mailto:${esc(PRESTADOR.email)}">${esc(PRESTADOR.email)}</a></p>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>${esc(MARCA.nombre)}</span></a>
+      <p>Un servicio de ${esc(PRESTADOR.web)} prestado por ${esc(PRESTADOR.titular)}, NIF ${esc(PRESTADOR.nif)}, ${esc(PRESTADOR.domicilio)}.</p>
       <nav class="enlaces" aria-label="Información legal">
-        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/condiciones-venta.html">Condiciones</a><a href="/#preguntas">Ayuda</a><a data-email href="mailto:${esc(PRESTADOR.email)}">Contacto</a>
+        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/privacidad.html#cookies">Cookies</a><a href="/condiciones-venta.html">Condiciones</a><a data-email href="mailto:${esc(PRESTADOR.email)}">Contacto</a>
       </nav>
-      <p>Preparamos documentación; no prestamos asesoramiento jurídico ni representamos ante la compañía o la Administración. No somos un organismo público.</p>
+      <p>Preparamos documentación: no prestamos asesoramiento jurídico ni te representamos. No somos un organismo público ni estamos vinculados a ninguna compañía.</p>
     </div>
   </footer>
 </body>
@@ -54,7 +61,7 @@ ${cuerpo}
 const p = (t) => `      <p>${t}</p>`;
 const h2 = (t) => `      <h2>${t}</h2>`;
 const ul = (items) => `      <ul>\n${items.map(i => `        <li>${i}</li>`).join('\n')}\n      </ul>`;
-const cta = '      <p style="margin-top:24px"><a class="boton ancho" href="/reclamar.html">Comprobar mi caso</a></p>';
+const cta = '      <p style="margin-top:24px"><a class="boton violeta ancho" href="/reclamar.html">Empieza tu reclamación</a></p>';
 
 // ——— Condiciones ———
 pagina({
@@ -121,7 +128,7 @@ pagina({
     ]),
     h2('7. Tus derechos'),
     p(`Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a href="mailto:${esc(PRESTADOR.email)}">${esc(PRESTADOR.email)}</a>. Si no te atendemos bien, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).`),
-    h2('8. Cookies y almacenamiento en tu navegador'),
+    '      <h2 id="cookies">8. Cookies y almacenamiento en tu navegador</h2>',
     p('No usamos cookies propias ni de terceros para analítica o publicidad. El formulario guarda tus respuestas y la clave de tu expediente en el almacenamiento de sesión del navegador, que se borra al cerrar la pestaña; es imprescindible para el servicio que pides. Stripe puede usar cookies en su propia página de pago.')
   ].join('\n')
 });
@@ -197,7 +204,7 @@ pagina({
   descripcion: 'Esta página no existe.',
   canonica: false,
   indexar: false,
-  cuerpo: ['      <h1>Esta página no existe</h1>', p('El enlace puede estar roto o la página se ha movido.'), '      <p><a class="boton" href="/">Ir al inicio</a></p>'].join('\n')
+  cuerpo: ['      <h1>Esta página no existe</h1>', p('El enlace puede estar roto o la página se ha movido.'), '      <p><a class="boton violeta" href="/">Ir al inicio</a></p>'].join('\n')
 });
 
 // ——— Verificación de escritos antiguos ———
@@ -210,7 +217,7 @@ pagina({
   cuerpo: [
     '      <h1>Verificar un escrito anterior</h1>',
     p('Los escritos generados por ReclamoIA antes del 28 de octubre de 2026 llevan una referencia del tipo RC-20260923-XXXX. Escríbela para comprobar que existe.'),
-    '      <form id="form-verificar" class="tarjeta"><div class="campo"><label for="ref">Referencia</label><input type="text" id="ref" autocapitalize="characters" placeholder="RC-20260923-XXXX"></div><button class="boton" type="submit">Verificar</button></form>',
+    '      <form id="form-verificar" class="tarjeta"><div class="campo"><label for="ref">Referencia</label><input type="text" id="ref" autocapitalize="characters" placeholder="RC-20260923-XXXX"></div><button class="boton violeta" type="submit">Verificar</button></form>',
     '      <div id="resultado" aria-live="polite" style="margin-top:16px"></div>'
   ].join('\n')
 });

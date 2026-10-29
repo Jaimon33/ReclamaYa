@@ -668,6 +668,12 @@ $('#borrar-expediente').addEventListener('click', async () => {
 
 async function iniciar() {
   rellenarRespuestas(leerAlmacen(ALMACEN.respuestas));
+  // Compañía elegida en el selector de la portada (?compania=Vodafone).
+  const compania = new URLSearchParams(location.search).get('compania');
+  if (compania && OPERADORES.includes(compania) && !$('#operador').value) {
+    $('#operador').value = compania;
+    actualizarVisibilidad();
+  }
   if (!cred) {
     history.replaceState({ paso: 1 }, '', location.pathname);
     return;

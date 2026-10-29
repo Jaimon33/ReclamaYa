@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="sin-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BajaClara — Reclama los cobros después de dar de baja tu teléfono o fibra</title>
-  <meta name="description" content="¿Te siguen cobrando después de la baja de tu teléfono o fibra? Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.">
+  <title>BajaClara — ¿Te siguen cobrando después de la baja? Reclámalo en minutos</title>
+  <meta name="description" content="Si tu compañía de teléfono o fibra te sigue cobrando después de la baja, prepara tu reclamación en minutos: escrito personalizado, tus facturas como anexos e instrucciones para presentarlo.">
   <link rel="canonical" href="https://reclamoia.es/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://reclamoia.es/">
@@ -12,155 +12,260 @@
   <meta property="og:description" content="Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.">
   <meta property="og:image" content="https://reclamoia.es/marca/og.png">
   <meta property="og:locale" content="es_ES">
-  <meta name="theme-color" content="#0b5d57">
+  <meta name="theme-color" content="#0E0B2B">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fuentes/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/estilos.css">
+  <script>document.documentElement.classList.remove('sin-js');</script>
   <script type="module" src="/sitio.js"></script>
+  <script type="module" src="/portada.js"></script>
 </head>
 <body>
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="cabecera">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
       <nav class="navegacion" aria-label="Principal">
         <a href="#como-funciona" class="solo-ancho">Cómo funciona</a>
-        <a href="#precios">Precios</a>
+        <a href="#precio" class="solo-ancho">Precio</a>
         <a href="#preguntas">Ayuda</a>
+        <a href="/reclamar.html" class="boton solo-ancho">Empezar</a>
       </nav>
     </div>
   </header>
 
   <main id="contenido">
-    <section class="portada">
-      <div class="contenedor estrecho">
-        <h1>¿Te siguen cobrando después de dar de baja tu teléfono o fibra?</h1>
-        <p class="entrada">Prepara tu reclamación con tus facturas y la prueba de baja. Recibe el escrito, los anexos y las instrucciones para presentarlo.</p>
-        <a class="boton ancho" href="/reclamar.html">Comprobar mi caso</a>
-        <ul class="notas">
-          <li>Comprobarlo es gratis y sin registrarte</li>
-          <li>Tú presentas la reclamación</li>
-          <li>Desde <span data-precio="operador">13,99 €</span>, IVA incluido</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="seccion" aria-labelledby="t-problema">
-      <div class="contenedor estrecho">
-        <h2 id="t-problema">El problema</h2>
-        <p>Pediste la baja y la compañía siguió cobrándote cuotas. La ley le prohíbe facturar lo que corresponda a después de la fecha en que debía hacerse efectiva tu baja (artículo 7 del Real Decreto 899/2009). Para recuperarlo hay que reclamar por escrito, con pruebas y en plazo.</p>
-        <p>Te ayudamos a preparar esa reclamación sin que tengas que saber de leyes: comprobamos qué periodo cubre cada factura, calculamos lo que corresponde reclamar y lo ordenamos todo en un PDF listo para presentar.</p>
-      </div>
-    </section>
-
-    <section class="seccion" aria-labelledby="t-casos">
-      <div class="contenedor">
-        <h2 id="t-casos">¿Encaja tu caso?</h2>
-        <div class="rejilla dos">
-          <div class="tarjeta">
-            <h3>Sí, si…</h3>
-            <ul class="lista-si">
-              <li>El contrato de fibra, móvil, fijo o paquete está a tu nombre o al de tu empresa.</li>
-              <li>Pediste la baja directamente a la compañía.</li>
-              <li>Tienes una prueba: número de referencia, email, SMS, carta o captura.</li>
-              <li>Te han cobrado cuotas o consumos de periodos posteriores a la baja.</li>
-            </ul>
+    <!-- 1. Héroe -->
+    <section class="oscuro degradado grano heroe" aria-labelledby="t-heroe">
+      <div class="mancha violeta" style="width:520px;height:520px;top:-180px;right:-140px"></div>
+      <div class="mancha coral" style="width:380px;height:380px;bottom:-160px;left:-120px"></div>
+      <div class="contenedor heroe-rejilla">
+        <div>
+          <p class="antetitulo revelar"><span class="punto-vivo" aria-hidden="true"></span> Telefonía y fibra</p>
+          <h1 id="t-heroe" class="revelar" style="--orden:1">¿Diste de baja tu línea y aún <span class="resalte">te cobran?</span></h1>
+          <p class="entrada revelar" style="--orden:2">Tiene solución. Prepara en minutos una reclamación con tus facturas y la prueba de baja, y preséntala tú mismo con todo en orden.</p>
+          <div class="acciones revelar" style="--orden:3">
+            <a href="/reclamar.html" class="boton brillo">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a>
+            <span class="nota-cta">Compruébalo gratis en 1 minuto</span>
           </div>
-          <div class="tarjeta">
-            <h3>Por ahora no preparamos</h3>
-            <ul class="lista-no">
-              <li>Bajas por portabilidad a otra compañía.</li>
-              <li>Penalizaciones por permanencia o plazos de un móvil financiado.</li>
-              <li>Cargos por no devolver el router u otros equipos.</li>
-              <li>Ficheros de morosos, suplantaciones, indemnizaciones o juicios.</li>
-            </ul>
+          <ul class="sellos revelar" style="--orden:4" aria-label="Garantías">
+            <li class="sello"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Pago seguro con Stripe</li>
+            <li class="sello"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>Lo recibes en minutos</li>
+            <li class="sello"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2A3.5 3.5 0 1 0 14.5 15M8 11h5M8 13.2h5"/></svg><span>Desde <span data-precio="operador">13,99 €</span></span></li>
+          </ul>
+        </div>
+        <div class="revelar" style="--orden:3" aria-hidden="true">
+          <div class="cristal ticket flotar">
+            <span class="etiqueta-ejemplo">Ejemplo</span>
+            <p class="antetitulo" style="margin-bottom:6px">Tu reclamación</p>
+            <h3 style="color:var(--texto-oscuro)">Baja pedida el 3 de junio</h3>
+            <div class="linea-factura"><span>Factura junio · 25 de 30 días</span><span class="indebido">30,25 €</span></div>
+            <div class="linea-factura"><span>Factura julio · mes completo</span><span class="indebido">36,30 €</span></div>
+            <div class="linea-factura"><span>Factura mayo · antes de la baja</span><span>No se reclama</span></div>
+            <div class="total"><span>Cobrado de más</span><strong>66,55 €</strong></div>
+            <div class="estado"><span class="punto-vivo"></span> Escrito, anexos y guía listos para presentar</div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="seccion" id="como-funciona" aria-labelledby="t-como">
-      <div class="contenedor">
-        <h2 id="t-como">Cómo funciona</h2>
-        <div class="rejilla tres">
-          <div class="tarjeta"><span class="paso-num">1</span><h3>Comprueba tu caso</h3><p>Seis preguntas, sin datos personales. Si no recuerdas una fecha, la sacamos de tus documentos.</p></div>
-          <div class="tarjeta"><span class="paso-num">2</span><h3>Añade tus documentos</h3><p>Sube facturas y la prueba de baja (PDF o foto). Leemos los datos por ti y tú los confirmas.</p></div>
-          <div class="tarjeta"><span class="paso-num">3</span><h3>Revisa y paga</h3><p>Ves un resumen con importes y precio. Al pagar, recibes los documentos para descargar y por email.</p></div>
+    <!-- Cinta de compañías -->
+    <div class="cinta" aria-label="Compañías">
+      <div class="cinta-pista" aria-hidden="true">
+        <span>Movistar</span><span>Vodafone</span><span>Orange</span><span>Jazztel</span><span>Yoigo</span><span>MásMóvil</span><span>Simyo</span><span>Lowi</span><span>O2</span><span>Pepephone</span><span>Digi</span><span>Finetwork</span><span>Euskaltel</span><span>Avatel</span>
+        <span>Movistar</span><span>Vodafone</span><span>Orange</span><span>Jazztel</span><span>Yoigo</span><span>MásMóvil</span><span>Simyo</span><span>Lowi</span><span>O2</span><span>Pepephone</span><span>Digi</span><span>Finetwork</span><span>Euskaltel</span><span>Avatel</span>
+      </div>
+      <p class="oculto-visual">Sirve para cualquier compañía de telefonía o fibra, como Movistar, Vodafone, Orange, Jazztel, Yoigo, MásMóvil, Digi y otras.</p>
+      <p class="aviso-cinta">Sirve con cualquier compañía. No estamos vinculados a ninguna de ellas.</p>
+    </div>
+
+    <!-- 2. Selector rápido -->
+    <section class="claro seccion" aria-labelledby="t-selector">
+      <div class="mancha violeta" style="width:500px;height:500px;top:-160px;left:-200px"></div>
+      <div class="contenedor estrecho">
+        <p class="antetitulo revelar">Empieza por aquí</p>
+        <h2 id="t-selector" class="revelar" style="--orden:1">¿Qué te ha pasado?</h2>
+        <div class="tarjeta selector revelar" style="--orden:2">
+          <form id="selector" onsubmit="return false">
+            <fieldset style="margin:0">
+              <legend>Elige lo que más se parece a tu caso</legend>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="caso" value="baja" checked><span>Me cobran después de la baja</span></label>
+                <label class="chip"><input type="radio" name="caso" value="permanencia"><span>Una penalización por permanencia</span></label>
+                <label class="chip"><input type="radio" name="caso" value="dispositivo"><span>Plazos de un móvil</span></label>
+                <label class="chip"><input type="radio" name="caso" value="otro"><span>Otro cobro</span></label>
+              </div>
+            </fieldset>
+            <div class="campo">
+              <label for="selector-compania">¿Con qué compañía?</label>
+              <select id="selector-compania"><option value="">Elige tu compañía</option></select>
+            </div>
+            <div class="respuesta-selector" id="respuesta-selector" aria-live="polite">
+              <p id="texto-selector">Es justo lo que preparamos: reclamamos solo los días cobrados después de tu baja.</p>
+              <a class="boton" id="cta-selector" href="/reclamar.html">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a>
+            </div>
+          </form>
         </div>
       </div>
     </section>
 
-    <section class="seccion" id="precios" aria-labelledby="t-precios">
+    <!-- 3. Cómo funciona -->
+    <section class="oscuro grano seccion" id="como-funciona" aria-labelledby="t-como">
+      <div class="mancha violeta" style="width:600px;height:600px;top:10%;right:-300px"></div>
       <div class="contenedor">
-        <h2 id="t-precios">Qué recibes y cuánto cuesta</h2>
-        <p class="explicacion">Primero se reclama a la compañía. Si en un mes no responde o no lo soluciona, tienes tres meses para acudir a la Oficina de Atención al Usuario de Telecomunicaciones del Ministerio. No necesitas saber cuál te toca: el formulario te lo indica.</p>
-        <div class="rejilla dos">
-          <div class="tarjeta">
-            <span class="etiqueta">Primer paso</span>
-            <h3 style="margin-top:10px">Reclamación a la compañía</h3>
+        <p class="antetitulo revelar">Cómo funciona</p>
+        <h2 id="t-como" class="revelar" style="--orden:1">Tres pasos y lo tienes</h2>
+        <p class="entrada revelar" style="--orden:2">Sin registrarte y sin saber de leyes. Tú solo aportas tus facturas y la prueba de la baja.</p>
+        <div class="rejilla tres" style="margin-top:36px">
+          <article class="tarjeta viva revelar" style="--orden:1">
+            <div class="icono-caja"><svg class="icono-anim" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="20" height="24" rx="4"/><path class="trazo" d="M11 16l3.5 3.5L21 12"/></svg></div>
+            <span class="paso-num">Paso 1</span>
+            <h3>Elige tu caso</h3>
+            <p class="suave">Unas pocas preguntas para saber qué toca: reclamar a la compañía o ir a la Oficina del Ministerio.</p>
+          </article>
+          <article class="tarjeta viva revelar" style="--orden:2">
+            <div class="icono-caja"><svg class="icono-anim" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h10l6 6v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path class="trazo" d="M11 16h10M11 21h7"/><g class="rebote"><path d="M19 4v6h6"/></g></svg></div>
+            <span class="paso-num">Paso 2</span>
+            <h3>Recibe tu escrito</h3>
+            <p class="suave">Leemos tus facturas, calculamos lo cobrado de más y montamos un PDF con el escrito y tus documentos.</p>
+          </article>
+          <article class="tarjeta viva revelar" style="--orden:3">
+            <div class="icono-caja"><svg class="icono-anim" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="trazo" d="M5 16l22-10-8 22-4-9z"/><path d="M15 19l12-13"/></svg></div>
+            <span class="paso-num">Paso 3</span>
+            <h3>Preséntalo y reclama</h3>
+            <p class="suave">Envíalo con la guía paso a paso y reclama lo que te cobraron. Reclamar es gratis.</p>
+          </article>
+        </div>
+        <div class="acciones revelar" style="margin-top:36px"><a href="/reclamar.html" class="boton">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+
+    <!-- 4. Por qué funciona -->
+    <section class="claro seccion" aria-labelledby="t-porque">
+      <div class="mancha violeta" style="width:520px;height:520px;bottom:-200px;right:-180px"></div>
+      <div class="contenedor">
+        <p class="antetitulo revelar">Por qué funciona</p>
+        <h2 id="t-porque" class="revelar" style="--orden:1">La ley está de <span class="resalte">tu parte</span></h2>
+        <p class="entrada revelar" style="--orden:2">Cuando pides la baja, la compañía tiene que dejar de cobrarte. Te lo explicamos sin jerga.</p>
+        <div class="rejilla cuatro" style="margin-top:36px">
+          <article class="tarjeta viva revelar" style="--orden:1"><div class="dato-legal">2 días</div><h3>Para hacer efectiva la baja</h3><p class="suave">Desde que la pides, como máximo dos días hábiles. Lo que facturen por después no te lo pueden cobrar.</p></article>
+          <article class="tarjeta viva revelar" style="--orden:2"><div class="dato-legal">1 mes</div><h3>Para que te respondan</h3><p class="suave">Es lo que tiene la compañía para contestar a tu reclamación por escrito.</p></article>
+          <article class="tarjeta viva revelar" style="--orden:3"><div class="dato-legal">3 meses</div><h3>Para ir a la Oficina</h3><p class="suave">Si no responden o no lo arreglan, puedes acudir gratis a la Oficina de Atención al Usuario de Telecomunicaciones.</p></article>
+          <article class="tarjeta viva revelar" style="--orden:4"><div class="dato-legal">0 €</div><h3>Sin abogado</h3><p class="suave">Ni la reclamación a la compañía ni la de la Oficina necesitan abogado ni tienen coste.</p></article>
+        </div>
+        <p class="cita revelar">Lo dice el artículo 7 del Real Decreto 899/2009: la compañía «se abstendrá de facturar y cobrar» lo que corresponda a después de la baja. Lo comprobamos en el BOE y lo citamos en tu escrito.</p>
+      </div>
+    </section>
+
+    <!-- 5. Precio -->
+    <section class="oscuro degradado grano seccion" id="precio" aria-labelledby="t-precio">
+      <div class="mancha lima" style="width:420px;height:420px;top:-120px;left:30%"></div>
+      <div class="contenedor">
+        <p class="antetitulo revelar">Precio</p>
+        <h2 id="t-precio" class="revelar" style="--orden:1">Un pago único. Sin sorpresas.</h2>
+        <p class="entrada revelar" style="--orden:2">Reclamar es gratis y puedes hacerlo por tu cuenta. Lo que pagas es que te lo dejemos todo preparado.</p>
+        <div class="precios" style="margin-top:36px">
+          <article class="tarjeta-precio destacada revelar" style="--orden:1">
+            <span class="insignia">Lo más habitual</span>
+            <h3 style="color:#fff">Reclamación a tu compañía</h3>
             <p class="precio"><span data-precio="operador">13,99 €</span> <small>IVA incluido</small></p>
-            <ul class="lista-si">
-              <li>Escrito personalizado dirigido a tu compañía</li>
-              <li>Índice y tus documentos como anexos numerados, en un solo PDF</li>
+            <ul class="lista-check">
+              <li>Escrito personalizado con la base legal</li>
+              <li>Cálculo de lo cobrado de más, factura a factura</li>
+              <li>Tus documentos como anexos numerados, en un solo PDF</li>
               <li>Guía para presentarlo y guardar la prueba</li>
             </ul>
-          </div>
-          <div class="tarjeta">
-            <span class="etiqueta">Si no lo solucionan</span>
-            <h3 style="margin-top:10px">Expediente para la Oficina del Ministerio</h3>
+            <a href="/reclamar.html" class="boton brillo ancho">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a>
+          </article>
+          <article class="tarjeta revelar" style="--orden:2;padding:32px;border-radius:24px">
+            <span class="paso-num">Si no te lo solucionan</span>
+            <h3>Expediente para la Oficina del Ministerio</h3>
             <p class="precio"><span data-precio="oaut">29,90 €</span> <small>IVA incluido</small></p>
-            <ul class="lista-si">
-              <li>Formulario oficial de reclamación cumplimentado</li>
-              <li>Explicación del caso y relación de importes</li>
+            <ul class="lista-check">
+              <li>Formulario oficial cumplimentado</li>
+              <li>Escrito explicativo y relación de importes</li>
               <li>Anexos numerados, también por separado</li>
               <li>Guía para presentarlo por internet o en papel</li>
             </ul>
-          </div>
+            <p class="suave" style="font-size:.92rem;margin:0">El formulario te dice cuál te toca. No tienes que saberlo tú.</p>
+          </article>
         </div>
-        <p style="margin-top:16px">Reclamar a la compañía y a la Oficina es <strong>gratis</strong> y puedes hacerlo por tu cuenta por los canales oficiales. Lo que pagas es la preparación de la documentación. No presentamos la reclamación en tu nombre ni garantizamos el resultado.</p>
+        <div class="tabla-scroll revelar">
+          <table class="comparativa">
+            <caption class="oculto-visual">Comparativa entre reclamar solo y con nuestro escrito</caption>
+            <thead><tr><th scope="col"></th><th scope="col">Tú solo</th><th scope="col">Con <span data-marca>BajaClara</span></th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Saber qué días te cobraron de más</th><td>Cuentas tú factura a factura</td><td class="si">Calculado por días</td></tr>
+              <tr><th scope="row">Escrito con base legal</th><td>Lo redactas y buscas la norma</td><td class="si">Listo y con la norma citada</td></tr>
+              <tr><th scope="row">Pruebas ordenadas</th><td>Adjuntas lo que puedas</td><td class="si">Índice y anexos numerados</td></tr>
+              <tr><th scope="row">Plazos y siguiente paso</th><td>Tienes que averiguarlos</td><td class="si">Fechas calculadas para tu caso</td></tr>
+              <tr><th scope="row">Coste</th><td>Gratis</td><td>Desde <span data-precio="operador">13,99 €</span></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <section class="seccion" id="ejemplo" aria-labelledby="t-ejemplo">
-      <div class="contenedor estrecho">
-        <h2 id="t-ejemplo">Un ejemplo completo</h2>
-        <div class="tarjeta">
-          <p><strong>Caso ficticio.</strong> Ana pidió la baja de su fibra el 3 de junio por teléfono y recibió un SMS con el número de referencia. En julio le cobraron otra cuota completa de 36,30 € (periodo del 1 al 31 de julio) y una factura de junio que cubría todo el mes.</p>
-          <p>La baja debía ser efectiva el 5 de junio (dos días hábiles después). La reclamación pide la cuota de julio entera y solo la parte de junio posterior a la baja: 25 de 30 días.</p>
-          <a class="boton secundario" href="/ejemplo.html">Ver el ejemplo completo</a>
-        </div>
+    <!-- 6. Opiniones y cifras (solo con datos reales) -->
+    <section class="claro seccion" id="opiniones" aria-labelledby="t-opiniones" hidden>
+      <div class="contenedor">
+        <p class="antetitulo revelar">Opiniones</p>
+        <h2 id="t-opiniones" class="revelar" style="--orden:1">Lo que cuentan quienes ya han reclamado</h2>
+        <div class="rejilla tres" id="cifras" style="margin:28px 0"></div>
+        <div class="rejilla tres" id="lista-opiniones"></div>
       </div>
     </section>
 
-    <section class="seccion" id="preguntas" aria-labelledby="t-preguntas">
+    <!-- 7. Preguntas -->
+    <section class="oscuro grano seccion" id="preguntas" aria-labelledby="t-preguntas">
       <div class="contenedor estrecho">
-        <h2 id="t-preguntas">Preguntas frecuentes</h2>
-        <details class="pregunta"><summary>Si reclamar es gratis, ¿qué estoy pagando?</summary><div><p>La preparación de la documentación: comprobar tu caso con reglas revisadas, calcular lo que corresponde a cada factura, redactar el escrito y montar un PDF ordenado con tus documentos como anexos, más la guía para presentarlo. Puedes reclamar por tu cuenta sin pagarnos nada.</p></div></details>
-        <details class="pregunta"><summary>¿Presentáis vosotros la reclamación?</summary><div><p>No. Tú la presentas a tu compañía (o a la Oficina) siguiendo la guía. No te representamos ni hacemos el seguimiento del procedimiento.</p></div></details>
-        <details class="pregunta"><summary>¿Me garantizáis que me devuelvan el dinero?</summary><div><p>No. Depende de la compañía, de la Oficina y de tus pruebas. Lo que sí hacemos es aplicar reglas con su fuente oficial y no reclamar lo que no corresponde.</p></div></details>
-        <details class="pregunta"><summary>Me llegó una factura después de la baja. ¿Es indebida?</summary><div><p>No siempre. Muchas facturas se emiten después pero cobran días anteriores a la baja. Por eso miramos el periodo que cubre cada factura y solo reclamamos los días posteriores a la fecha en que la baja debía ser efectiva.</p></div></details>
-        <details class="pregunta"><summary>¿Qué documentos necesito?</summary><div><p>Las facturas cobradas después de la baja y una prueba de que la pediste (número de referencia, email, SMS, carta o captura). Si vas a la Oficina, también tu reclamación a la compañía y su respuesta si la hubo. Admitimos PDF, JPG y PNG.</p></div></details>
-        <details class="pregunta"><summary>¿Qué hacéis con mis documentos?</summary><div><p>Los usamos solo para preparar tu reclamación. Se guardan en almacenamiento privado y se borran solos: a las 48 horas si no pagas y a los 30 días de la entrega si pagas. Usamos inteligencia artificial para leer las facturas y proponerte los datos; tú los revisas antes de pagar. Más detalle en la <a href="/privacidad.html">política de privacidad</a>.</p></div></details>
-        <details class="pregunta"><summary>¿Puedo desistir o pedir que me devolváis el dinero?</summary><div><p>Tienes 14 días para desistir. Si pides que preparemos los documentos de inmediato y quedan a tu disposición, el servicio está ejecutado y ya no cabe desistir. Si algo está mal por nuestra parte, lo corregimos gratis o te devolvemos el importe. Consulta las <a href="/condiciones-venta.html">condiciones</a>.</p></div></details>
-        <details class="pregunta"><summary>¿Cómo os contacto?</summary><div><p>Escríbenos a <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a>.</p></div></details>
-        <div class="cta-centro"><a class="boton ancho" href="/reclamar.html">Comprobar mi caso</a></div>
+        <p class="antetitulo revelar">Preguntas frecuentes</p>
+        <h2 id="t-preguntas" class="revelar" style="--orden:1">Lo que te estarás preguntando</h2>
+        <div class="preguntas revelar" style="--orden:2;margin-top:28px">
+          <details class="pregunta"><summary>¿Es legal?</summary><div><p>Sí. Reclamar a tu compañía y a la Oficina de Atención al Usuario de Telecomunicaciones es un derecho. Nosotros solo preparamos la documentación; la presentas tú.</p></div></details>
+          <details class="pregunta"><summary>¿Cuánto tarda?</summary><div><p>Comprobar tu caso, un minuto. Subir tus documentos y revisar los datos, unos minutos más. Al pagar, tienes los documentos al momento y también por email.</p></div></details>
+          <details class="pregunta"><summary>¿Y si no me responden?</summary><div><p>La compañía tiene un mes. Si no responde o no lo arregla, tienes tres meses para acudir gratis a la Oficina del Ministerio. Te avisamos y podemos prepararte ese expediente con el formulario oficial.</p></div></details>
+          <details class="pregunta"><summary>¿Necesito abogado?</summary><div><p>No. Ni la reclamación a la compañía ni la de la Oficina lo exigen. Nosotros tampoco somos un despacho: preparamos la documentación y te explicamos cómo presentarla.</p></div></details>
+          <details class="pregunta"><summary>¿Me garantizáis que me devuelvan el dinero?</summary><div><p>No, y desconfía de quien lo prometa. Depende de la compañía y de tus pruebas. Lo que sí hacemos es reclamar solo lo que corresponde, con la norma citada y todo en orden.</p></div></details>
+          <details class="pregunta"><summary>Me llegó una factura después de la baja, ¿es indebida?</summary><div><p>No siempre: muchas se emiten después pero cobran días de antes. Miramos el periodo de cada factura y reclamamos solo los días posteriores a la baja.</p></div></details>
+          <details class="pregunta"><summary>¿Qué hacéis con mis documentos?</summary><div><p>Solo los usamos para tu reclamación y se borran solos: a las 48 horas si no pagas y a los 30 días de la entrega si pagas. Más detalle en la <a href="/privacidad.html">política de privacidad</a>.</p></div></details>
+          <details class="pregunta"><summary>¿Puedo desistir?</summary><div><p>Tienes 14 días. Si pides que preparemos los documentos al momento y quedan listos, el servicio ya está prestado. Si hay un error nuestro, lo corregimos gratis o te devolvemos el dinero. Lee las <a href="/condiciones-venta.html">condiciones</a>.</p></div></details>
+        </div>
+        <p class="suave revelar" style="margin-top:24px">¿Otra duda? Escríbenos a <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a>.</p>
+      </div>
+    </section>
+
+    <!-- 8. CTA final -->
+    <section class="oscuro degradado grano cta-final" id="cta-final" aria-labelledby="t-final">
+      <div class="mancha coral" style="width:460px;height:460px;top:-120px;right:-80px"></div>
+      <div class="mancha lima" style="width:360px;height:360px;bottom:-140px;left:-60px"></div>
+      <div class="contenedor estrecho">
+        <h2 id="t-final" class="revelar">Lo que te cobraron de más <span class="resalte">se reclama</span></h2>
+        <p class="entrada revelar" style="--orden:1">Compruébalo gratis. Si encaja, en unos minutos tienes tu reclamación lista para presentar.</p>
+        <a href="/reclamar.html" class="boton brillo revelar" style="--orden:2">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a>
       </div>
     </section>
   </main>
 
+  <!-- 9. Pie -->
   <footer class="pie">
     <div class="contenedor">
-      <p><strong data-marca>BajaClara</strong> es un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid. Contacto: <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a></p>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
+      <p>Un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid.</p>
       <nav class="enlaces" aria-label="Información legal">
         <a href="/legal.html">Aviso legal</a>
         <a href="/privacidad.html">Privacidad</a>
+        <a href="/privacidad.html#cookies">Cookies</a>
         <a href="/condiciones-venta.html">Condiciones</a>
-        <a href="/#preguntas">Ayuda</a>
         <a data-email href="mailto:hola@reclamoia.es">Contacto</a>
       </nav>
-      <p>Preparamos documentación; no prestamos asesoramiento jurídico ni representamos ante la compañía o la Administración. No somos un organismo público.</p>
+      <p>Preparamos documentación: no prestamos asesoramiento jurídico ni te representamos. No somos un organismo público ni estamos vinculados a ninguna compañía.</p>
     </div>
   </footer>
+
+  <div class="cta-fijo" id="cta-fijo"><a href="/reclamar.html" class="boton">Empieza tu reclamación <span class="flecha" aria-hidden="true">→</span></a></div>
 </body>
 </html>

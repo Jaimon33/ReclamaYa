@@ -8,8 +8,14 @@ export const MARCA = {
   lema: 'Reclama los cobros después de tu baja de teléfono o fibra',
   dominio: 'reclamoia.es',
   emailContacto: 'hola@reclamoia.es',
-  colorPrincipal: '#0B5D57'
+  colorPrincipal: '#5B2EFF'
 };
+
+// Opiniones y cifras reales para la portada. Mientras estén vacías, esas secciones no se
+// muestran en la web publicada (en la vista previa se ven ejemplos marcados como tales).
+// Formato: OPINIONES = [{ texto, autor, detalle }]; CIFRAS = [{ valor, sufijo, etiqueta }]
+export const OPINIONES = [];
+export const CIFRAS = [];
 
 export const PRESTADOR = {
   titular: 'Jaime Porras Rodríguez',

@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 64" role="img" aria-label="BajaClara">
-  <rect width="64" height="64" rx="15" fill="#0B5D57"/>
-  <path d="M9 32h13" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-  <rect x="21" y="23" width="13" height="18" rx="3.5" fill="#fff"/>
-  <path d="M34 27.5h5M34 36.5h5" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M46 23v18M46 32h9" stroke="#9FE0D5" stroke-width="5" stroke-linecap="round"/>
-  <text x="78" y="43" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="-0.5"><tspan fill="#14212B">Baja</tspan><tspan fill="#0B5D57">Clara</tspan></text>
-</svg>

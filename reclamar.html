@@ -6,10 +6,12 @@
   <title>Comprueba tu caso — BajaClara</title>
   <meta name="description" content="Comprueba gratis si puedes reclamar los cobros de tu teléfono o fibra posteriores a la baja.">
   <link rel="canonical" href="https://reclamoia.es/reclamar.html">
-  <meta name="theme-color" content="#0b5d57">
+  <meta name="theme-color" content="#0E0B2B">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fuentes/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/estilos.css">
   <script type="module" src="/sitio.js"></script>
   <script type="module" src="/reclamar.js"></script>
@@ -18,13 +20,15 @@
   <a class="saltar" href="#contenido">Saltar al contenido</a>
   <header class="cabecera">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
       <nav class="navegacion" aria-label="Principal"><a href="/#preguntas">Ayuda</a></nav>
     </div>
   </header>
 
-  <main id="contenido" class="asistente">
-    <div class="contenedor estrecho">
+  <main id="contenido" class="pagina-clara asistente">
+    <div class="mancha violeta" style="width:520px;height:520px;top:-200px;right:-200px"></div>
+    <div class="mancha violeta" style="width:420px;height:420px;bottom:-160px;left:-200px"></div>
+    <div class="contenedor estrecho" style="padding-top:32px">
       <ol class="progreso" aria-label="Pasos">
         <li id="prog-1" class="activo" aria-current="step">1. Comprueba tu caso</li>
         <li id="prog-2">2. Añade tus documentos</li>
@@ -34,7 +38,7 @@
       <noscript><p class="mensaje error">Para usar el formulario necesitas activar JavaScript.</p></noscript>
 
       <!-- PASO 1 -->
-      <section id="paso-1" aria-labelledby="t-paso-1">
+      <section id="paso-1" class="paso-tarjeta" aria-labelledby="t-paso-1">
         <h1 id="t-paso-1" tabindex="-1">Comprueba tu caso</h1>
         <p class="ayuda">Unas pocas preguntas. Lo demás lo sacaremos de tus documentos. No te pedimos nombre, DNI ni email todavía.</p>
         <form id="form-caso" novalidate>
@@ -129,7 +133,7 @@
       </section>
 
       <!-- PASO 2 -->
-      <section id="paso-2" hidden aria-labelledby="t-paso-2">
+      <section id="paso-2" class="paso-tarjeta" hidden aria-labelledby="t-paso-2">
         <h1 id="t-paso-2" tabindex="-1">Añade tus documentos</h1>
         <p class="ayuda" id="limites"></p>
         <h2 class="rotulo">Lo que necesitamos</h2>
@@ -213,7 +217,7 @@
       </section>
 
       <!-- PASO 3 -->
-      <section id="paso-3" hidden aria-labelledby="t-paso-3">
+      <section id="paso-3" class="paso-tarjeta" hidden aria-labelledby="t-paso-3">
         <h1 id="t-paso-3" tabindex="-1">Revisa y paga</h1>
         <div id="resumen"></div>
         <form id="form-pago" novalidate>
@@ -238,10 +242,12 @@
 
   <footer class="pie">
     <div class="contenedor">
-      <p><strong data-marca>BajaClara</strong> es un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z. Contacto: <a data-email href="mailto:hola@reclamoia.es">hola@reclamoia.es</a></p>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
+      <p>Un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid.</p>
       <nav class="enlaces" aria-label="Información legal">
-        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/condiciones-venta.html">Condiciones</a><a href="/#preguntas">Ayuda</a>
+        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/privacidad.html#cookies">Cookies</a><a href="/condiciones-venta.html">Condiciones</a><a data-email href="mailto:hola@reclamoia.es">Contacto</a>
       </nav>
+      <p>Preparamos documentación: no prestamos asesoramiento jurídico ni te representamos. No somos un organismo público ni estamos vinculados a ninguna compañía.</p>
     </div>
   </footer>
 </body>

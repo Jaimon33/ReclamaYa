@@ -8,6 +8,8 @@
   <title>Tus documentos — BajaClara</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preload" href="/fuentes/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fuentes/plus-jakarta-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/estilos.css">
   <script type="module" src="/sitio.js"></script>
   <script type="module" src="/exito.js"></script>
@@ -15,12 +17,14 @@
 <body>
   <header class="cabecera">
     <div class="contenedor">
-      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="36" height="36"><span class="marca-nombre" data-marca>BajaClara</span></a>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
       <nav class="navegacion" aria-label="Principal"><a href="/#preguntas">Ayuda</a></nav>
     </div>
   </header>
-  <main id="contenido" class="asistente">
-    <div class="contenedor estrecho">
+  <main id="contenido" class="pagina-clara asistente">
+    <div class="mancha violeta" style="width:520px;height:520px;top:-200px;right:-200px"></div>
+    <div class="mancha violeta" style="width:420px;height:420px;bottom:-160px;left:-200px"></div>
+    <div class="contenedor estrecho paso-tarjeta" style="margin-top:32px">
       <h1 id="titulo" tabindex="-1">Estamos preparando tus documentos</h1>
       <div id="estado" aria-live="polite"><p><span class="cargando" aria-hidden="true"></span> Un momento…</p></div>
       <div id="descargas"></div>
@@ -30,8 +34,12 @@
   </main>
   <footer class="pie">
     <div class="contenedor">
-      <p><strong data-marca>BajaClara</strong> · reclamoia.es · Jaime Porras Rodríguez, NIF 51141641Z</p>
-      <nav class="enlaces" aria-label="Información legal"><a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/condiciones-venta.html">Condiciones</a></nav>
+      <a class="marca" href="/"><img src="/marca/simbolo.svg" alt="" width="38" height="38"><span data-marca>BajaClara</span></a>
+      <p>Un servicio de reclamoia.es prestado por Jaime Porras Rodríguez, NIF 51141641Z, Camino de la Huerta 209, 28055 Madrid.</p>
+      <nav class="enlaces" aria-label="Información legal">
+        <a href="/legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a><a href="/privacidad.html#cookies">Cookies</a><a href="/condiciones-venta.html">Condiciones</a><a data-email href="mailto:hola@reclamoia.es">Contacto</a>
+      </nav>
+      <p>Preparamos documentación: no prestamos asesoramiento jurídico ni te representamos. No somos un organismo público ni estamos vinculados a ninguna compañía.</p>
     </div>
   </footer>
 </body>
