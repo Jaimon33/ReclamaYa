@@ -102,6 +102,7 @@ pagina({
           <tr><td>Expediente sin pagar (respuestas, datos y documentos)</td><td>Se borra automáticamente a las 48 horas de la última modificación. Puedes borrarlo antes desde el formulario.</td></tr>
           <tr><td>Expediente pagado: tus documentos y los documentos generados</td><td>30 días desde la entrega, para que puedas descargarlos. Después se borran automáticamente.</td></tr>
           <tr><td>Datos para el recordatorio (email, referencia y compañía)</td><td>Hasta el envío del recordatorio, como máximo 45 días.</td></tr>
+          <tr><td>Facturas emitidas (número, fecha, nombre, NIF o CIF, dirección si la diste e importes)</td><td>Seis años, por obligación fiscal y mercantil (art. 30 del Código de Comercio).</td></tr>
           <tr><td>Registro mínimo del pedido</td><td>5 años.</td></tr>
           <tr><td>Pedidos anteriores al 28/10/2026 (servicio generalista)</td><td>Se mantiene la referencia mínima anunciada entonces (referencia, fecha, categoría y email) hasta 24 meses.</td></tr>
           <tr><td>Contadores anónimos</td><td>Hasta 400 días.</td></tr>

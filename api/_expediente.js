@@ -134,7 +134,8 @@ export function construirPropuesta(exp) {
   return {
     titular: { nombre, documento },
     numeroCliente: elegir(candidatos.numeroCliente),
-    lineas: { valor: [...new Set(candidatos.lineas.map(l => l.valor))].join(', '), fuentes: candidatos.lineas.map(l => l.fuente) },
+    // La misma línea puede venir escrita con o sin espacios ("912 345 678" y "912345678"): se cuenta una vez.
+    lineas: { valor: [...new Map([...candidatos.lineas].reverse().map(l => [l.valor.replace(/\D/g, '') || l.valor, l.valor])).values()].reverse().join(', '), fuentes: candidatos.lineas.map(l => l.fuente) },
     razonSocialOperador: elegir(candidatos.razonSocial),
     cifOperador: elegir(candidatos.cifOperador),
     bajaReferencia: elegir(candidatos.bajaRef),

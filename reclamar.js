@@ -403,7 +403,8 @@ function resumirLeido() {
   $('#leido-resumen').textContent = partes.join(' · ');
   const leyendo = vista.documentos.some(d => d.lectura === 'pendiente');
   const incompleto = !baja || !n || leerFacturas().some(f => !f.periodoDesde || !f.periodoHasta || f.importeServicio == null);
-  if (!leyendo && incompleto && !$('#leido').dataset.tocado) $('#leido').open = true;
+  // Se abre solo si falta algo y se vuelve a cerrar cuando está completo, salvo que el cliente lo haya tocado.
+  if (!leyendo && !$('#leido').dataset.tocado) $('#leido').open = incompleto;
 }
 $('#leido summary').addEventListener('click', () => { $('#leido').dataset.tocado = '1'; });
 
