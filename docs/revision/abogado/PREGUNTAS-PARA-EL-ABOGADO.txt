@@ -1,0 +1,30 @@
+Hola,
+
+Voy a lanzar Línea Clara (reclamoia.es), un servicio online que prepara la documentación para que un consumidor reclame a su compañía de teléfono o fibra lo que le han cobrado después de darse de baja. No representamos al cliente ni damos asesoramiento: él presenta los documentos.
+
+Hay dos productos, de 19,99 € cada uno (IVA incluido):
+- Primera reclamación: escrito dirigido a la compañía (documentos 1 y 2).
+- Segunda reclamación: expediente para la Oficina de Atención al Usuario de Telecomunicaciones del Ministerio, con el formulario oficial (documentos 3 y 4).
+
+Te adjunto ejemplos generados con datos inventados. Me gustaría que revisaras:
+
+1. Escritos (documentos 1 y 3)
+   - ¿La base legal es correcta y está vigente? Citamos el art. 7 del Real Decreto 899/2009 (baja efectiva en dos días hábiles), su art. 26.2 (número de referencia) y los arts. 3.1, 4 y 9.1 de la Orden ITC/1030/2007 (plazos de un mes y tres meses y facultades de la Oficina).
+   - ¿Es correcto el cálculo? Solo reclamamos los días facturados después de la fecha en que la baja debía ser efectiva, prorrateando por días.
+   - ¿Falta algo que la compañía o la Oficina puedan usar para rechazar la reclamación?
+
+2. Guías para el cliente (documentos 2 y 4)
+   - ¿Son correctos los plazos y los pasos de presentación? ¿Algo que pueda inducir a error?
+
+3. Condiciones de contratación (documento 5, también en reclamoia.es/condiciones-venta.html)
+   - Antes de pagar, el cliente marca una sola casilla: "Acepto las condiciones y la política de privacidad, y quiero los documentos al momento: una vez entregados, no podré desistir del pedido". ¿Basta para la excepción al desistimiento del art. 103.a) de la Ley General para la Defensa de los Consumidores, o deben ser dos casillas separadas?
+   - ¿El resto de condiciones es correcto para un servicio de este tipo?
+
+4. Política de privacidad y aviso legal (reclamoia.es/privacidad.html y reclamoia.es/legal.html)
+   - Tratamos DNI, dirección y facturas del cliente. Usamos la API de Anthropic (EE. UU.) para leer los documentos, además de Vercel, Upstash, Stripe y Resend. ¿Están bien descritos los encargados, las transferencias internacionales y los plazos de conservación?
+
+5. Actividad
+   - ¿Hay algún riesgo de que esto se considere asesoramiento jurídico o intrusismo? En la web y en los documentos decimos que no prestamos asesoramiento ni representamos al cliente.
+
+Gracias,
+Jaime Porras Rodríguez

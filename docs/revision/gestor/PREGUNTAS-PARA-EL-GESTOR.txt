@@ -1,0 +1,21 @@
+Hola,
+
+Voy a empezar a vender online, como autónomo, un servicio digital: la preparación de documentos de reclamación para particulares (y algunas empresas) a 19,99 € IVA incluido cada uno. Se paga con tarjeta a través de Stripe y la web emite la factura automáticamente al cobrar.
+
+Te adjunto una factura de ejemplo. Las reales llevarán la serie "LC" (LC 001-26, LC 002-26… con numeración correlativa que empieza de nuevo cada año), sin la nota de "documento de prueba".
+
+Cómo funciona ahora:
+- Base imponible e IVA salen del total: 19,99 € = 16,52 € de base + 3,47 € de IVA al 21 %.
+- Si el cliente da su dirección, la factura es completa. Si no la da (es opcional), se emite como "factura simplificada" con su nombre y NIF.
+- Las completas y las simplificadas comparten la misma serie LC.
+- Cada vez que se emite una factura me llega una copia por email y queda registrada en la web 6 años.
+
+Preguntas:
+1. ¿Es correcto aplicar el IVA al 21 % a este servicio?
+2. ¿Puedo mezclar facturas completas y simplificadas en la misma serie, o necesito dos series?
+3. ¿Hace falta que la dirección del cliente sea obligatoria?
+4. ¿Qué tengo que hacer con las facturas para el libro registro y las declaraciones trimestrales? ¿Te vale la copia por email o necesitas otro formato (por ejemplo, una hoja de cálculo mensual)?
+5. ¿Hay algo más que deba tener en cuenta (Verifactu, alta de actividad, epígrafe del IAE, comisiones de Stripe…)?
+
+Gracias,
+Jaime Porras Rodríguez
