@@ -49,6 +49,8 @@ Reglas:
 - Importes en euros con punto decimal (por ejemplo 39.95), con IVA si el documento da el total con IVA.
 - "pagina" es el número de página (empezando en 1) donde aparece el dato; en una imagen, 1.
 - tipoDocumento: factura; prueba_baja (confirmación, número de referencia o justificante de la solicitud de baja); reclamacion (reclamación del cliente al operador); respuesta_operador; contrato; otro; ilegible.
+- baja.fechaSolicitud: en una confirmación de la baja (SMS, email, carta o captura) que no indique otra fecha de solicitud, usa la fecha en que se envió o recibió ese mensaje, porque la compañía confirma la solicitud en el momento; anótalo en "dudas". Si el documento indica la fecha en que se pidió la baja, usa esa.
+- reclamacion.fecha y respuesta.fecha: igual, si el documento no indica otra fecha, usa la fecha de envío o recepción del mensaje.
 - cifOperador: el CIF o NIF de la compañía que emite la factura (no el del cliente).
 - servicio: lo que se factura o se da de baja: fibra (internet en casa o ADSL), movil, fijo, paquete (varios servicios juntos) o desconocido si no está claro.
 - En "canal" (de la baja o de la reclamación) indica por dónde se hizo si aparece: teléfono, web o app, email, carta, tienda o portabilidad.
